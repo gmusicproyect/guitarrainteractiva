@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guitarra Interactiva — Academia GMusic</title>
+<style>
+  :root{
+    --fondo:#080808; --superficie:#111111; --borde:rgba(255,255,255,.06);
+    --dorado:#C9A84C; --dorado-claro:#E8CE8A; --texto:#F5F0E8; --sec:#8A8A8A;
+    --tu:#5FBF8A; /* verde: lo que el alumno toca / acierto */
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--fondo);color:var(--texto);font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;min-height:100vh;padding:28px 20px 48px}
+  .wrap{max-width:1060px;margin:0 auto}
+  header{text-align:center;margin-bottom:22px}
+  h1{font-family:Georgia,'Times New Roman',serif;font-size:32px;font-weight:700;letter-spacing:-.5px}
+  h1 .gold{color:var(--dorado)}
+  .sub{color:var(--sec);font-size:13.5px;margin-top:6px}
+  .chip{display:inline-block;margin-top:10px;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dorado);border:1px solid rgba(201,168,76,.4);border-radius:999px;padding:5px 14px}
+
+  .tabs{display:flex;justify-content:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+  .tab{border:1px solid var(--borde);background:var(--superficie);color:var(--sec);border-radius:999px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;transition:all .18s}
+  .tab.active{background:var(--dorado);color:#080808;border-color:var(--dorado)}
+  .tab:not(.active):hover{border-color:rgba(201,168,76,.4);color:var(--texto)}
+
+  .panel{background:var(--superficie);border:1px solid var(--borde);border-radius:16px;padding:18px 22px;margin-bottom:18px}
+  .panel h3{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dorado);margin-bottom:12px;font-weight:600}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .row + .row{margin-top:12px}
+  .lbl{font-size:12px;color:var(--sec);margin-right:4px}
+  .pick{border:1px solid var(--borde);background:#080808;color:var(--texto);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+  .pick:hover{border-color:rgba(201,168,76,.4)}
+  .pick.active{background:var(--dorado);color:#080808;border-color:var(--dorado)}
+  .pick.minor.active{background:var(--dorado-claro)}
+  .formula{font-size:12.5px;color:var(--sec);margin-left:auto;font-style:italic}
+  .play{border:none;background:var(--dorado);color:#080808;border-radius:999px;padding:11px 28px;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s}
+  .play:hover{background:var(--dorado-claro)}
+  .play:disabled{opacity:.45;cursor:default}
+  .ghost{border:1px solid var(--borde);background:transparent;color:var(--sec);border-radius:999px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer}
+  .ghost:hover{color:var(--texto);border-color:rgba(255,255,255,.2)}
+  input[type=range]{accent-color:var(--dorado);width:130px}
+  .bpm-val{font-size:12.5px;color:var(--texto);min-width:64px}
+
+  .stage{background:var(--superficie);border:1px solid var(--borde);border-radius:16px;padding:14px 10px 6px;overflow-x:auto}
+  svg{display:block;width:100%;min-width:960px;height:auto}
+
+  .display{min-height:66px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;margin-top:12px}
+  .display .big{font-family:Georgia,serif;font-size:30px;font-weight:700;color:var(--dorado)}
+  .display .small{font-size:13px;color:var(--sec);margin-top:2px}
+
+  .leyenda{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:var(--sec)}
+  .sw{display:inline-flex;align-items:center;gap:7px}
+  .sw i{width:13px;height:13px;border-radius:50%;display:inline-block}
+
+  /* SVG */
+  .pos{cursor:pointer}
+  .pos circle{fill:rgba(255,255,255,.05);stroke:rgba(255,255,255,.15);stroke-width:1;transition:fill .15s}
+  .pos:hover circle{fill:rgba(201,168,76,.3)}
+  .pos .nl{opacity:0;transition:opacity .15s}
+  .pos.in-scale circle{fill:rgba(201,168,76,.16);stroke:rgba(201,168,76,.55)}
+  .pos.in-scale .nl{opacity:1;fill:var(--texto)}
+  .pos.root circle{fill:var(--dorado);stroke:var(--dorado-claro)}
+  .pos.root .nl{opacity:1;fill:#080808}
+  .pos.in-chord circle{fill:var(--dorado);stroke:var(--dorado-claro)}
+  .pos.in-chord .nl{opacity:1;fill:#080808}
+  .pos.playing circle{fill:var(--dorado-claro);filter:drop-shadow(0 0 7px rgba(232,206,138,.9))}
+  @keyframes vib{0%,100%{transform:translateY(0)}20%{transform:translateY(-1.6px)}40%{transform:translateY(1.6px)}60%{transform:translateY(-1px)}80%{transform:translateY(.5px)}}
+  .vib{animation:vib .4s ease-out}
+  @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.28)}100%{transform:scale(1)}}
+  .pulse{animation:pulse .3s ease;transform-box:fill-box;transform-origin:center}
+
+  /* Modo espejo: lo que TÚ tocas se ve en verde */
+  .pos.heard circle{fill:rgba(95,191,138,.22);stroke:var(--tu)}
+  .pos.heard .nl{opacity:1;fill:var(--tu)}
+  .pos.hit circle{fill:var(--tu);stroke:#9FE6BE}
+  .pos.hit .nl{opacity:1;fill:#07130C}
+  .pos.expect circle{stroke:var(--dorado-claro);stroke-width:2.5;stroke-dasharray:5 4;animation:marcha 1s linear infinite}
+  @keyframes marcha{to{stroke-dashoffset:-18}}
+
+  /* Reto */
+  .pos.quiz circle{fill:rgba(201,168,76,.2);stroke:var(--dorado);stroke-width:2}
+  .pos.quiz .nl{opacity:1;fill:var(--dorado-claro)}
+  .pos.miss{animation:niega .4s ease;transform-box:fill-box;transform-origin:center}
+  .pos.miss circle{stroke:#C96B5C}
+  @keyframes niega{25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-3px)}}
+
+  /* Cambios: anillo punteado = dedo ancla */
+  .ancring{fill:none;stroke:var(--dorado-claro);stroke-width:2;stroke-dasharray:4 4}
+  .bigcount{font-family:Georgia,serif;font-size:32px;font-weight:700;color:var(--dorado);min-width:34px;text-align:center}
+
+  /* Progresiones: pulsos y patrón de rasgueo */
+  .beats span{color:var(--sec);font-weight:700;margin:0 3px}
+  .beats span.on{color:var(--dorado)}
+  .patchip{display:inline-block;min-width:18px;text-align:center;color:var(--sec);font-weight:700;margin:0 2px;font-size:15px}
+  .patchip.on{color:var(--dorado-claro)}
+  .prog-chip b{color:var(--dorado)}
+  .prog-chip.active b{color:inherit}
+
+  /* Foco de teclado visible (piso de accesibilidad) */
+  button:focus-visible, select:focus-visible, input:focus-visible{
+    outline:2px solid var(--dorado-claro); outline-offset:2px;
+  }
+
+  /* Deslizamiento del mástil en pantallas estrechas */
+  .stage{position:relative}
+  .stage::after{content:"";position:absolute;top:0;right:0;width:34px;height:100%;
+    pointer-events:none;background:linear-gradient(90deg,transparent,rgba(17,17,17,.9));
+    border-radius:0 16px 16px 0;opacity:0;transition:opacity .2s}
+  .stage.scrollable::after{opacity:1}
+  .hint{display:none;text-align:center;color:var(--sec);font-size:12px;margin:8px 0 -4px}
+  .stage.scrollable ~ .hint{display:block}
+
+  /* Respeta "reducir movimiento" */
+  @media (prefers-reduced-motion: reduce){
+    .vib,.pulse,.pos.expect circle,.pos.miss{animation:none}
+    .tab,.pick,.play,.pos circle{transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Guitarra <span class="gold">Interactiva</span></h1>
+    <p class="sub">Escalas · Acordes y CAGED · Progresiones · Cambios de acorde · Retos — toca, escucha y mírate</p>
+    <span class="chip">Herramienta de práctica · sonido sintetizado · micrófono solo si activas el modo espejo</span>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-escalas">Escalas</button>
+    <button class="tab" id="tab-acordes">Acordes</button>
+    <button class="tab" id="tab-prog">Progresiones</button>
+    <button class="tab" id="tab-cambios">Cambios</button>
+    <button class="tab" id="tab-reto">Reto</button>
+  </div>
+
+  <!-- PANEL ESCALAS -->
+  <div class="panel" id="panel-escalas">
+    <h3>Construye tu escala</h3>
+    <div class="row">
+      <span class="lbl">Tónica:</span>
+      <span id="roots"></span>
+    </div>
+    <div class="row">
+      <span class="lbl">Tipo:</span>
+      <button class="pick active" data-tipo="mayor">Mayor</button>
+      <button class="pick minor" data-tipo="menor">Menor natural</button>
+      <span class="lbl" style="margin-left:14px">Vista:</span>
+      <select class="pick" id="posicion">
+        <option value="todo">Todo el diapasón</option>
+        <option value="abierta" selected>Posición abierta (al aire)</option>
+        <option value="custom">Ventana libre (elige trastes)</option>
+      </select>
+      <span id="rango" style="display:none;align-items:center;gap:6px">
+        <span class="lbl">desde</span><select class="pick" id="desde"></select>
+        <span class="lbl">hasta</span><select class="pick" id="hasta"></select>
+      </span>
+      <span class="formula" id="formula"></span>
+    </div>
+    <div class="row">
+      <span class="lbl">Puntos:</span>
+      <button class="pick active" data-etq="notas">Notas</button>
+      <button class="pick" data-etq="grados">Grados</button>
+      <span class="lbl" style="margin-left:12px" title="La tónica es 1 · en menor, ♭3 ♭6 ♭7">?</span>
+    </div>
+    <div class="row">
+      <button class="play" id="btn-play-scale">▶ Reproducir escala</button>
+      <button class="pick" id="btn-vuelta" aria-pressed="false" title="Sube y baja la escala">↕ Ida y vuelta</button>
+      <span class="lbl" style="margin-left:8px">Tempo:</span>
+      <input type="range" id="bpm" min="50" max="120" value="70">
+      <span class="bpm-val" id="bpm-val">70 BPM</span>
+      <button class="ghost" id="btn-clear-1">Limpiar</button>
+    </div>
+    <div class="row">
+      <button class="pick" id="btn-mic">🎙 Modo espejo (beta)</button>
+      <button class="pick" id="btn-run" disabled>▶ Tu escala (te escucho)</button>
+      <span class="lbl" id="mic-status">Actívalo y lo que toques en tu guitarra se enciende en verde — no califica, solo refleja.</span>
+    </div>
+  </div>
+
+  <!-- PANEL ACORDES -->
+  <div class="panel" id="panel-acordes" style="display:none">
+    <h3>Mayores</h3>
+    <div class="row" id="chords-major"></div>
+    <h3 style="margin-top:16px">Menores</h3>
+    <div class="row" id="chords-minor"></div>
+    <div class="row" style="margin-top:14px">
+      <button class="ghost" id="btn-clear-2">Limpiar</button>
+      <span class="formula">Toca un acorde para ver su digitación en el diapasón · ○ al aire · ✕ no suena</span>
+    </div>
+    <h3 style="margin-top:20px">Sistema CAGED — un mismo acorde, cinco caminos por el mástil</h3>
+    <div class="row">
+      <span class="lbl">Tónica:</span><span id="caged-roots"></span>
+      <span class="lbl" style="margin-left:10px">Tipo:</span>
+      <button class="pick active" data-ctipo="mayor">Mayor</button>
+      <button class="pick minor" data-ctipo="menor">Menor</button>
+    </div>
+    <div class="row">
+      <span class="lbl">Forma:</span><span id="caged-formas"></span>
+      <span class="formula">«Todas» muestra el acorde encadenado por el mástil · toca la letra de cada forma para escucharla</span>
+    </div>
+  </div>
+
+  <!-- PANEL PROGRESIONES -->
+  <div class="panel" id="panel-prog" style="display:none">
+    <h3>Progresiones — los acordes en familia</h3>
+    <div class="row">
+      <span class="lbl">Tonalidad:</span><span id="prog-roots"></span>
+    </div>
+    <div class="row">
+      <span class="lbl">Progresión:</span>
+      <select class="pick" id="prog-sel"></select>
+      <span class="formula" id="prog-desc"></span>
+    </div>
+    <div class="row">
+      <span class="lbl">Rasgueo:</span><span id="prog-pats"></span>
+    </div>
+    <div class="row">
+      <button class="play" id="btn-prog">▶ Tocar en bucle</button>
+      <span class="lbl">Tempo:</span>
+      <input type="range" id="prog-bpm" min="55" max="120" value="80">
+      <span class="bpm-val" id="prog-bpm-val">80 BPM</span>
+      <span class="beats" id="prog-beats"><span>1</span><span>2</span><span>3</span><span>4</span></span>
+      <span id="prog-pat"></span>
+    </div>
+    <div class="row" id="prog-chips"></div>
+    <div class="row"><span class="formula">Toca un acorde de la rueda para verlo y oírlo · en bucle, el activo se ilumina · voces elegidas con las formas CAGED</span></div>
+  </div>
+
+  <!-- PANEL CAMBIOS -->
+  <div class="panel" id="panel-cambios" style="display:none">
+    <h3>Cambios de acorde — el músculo del principiante</h3>
+    <div class="row">
+      <span class="lbl">Ejercicio:</span>
+      <button class="pick active" data-camej="dos">1 · Dos acordes libres</button>
+      <button class="pick" data-camej="grados">2 · Por grados</button>
+    </div>
+    <div id="cam-ej1">
+      <div class="row"><span class="lbl">De:</span><span id="cam-a"></span></div>
+      <div class="row"><span class="lbl">A:</span><span id="cam-b"></span></div>
+    </div>
+    <div id="cam-ej2" style="display:none">
+      <div class="row">
+        <span class="lbl">Tonalidad:</span><span id="cam-roots"></span>
+        <button class="pick active" data-camk="mayor">Mayor</button>
+        <button class="pick minor" data-camk="menor">Menor</button>
+      </div>
+      <div class="row">
+        <span class="lbl">Acordes:</span>
+        <select class="pick" id="cam-n">
+          <option value="2">2</option><option value="3">3</option>
+          <option value="4" selected>4</option><option value="5">5</option>
+          <option value="6">6</option><option value="7">7</option>
+        </select>
+        <span class="formula">El campo armónico entra en orden de grados — con 7 lo recorres completo</span>
+      </div>
+      <div class="row" id="cam-seq"></div>
+    </div>
+    <div class="row"><span class="formula" id="cam-ancla"></span></div>
+    <div class="row">
+      <button class="play" id="btn-cam">▶ Metrónomo de cambios</button>
+      <span class="lbl">Tempo:</span>
+      <input type="range" id="cam-bpm" min="40" max="110" value="60">
+      <span class="bpm-val" id="cam-bpm-val">60 BPM</span>
+      <span class="lbl">Cambia cada:</span>
+      <select class="pick" id="cam-beats">
+        <option value="2">2 pulsos</option>
+        <option value="4" selected>4 pulsos</option>
+        <option value="8">8 pulsos</option>
+      </select>
+      <span class="bigcount" id="cam-count">·</span>
+    </div>
+    <div class="row" style="border-top:1px solid var(--borde);padding-top:12px;margin-top:14px">
+      <button class="pick" id="btn-min">⏱ Reto de 1 minuto</button>
+      <button class="play" id="btn-tap" disabled>¡Cambié!</button>
+      <span class="lbl">(o barra espaciadora)</span>
+      <span class="formula" id="min-res"></span>
+    </div>
+  </div>
+
+  <!-- PANEL RETO -->
+  <div class="panel" id="panel-reto" style="display:none">
+    <h3>Reto — pon a prueba tu diapasón</h3>
+    <div class="row">
+      <span class="lbl">Tipo:</span>
+      <button class="pick active" data-rtipo="encuentra">Encuentra la nota</button>
+      <button class="pick" data-rtipo="grado">¿Qué grado es?</button>
+      <span class="lbl" id="reto-score" style="margin-left:auto">Aciertos 0 · Racha 0 · Mejor 0</span>
+    </div>
+    <div class="row" id="reto-key" style="display:none">
+      <span class="lbl">Tonalidad:</span><span id="reto-roots"></span>
+      <button class="pick active" data-rktipo="mayor">Mayor</button>
+      <button class="pick minor" data-rktipo="menor">Menor</button>
+    </div>
+    <div class="row">
+      <button class="play" id="btn-reto">↻ Otra pregunta</button>
+      <span id="reto-opts" style="display:inline-flex;gap:8px;flex-wrap:wrap"></span>
+      <span class="formula">Sin cronómetro ni castigo: la racha es solo tuya</span>
+    </div>
+  </div>
+
+  <!-- DIAPASÓN -->
+  <div class="stage" id="stage">
+    <svg id="guitarra" viewBox="0 0 1000 300" aria-label="Diapasón interactivo"></svg>
+  </div>
+  <p class="hint">← desliza para recorrer todo el mástil →</p>
+
+  <div class="display" id="display">
+    <p class="small">Toca cualquier posición del diapasón para escucharla — o elige una escala / un acorde arriba</p>
+  </div>
+
+  <div class="leyenda">
+    <span class="sw"><i style="background:var(--dorado)"></i>Tónica / acorde activo</span>
+    <span class="sw"><i style="background:rgba(201,168,76,.25);border:1px solid rgba(201,168,76,.55)"></i>Nota de la escala</span>
+    <span class="sw"><i style="background:var(--tu)"></i>Lo que tú tocas / acierto</span>
+    <span class="sw"><i style="background:transparent;border:1px solid rgba(255,255,255,.25)"></i>Posición libre</span>
+  </div>
+
+</div>
+
+<script>
+/* ================= DATOS ================= */
+const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const STRINGS = [ // s=0 arriba (aguda) … s=5 abajo (grave)
+  { letra:'e', midi:64 }, { letra:'B', midi:59 }, { letra:'G', midi:55 },
+  { letra:'D', midi:50 }, { letra:'A', midi:45 }, { letra:'E', midi:40 }
+];
+const FRETS = 16; // 16 trastes para alojar las 5 formas CAGED en cualquier tonalidad
+const NUT_X = 90, D12 = 670; // distancia cejilla → traste 12
+const fretX = f => NUT_X + 2*D12*(1 - Math.pow(2, -f/12));       // borde derecho del traste f
+const cellX = f => f === 0 ? NUT_X - 34 : (fretX(f-1) + fretX(f)) / 2; // centro de la casilla
+const TOP = 50, SPACING = 40;
+// Vista del guitarrista: 6ª cuerda (E grave) ARRIBA, 1ª (e aguda) ABAJO
+const stringY = s => TOP + (5 - s)*SPACING;
+const THICK = [1.2, 1.7, 2.2, 3.0, 4.0, 5.2];
+const SCOL  = ['#CFCFCF','#C4C4C4','#B4B4B4','#A0A0A0','#8C8C8C','#787878'];
+
+const SCALES = {
+  mayor: { pasos:[0,2,4,5,7,9,11], formula:'T – T – ST – T – T – T – ST' },
+  menor: { pasos:[0,2,3,5,7,8,10], formula:'T – ST – T – T – ST – T – T' }
+};
+
+/* ============ SISTEMA CAGED DE ESCALAS (ARCHIVADO) ============
+   Decisión del maestro (2026-08-15): CAGED se mueve a la pestaña ACORDES
+   (nació de acordes: las formas se llaman Do-La-Sol-Mi-Re). Las escalas se
+   exploran con ventana libre. Se conservan los patrones validados — carrera
+   continua, sin huecos ni repetidas — por si se reactivan como vista.
+   Cada forma = patrón de trastes RELATIVO a un ancla (la tónica en su cuerda
+   característica). 2–3 notas por cuerda · span real de 4–5 trastes.
+   La menor natural usa la MISMA forma de su relativa mayor (tónica + 3 st). */
+/* REGLA DEL MAESTRO aplicada a las 5 formas: la carrera ascendente no tiene
+   huecos ni repeticiones. Las digitaciones clásicas se corrigieron agregando
+   la nota que falta en la secuencia (C: 2ª cuerda rel -3 · A: 5ª rel -1 ·
+   G: 4ª rel +1 (estiramiento) · E: 3ª rel +2 · D: 5ª rel -2 y 4ª rel -1). */
+const CAGED = {
+  'C': { anclaS:4, minAncla:4, acorde:'Do',  rel:{ 5:[-2,0], 4:[-3,-1,0], 3:[-3,-1,0], 2:[-3,-1], 1:[-3,-2,0], 0:[-3,-2,0] } },
+  'A': { anclaS:4, minAncla:2, acorde:'La',  rel:{ 5:[0,2], 4:[-1,0,2], 3:[-1,0,2], 2:[-1,1,2], 1:[0,2,3], 0:[0,2] } },
+  'G': { anclaS:5, minAncla:4, acorde:'Sol', rel:{ 5:[-3,-1,0], 4:[-3,-1,0], 3:[-3,-1,1], 2:[-3,-1], 1:[-3,-2,0], 0:[-3,-1,0] } },
+  'E': { anclaS:5, minAncla:2, acorde:'Mi',  rel:{ 5:[0,2], 4:[-1,0,2], 3:[-1,1,2], 2:[-1,1,2], 1:[0,2], 0:[-1,0,2] } },
+  'D': { anclaS:3, minAncla:3, acorde:'Re',  rel:{ 5:[0,2], 4:[-2,0,2], 3:[-1,0,2], 2:[-1,0,2], 1:[0,2], 0:[-2,0,2] } }
+};
+
+/* Calcula el ancla (traste de la tónica en la cuerda de la forma) y el
+   conjunto de posiciones (cuerda,traste) de la forma para la tonalidad. */
+function cagedSet(forma, root){
+  const c = CAGED[forma];
+  const rootMayor = scaleState.tipo==='menor' ? (root+3)%12 : root; // relativa mayor
+  let a = ((rootMayor - STRINGS[c.anclaS].midi) % 12 + 12) % 12;
+  while(a < c.minAncla) a += 12; // sube una octava hasta que quepa sin al aire
+  const set = new Set(); let lo=99, hi=-1;
+  for(const s in c.rel) for(const r of c.rel[s]){
+    const f = a + r;
+    if(f < 1 || f > FRETS) continue;
+    set.add(s+','+f); if(f<lo)lo=f; if(f>hi)hi=f;
+  }
+  return { set, lo, hi, ancla:a };
+}
+
+/* ============ DELETREO POR TONALIDAD ============
+   Fuente canónica: el libro del maestro (cap. "Las escalas mayores"), que
+   enseña las 12 tonalidades en orden de círculo de quintas:
+   C G D A E B F# | Db Ab Eb Bb F  →  ni C#, ni G#, ni D#, ni A# mayores.
+   Cada tonalidad deletrea sus 7 notas con sus alteraciones propias
+   (Si♭ mayor dice Si♭, no La♯). La menor natural hereda el deletreo de su
+   relativa mayor. Única desviación registrada: Fa♯ mayor usa Mi♯ (E♯)
+   como 7º grado — el libro escribe "Fa", que es enarmónico pero incorrecto. */
+const SPELL = { // indexado por clase de pitch de la relativa mayor
+  0:  {0:'C', 2:'D', 4:'E', 5:'F', 7:'G', 9:'A', 11:'B'},          // Do mayor / La menor
+  7:  {7:'G', 9:'A', 11:'B', 0:'C', 2:'D', 4:'E', 6:'F♯'},         // Sol mayor / Mi menor
+  2:  {2:'D', 4:'E', 6:'F♯', 7:'G', 9:'A', 11:'B', 1:'C♯'},        // Re mayor / Si menor
+  9:  {9:'A', 11:'B', 1:'C♯', 2:'D', 4:'E', 6:'F♯', 8:'G♯'},       // La mayor / Fa♯ menor
+  4:  {4:'E', 6:'F♯', 8:'G♯', 9:'A', 11:'B', 1:'C♯', 3:'D♯'},      // Mi mayor / Do♯ menor
+  11: {11:'B', 1:'C♯', 3:'D♯', 4:'E', 6:'F♯', 8:'G♯', 10:'A♯'},    // Si mayor / Sol♯ menor
+  6:  {6:'F♯', 8:'G♯', 10:'A♯', 11:'B', 1:'C♯', 3:'D♯', 4:'E♯'},   // Fa♯ mayor / Re♯ menor
+  1:  {1:'D♭', 3:'E♭', 5:'F', 6:'G♭', 8:'A♭', 10:'B♭', 0:'C'},     // Re♭ mayor / Si♭ menor
+  8:  {8:'A♭', 10:'B♭', 0:'C', 1:'D♭', 3:'E♭', 5:'F', 7:'G'},      // La♭ mayor / Fa menor
+  3:  {3:'E♭', 5:'F', 7:'G', 8:'A♭', 10:'B♭', 0:'C', 2:'D'},       // Mi♭ mayor / Do menor
+  10: {10:'B♭', 0:'C', 2:'D', 3:'E♭', 5:'F', 7:'G', 9:'A'},        // Si♭ mayor / Sol menor
+  5:  {5:'F', 7:'G', 9:'A', 10:'B♭', 0:'C', 2:'D', 4:'E'}          // Fa mayor / Re menor
+};
+const KEY_LABEL = {
+  mayor: {0:'C',1:'D♭',2:'D',3:'E♭',4:'E',5:'F',6:'F♯',7:'G',8:'A♭',9:'A',10:'B♭',11:'B'},
+  menor: {9:'A',10:'B♭',11:'B',0:'C',1:'C♯',2:'D',3:'D♯',4:'E',5:'F',6:'F♯',7:'G',8:'G♯'}
+};
+const ES = { 'C':'Do','D♭':'Re♭','D':'Re','E♭':'Mi♭','E':'Mi','F':'Fa','F♯':'Fa♯','G':'Sol',
+             'A♭':'La♭','A':'La','B♭':'Si♭','B':'Si','C♯':'Do♯','D♯':'Re♯','G♯':'Sol♯' };
+function spellName(midi, tipo, root){ // nombre correcto de la nota en la tonalidad dada
+  tipo = tipo || scaleState.tipo; root = root===undefined ? scaleState.root : root;
+  const pc = ((midi%12)+12)%12;
+  const rel = tipo==='menor' ? (root+3)%12 : root;
+  const t = SPELL[rel];
+  return (t && t[pc]) || NOTES[pc];
+}
+
+/* ============ GRADOS DE LA ESCALA ============
+   Alternativa pedagógica al nombre de la nota: cada nota como su grado dentro
+   de la escala (la tónica es 1). Ayuda a pensar en función, no en posición. */
+const DEGREE = { mayor:['1','2','3','4','5','6','7'], menor:['1','2','♭3','4','5','♭6','♭7'] };
+function degreeName(midi, tipo, root){
+  tipo = tipo || scaleState.tipo; root = root===undefined ? scaleState.root : root;
+  const pc = ((midi%12)+12)%12;
+  const idx = SCALES[tipo].pasos.indexOf(((pc-root)%12+12)%12);
+  return idx>=0 ? DEGREE[tipo][idx] : '';
+}
+// etiqueta de una nota de escala según el modo elegido (notas ⇄ grados)
+function scaleLabel(midi){ return scaleState.etiqueta==='grados' ? degreeName(midi) : spellName(midi); }
+
+/* Acordes: f=-1 muda · fingers por cuerda (índice = s) */
+const CHORDS = {
+  'C' :{ tipo:'mayor', pos:[{s:5,f:-1},{s:4,f:3},{s:3,f:2},{s:2,f:0},{s:1,f:1},{s:0,f:0}], fingers:[0,1,0,2,3,0] },
+  'D' :{ tipo:'mayor', pos:[{s:5,f:-1},{s:4,f:-1},{s:3,f:0},{s:2,f:2},{s:1,f:3},{s:0,f:2}], fingers:[2,3,1,0,0,0] },
+  'E' :{ tipo:'mayor', pos:[{s:5,f:0},{s:4,f:2},{s:3,f:2},{s:2,f:1},{s:1,f:0},{s:0,f:0}], fingers:[0,0,1,3,2,0] },
+  'F' :{ tipo:'mayor', pos:[{s:5,f:1},{s:4,f:3},{s:3,f:3},{s:2,f:2},{s:1,f:1},{s:0,f:1}], fingers:[1,1,2,4,3,1] },
+  'G' :{ tipo:'mayor', pos:[{s:5,f:3},{s:4,f:2},{s:3,f:0},{s:2,f:0},{s:1,f:0},{s:0,f:3}], fingers:[3,0,0,0,1,2] },
+  'A' :{ tipo:'mayor', pos:[{s:5,f:-1},{s:4,f:0},{s:3,f:2},{s:2,f:2},{s:1,f:2},{s:0,f:0}], fingers:[0,3,2,1,0,0] },
+  'B' :{ tipo:'mayor', pos:[{s:5,f:-1},{s:4,f:2},{s:3,f:4},{s:2,f:4},{s:1,f:4},{s:0,f:2}], fingers:[1,3,3,3,1,0] },
+  'Am':{ tipo:'menor', pos:[{s:5,f:-1},{s:4,f:0},{s:3,f:2},{s:2,f:2},{s:1,f:1},{s:0,f:0}], fingers:[0,1,3,2,0,0] },
+  'Dm':{ tipo:'menor', pos:[{s:5,f:-1},{s:4,f:-1},{s:3,f:0},{s:2,f:2},{s:1,f:3},{s:0,f:1}], fingers:[1,3,2,0,0,0] },
+  'Em':{ tipo:'menor', pos:[{s:5,f:0},{s:4,f:2},{s:3,f:2},{s:2,f:0},{s:1,f:0},{s:0,f:0}], fingers:[0,0,0,3,2,0] },
+  'Bm':{ tipo:'menor', pos:[{s:5,f:-1},{s:4,f:2},{s:3,f:4},{s:2,f:4},{s:1,f:3},{s:0,f:2}], fingers:[1,2,4,3,1,0] },
+  'Cm':{ tipo:'menor', pos:[{s:5,f:-1},{s:4,f:3},{s:3,f:5},{s:2,f:5},{s:1,f:4},{s:0,f:3}], fingers:[1,2,4,3,1,0] }
+};
+
+/* ============ SISTEMA CAGED DE ACORDES ============
+   Un mismo acorde, cinco caminos por el mástil. Cada forma = trastes
+   RELATIVOS al ancla (tónica en su cuerda característica) + dedos.
+   Cuando el ancla cae en su posición natural, la forma ES el acorde abierto
+   del que nace (Do mayor forma C = el Do abierto de siempre).
+   Mayor: 5 formas (C-A-G-E-D). Menor: las 3 formas prácticas (Em-Am-Dm);
+   las formas Cm/Gm existen pero son poco tocables — decisión registrada. */
+const CAGED_CHORDS = {
+  mayor: {
+    'C': { anclaS:4, origen:'Do abierto',  mute:[5],   notas:{4:0, 3:-1, 2:-3, 1:-2, 0:-3}, dedos:{4:4, 3:3, 2:1, 1:2, 0:1} },
+    'A': { anclaS:4, origen:'La abierto',  mute:[5],   notas:{4:0, 3:2, 2:2, 1:2, 0:0},     dedos:{4:1, 3:3, 2:3, 1:3, 0:1} },
+    'G': { anclaS:5, origen:'Sol abierto', mute:[],    notas:{5:0, 4:-1, 3:-3, 2:-3, 1:-3, 0:0}, dedos:{5:3, 4:2, 3:1, 2:1, 1:1, 0:4} },
+    'E': { anclaS:5, origen:'Mi abierto',  mute:[],    notas:{5:0, 4:2, 3:2, 2:1, 1:0, 0:0}, dedos:{5:1, 4:3, 3:4, 2:2, 1:1, 0:1} },
+    'D': { anclaS:3, origen:'Re abierto',  mute:[5,4], notas:{3:0, 2:2, 1:3, 0:2},           dedos:{3:1, 2:2, 1:4, 0:3} }
+  },
+  menor: {
+    'Em': { anclaS:5, origen:'Mi menor abierto', mute:[],   notas:{5:0, 4:2, 3:2, 2:0, 1:0, 0:0}, dedos:{5:1, 4:3, 3:4, 2:1, 1:1, 0:1} },
+    'Am': { anclaS:4, origen:'La menor abierto', mute:[5],  notas:{4:0, 3:2, 2:2, 1:1, 0:0},      dedos:{4:1, 3:3, 2:4, 1:2, 0:1} },
+    'Dm': { anclaS:3, origen:'Re menor abierto', mute:[5,4],notas:{3:0, 2:2, 1:3, 0:1},           dedos:{3:1, 2:2, 1:4, 0:3} }
+  },
+  dim: {
+    '6ª': { anclaS:5, origen:'Tríada dim · tónica en 6ª', mute:[3,1,0], notas:{5:0, 4:1, 2:0},       dedos:{5:1, 4:2, 2:1} },
+    '5ª': { anclaS:4, origen:'Tríada dim · tónica en 5ª', mute:[5,2,0], notas:{4:0, 3:1, 1:1},       dedos:{4:1, 3:2, 1:3} },
+    '4ª': { anclaS:3, origen:'Tríada dim · tónica en 4ª', mute:[5,4],   notas:{3:0, 2:1, 1:3, 0:1},  dedos:{3:1, 2:2, 1:4, 0:3} },
+    '3ª': { anclaS:2, origen:'Tríada dim · tónica en 3ª', mute:[5,4,0], notas:{3:-1, 2:0, 1:-1},     dedos:{3:1, 2:3, 1:2} },
+    '2ª': { anclaS:1, origen:'Tríada dim · tónica en 2ª', mute:[5,4,0], notas:{3:0, 2:-2, 1:0},      dedos:{3:2, 2:1, 1:3} }
+  }
+};
+function cagedChordAnchor(sh, root){
+  let a = ((root - STRINGS[sh.anclaS].midi) % 12 + 12) % 12;
+  const rels = Object.values(sh.notas);
+  const minR = Math.min(...rels), maxR = Math.max(...rels);
+  while(a + minR < 0) a += 12;         // f=0 permitido: es el acorde abierto de origen
+  if(a + maxR > FRETS) a -= 12;
+  return a;
+}
+function strumShape(sh, a){
+  let d = 0;
+  for(let s=5;s>=0;s--){
+    if(sh.notas[s]===undefined) continue;
+    playTone(STRINGS[s].midi + a + sh.notas[s], d); vibrate(s); d += .07;
+  }
+}
+function renderCaged(){
+  clearAll();
+  const {root,tipo,forma} = cagedState;
+  const shapes = CAGED_CHORDS[tipo];
+  const label = KEY_LABEL[tipo][root], nombre = ES[label] || label;
+  const keys = forma==='todas' ? Object.keys(shapes) : [forma];
+  const partes = [];
+  keys.forEach(fk=>{
+    const sh = shapes[fk];
+    const a = cagedChordAnchor(sh, root);
+    const minF = Math.max(a + Math.min(...Object.values(sh.notas)), 0);
+    // letra de la forma sobre su primer traste — clicable, rasguea la forma
+    const lt = el('text',{class:'chord-mark',x:cellX(minF),y:TOP-26,fill:'#E8CE8A','font-size':14,'font-weight':700,'text-anchor':'middle'},svg);
+    lt.textContent = fk; lt.style.cursor='pointer';
+    lt.addEventListener('click',()=>strumShape(sh,a));
+    if(forma!=='todas') (sh.mute||[]).forEach(s=>{
+      const t = el('text',{class:'chord-mark',x:NUT_X-34,y:stringY(s)+5,'font-size':15,'font-weight':700,fill:'#8A8A8A','text-anchor':'middle'},svg);
+      t.textContent='✕';
+    });
+    for(const s in sh.notas){
+      const f = a + sh.notas[s];
+      const g = pos(+s,f); if(!g) continue;
+      g.classList.add('in-chord');
+      g.querySelector('.nl').textContent =
+        forma==='todas' ? spellName(STRINGS[s].midi+f,tipo,root)
+        : (f===0 ? spellName(STRINGS[s].midi,tipo,root) : (sh.dedos[s]||''));
+    }
+    partes.push(`${fk}: ${a===0?'al aire':'traste '+a}`);
+  });
+  if(forma!=='todas'){
+    const sh = shapes[forma], a = cagedChordAnchor(sh, root);
+    strumShape(sh, a);
+    display.innerHTML = `<span class="big">${nombre} ${tipo} (${label}) · Forma ${forma} · ${a===0?'posición abierta':'traste '+a}</span>
+      <span class="small">Nace del acorde de ${sh.origen} · números en los puntos = dedo (1 índice … 4 meñique)</span>`;
+  } else {
+    display.innerHTML = `<span class="big">${nombre} ${tipo} (${label}) · ${keys.length} formas CAGED encadenadas</span>
+      <span class="small">${partes.join(' · ')} — toca la letra de una forma para escucharla, o elígela arriba para ver su digitación</span>`;
+  }
+}
+
+/* ================= AUDIO — cuerda pulsada (síntesis Karplus–Strong) =================
+   Antes: dos osciladores (suena a órgano). Ahora: se sintetiza el pluck real de una
+   cuerda — ruido de púa que se filtra sobre sí mismo y decae con timbre natural.
+   Cada altura se calcula una vez y se guarda en caché. */
+let audioCtx, master;
+function ctx(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    master = audioCtx.createGain(); master.gain.value = .85;
+    const comp = audioCtx.createDynamicsCompressor(); // controla picos al rasguear
+    master.connect(comp).connect(audioCtx.destination);
+  }
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  return audioCtx;
+}
+const ksCache = new Map();
+function pluckBuffer(freq, bright){
+  const c = ctx(), sr = c.sampleRate;
+  const key = Math.round(freq*2)+'_'+Math.round(bright*100);
+  if(ksCache.has(key)) return ksCache.get(key);
+  const N = Math.max(2, Math.round(sr/freq));   // longitud de la "cuerda"
+  const len = Math.floor(sr*2.4);
+  const buf = c.createBuffer(1, len, sr);
+  const d = buf.getChannelData(0);
+  let last = 0;                                  // excitación: ruido de púa suavizado
+  for(let i=0;i<N;i++){ const n=Math.random()*2-1; last = bright*n + (1-bright)*last; d[i]=last; }
+  const damp = 0.996 - Math.min(0.004, freq/40000); // agudos decaen algo más rápido
+  for(let i=N;i<len;i++) d[i] = damp*0.5*(d[i-N] + d[i-N+1]); // realimentación de la cuerda
+  ksCache.set(key, buf);
+  return buf;
+}
+function playTone(midi, when=0){
+  const c = ctx(), t = c.currentTime + when;
+  const freq = 440*Math.pow(2,(midi-69)/12);
+  const bright = Math.max(.4, Math.min(.85, 0.5 + (midi-52)/120)); // más brillo hacia agudos
+  const src = c.createBufferSource(); src.buffer = pluckBuffer(freq, bright);
+  const g = c.createGain();
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.5, t+.004);
+  g.gain.exponentialRampToValueAtTime(.0008, t+2.0);
+  const lp = c.createBiquadFilter(); lp.type='lowpass';    // el timbre se apaga al decaer
+  lp.frequency.setValueAtTime(4200 + bright*3200, t);
+  lp.frequency.exponentialRampToValueAtTime(1300, t+1.3);
+  src.connect(lp).connect(g).connect(master);
+  src.start(t); src.stop(t+2.1);
+}
+
+/* ================= DIAPASÓN ================= */
+const svg = document.getElementById('guitarra');
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+
+function buildGuitar(){
+  svg.innerHTML = '';
+  // madera
+  const defs = el('defs',{},svg);
+  const grad = el('linearGradient',{id:'madera',x1:0,y1:0,x2:0,y2:1},defs);
+  el('stop',{offset:'0%','stop-color':'#1B1612'},grad);
+  el('stop',{offset:'100%','stop-color':'#0E0C0A'},grad);
+  el('rect',{x:NUT_X-8,y:TOP-16,width:fretX(FRETS)-NUT_X+34,height:SPACING*5+32,rx:10,fill:'url(#madera)',stroke:'rgba(255,255,255,.07)'},svg);
+
+  // incrustaciones (3,5,7,9 · doble en 12 · 15)
+  [3,5,7,9,15].forEach(f=> el('circle',{cx:cellX(f),cy:TOP+SPACING*2.5,r:6,fill:'rgba(232,206,138,.28)'},svg));
+  el('circle',{cx:cellX(12),cy:TOP+SPACING*1.5,r:6,fill:'rgba(232,206,138,.28)'},svg);
+  el('circle',{cx:cellX(12),cy:TOP+SPACING*3.5,r:6,fill:'rgba(232,206,138,.28)'},svg);
+
+  // cejilla dorada + trastes metálicos
+  el('rect',{x:NUT_X-6,y:TOP-16,width:7,height:SPACING*5+32,rx:2,fill:'#C9A84C'},svg);
+  for(let f=1;f<=FRETS;f++){
+    el('line',{x1:fretX(f),y1:TOP-14,x2:fretX(f),y2:TOP+SPACING*5+14,stroke:'#9A9A9A','stroke-width':2,opacity:.55},svg);
+    const t = el('text',{x:cellX(f),y:TOP+SPACING*5+34,fill:'#8A8A8A','font-size':11,'text-anchor':'middle'},svg);
+    t.textContent = f;
+  }
+
+  // cuerdas + etiquetas
+  for(let s=0;s<6;s++){
+    el('line',{id:'str-'+s,x1:NUT_X,y1:stringY(s),x2:fretX(FRETS)+26,y2:stringY(s),stroke:SCOL[s],'stroke-width':THICK[s],'stroke-linecap':'round',opacity:.95},svg);
+    const t = el('text',{x:NUT_X-52,y:stringY(s)+4.5,fill:'#8A8A8A','font-size':13,'font-weight':700,'text-anchor':'middle'},svg);
+    t.textContent = STRINGS[s].letra;
+  }
+
+  // posiciones interactivas
+  for(let s=0;s<6;s++) for(let f=0;f<=FRETS;f++){
+    const midi = STRINGS[s].midi + f;
+    const g = el('g',{class:'pos','data-s':s,'data-f':f,'data-midi':midi},svg);
+    el('circle',{cx:cellX(f),cy:stringY(s),r:15},g);
+    const t = el('text',{class:'nl',x:cellX(f),y:stringY(s)+4.5,'font-size':11.5,'font-weight':700,'text-anchor':'middle'},g);
+    t.textContent = NOTES[midi%12];
+    g.addEventListener('click',()=>freePlay(g));
+    g.addEventListener('touchstart',e=>{e.preventDefault();freePlay(g);},{passive:false});
+  }
+}
+
+/* ================= ESTADO / LIMPIEZA ================= */
+let mode='escalas', scaleState={root:0,tipo:'mayor',vista:'abierta',desde:0,hasta:4,etiqueta:'notas',vuelta:false}, activeChord=null, playTimer=null, vistaCache=null,
+    cagedState={root:0,tipo:'mayor',forma:'todas'};
+const display = document.getElementById('display');
+
+function clearAll(){
+  stopPlayback();
+  activeChord=null;
+  document.querySelectorAll('.pos').forEach(g=>g.classList.remove('in-scale','root','in-chord','playing','heard','hit','expect','quiz','miss'));
+  document.querySelectorAll('.pick-chord').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.chord-mark').forEach(m=>m.remove());
+  restoreLabels(); // sin esto, los números de dedo de un acorde quedaban pegados en juego libre
+}
+function restoreLabels(){
+  document.querySelectorAll('.pos .nl').forEach(t=>{
+    const g=t.parentNode; t.textContent=NOTES[(+g.dataset.midi)%12];
+  });
+}
+function stopPlayback(){ if(playTimer){clearTimeout(playTimer);playTimer=null;} document.getElementById('btn-play-scale').disabled=false; }
+function pulse(g){ g.classList.remove('pulse'); void g.getBoundingClientRect(); g.classList.add('pulse'); setTimeout(()=>g.classList.remove('pulse'),320); }
+function vibrate(s){ const l=document.getElementById('str-'+s); l.classList.remove('vib'); void l.getBoundingClientRect(); l.classList.add('vib'); }
+function pos(s,f){ return svg.querySelector(`.pos[data-s="${s}"][data-f="${f}"]`); }
+
+/* ================= JUEGO LIBRE ================= */
+function freePlay(g){
+  if(mode==='reto' && retoState.target && retoState.target.kind==='enc'){ retoAnswer(g); return; }
+  const s=+g.dataset.s, f=+g.dataset.f, midi=+g.dataset.midi;
+  document.querySelectorAll('.pos.playing').forEach(p=>p.classList.remove('playing'));
+  g.classList.add('playing'); pulse(g); vibrate(s); playTone(midi);
+  const cuerdaNum = 6-s;
+  const nombre = mode==='escalas' ? spellName(midi) : NOTES[midi%12];
+  const gr = mode==='escalas' ? degreeName(midi) : '';
+  const extra = gr ? ` · grado ${gr}` : '';
+  display.innerHTML = `<span class="big">${nombre}</span>
+    <span class="small">Cuerda ${cuerdaNum} (${STRINGS[s].letra}) · ${f===0?'al aire':'traste '+f}${extra}</span>`;
+}
+
+/* ================= ESCALAS ================= */
+/* Posición abierta como CARRERA ASCENDENTE (regla del maestro):
+   cada cuerda toca las notas de la escala desde su punto de partida hasta
+   donde empieza la siguiente cuerda. Una nota NO se repite si la continuidad
+   ya la alcanza en la cuerda siguiente (Si al aire en la 2ª ⇒ no se trastea
+   en la 3ª), pero SÍ se agrega en el traste que corresponde cuando falta en
+   la secuencia (Do♯ en 5ª cuerda traste 4 en Re mayor). */
+function abiertaSet(pitches){
+  const cands = {};
+  for(let s=0;s<6;s++){
+    cands[s]=[];
+    for(let f=0;f<=4;f++) if(pitches.includes((STRINGS[s].midi+f)%12)) cands[s].push(f);
+  }
+  const set = new Set();
+  for(let s=5;s>=0;s--){
+    const limite = (s>0 && cands[s-1].length) ? STRINGS[s-1].midi + cands[s-1][0] : 99;
+    for(const f of cands[s]) if(STRINGS[s].midi+f < limite) set.add(s+','+f);
+  }
+  return set;
+}
+
+function inVista(g){
+  const v = scaleState.vista, f = +g.dataset.f;
+  if(v==='todo') return true;
+  if(v==='custom') return f>=scaleState.desde && f<=scaleState.hasta; // ventana libre: TODAS las notas de la escala en el rango
+  return vistaCache ? vistaCache.set.has(g.dataset.s+','+g.dataset.f) : false; // abierta
+}
+function vistaLabel(){
+  const v = scaleState.vista;
+  if(v==='todo') return 'todo el diapasón';
+  if(v==='custom') return `ventana libre · trastes ${scaleState.desde}–${scaleState.hasta}`;
+  const hi = vistaCache ? vistaCache.hi : 4;
+  return `posición abierta (al aire · trastes 0–${hi})`;
+}
+function renderScale(){
+  if(mic.run){ mic.run=null; const r=document.getElementById('btn-run'); if(r) r.textContent='▶ Tu escala (te escucho)'; }
+  clearAll();
+  const {root,tipo} = scaleState, scale = SCALES[tipo];
+  if(scaleState.vista==='abierta'){
+    const set = abiertaSet(scale.pasos.map(p=>(root+p)%12));
+    let hi = 0; for(const k of set){ const f=+k.split(',')[1]; if(f>hi) hi=f; }
+    vistaCache = { set, lo:0, hi };
+  }
+  else vistaCache = null;
+  const label = KEY_LABEL[tipo][root];
+  const nombre = ES[label] || label;
+  const pitches = scale.pasos.map(p=>(root+p)%12);
+  const relMayor = tipo==='menor' ? ` · mismas notas que ${KEY_LABEL.mayor[(root+3)%12]} mayor` : '';
+  document.getElementById('formula').textContent = `${nombre} ${tipo==='mayor'?'mayor':'menor natural'} (${label}): ${scale.formula}`;
+  let visibles = 0;
+  document.querySelectorAll('.pos').forEach(g=>{
+    const pc = (+g.dataset.midi)%12;
+    if(!pitches.includes(pc) || !inVista(g)) return;
+    g.classList.add(pc===root ? 'root' : 'in-scale'); visibles++;
+    g.querySelector('.nl').textContent = scaleLabel(+g.dataset.midi); // nota o grado
+  });
+  display.innerHTML = `<span class="big">Escala de ${nombre} ${tipo==='mayor'?'mayor':'menor'} (${label}) · ${vistaLabel()}</span>
+    <span class="small">${pitches.map(p=>spellName(p)).join(' – ')} — ${visibles} posiciones en esta vista · las doradas son la tónica${relMayor}</span>`;
+}
+
+/* Carrera ascendente única de la vista actual (compartida por
+   Reproducir y por el modo espejo). */
+function buildSeq(){
+  const {root,tipo} = scaleState, pitches = SCALES[tipo].pasos.map(p=>(root+p)%12);
+  const seen = new Set();
+  return [...document.querySelectorAll('.pos')]
+    .filter(g=>pitches.includes((+g.dataset.midi)%12) && inVista(g))
+    .sort((a,b)=>(+a.dataset.midi)-(+b.dataset.midi))
+    .filter(g=>{ const m=+g.dataset.midi; if(seen.has(m)) return false; seen.add(m); return true; });
+}
+
+function playScale(){
+  stopPlayback();
+  const {root} = scaleState;
+  let seq = buildSeq();
+  if(!seq.length) return;
+  if(scaleState.vuelta && seq.length>1) seq = seq.concat(seq.slice(0,-1).reverse()); // sube y baja
+  const bpm = +document.getElementById('bpm').value, beat = 60000/bpm;
+  const btn = document.getElementById('btn-play-scale'); btn.disabled=true;
+  let i=0;
+  (function step(){
+    if(i>0) seq[i-1].classList.remove('playing');
+    if(i>=seq.length){ btn.disabled=false; playTimer=null;
+      display.innerHTML = `<span class="big">✓</span><span class="small">Escala completada · ${KEY_LABEL[scaleState.tipo][root]} ${scaleState.tipo} · ${seq.length} notas a ${bpm} BPM</span>`; return; }
+    const g = seq[i++];
+    g.classList.add('playing'); pulse(g); playTone(+g.dataset.midi); vibrate(+g.dataset.s);
+    playTimer = setTimeout(step, beat);
+  })();
+}
+
+/* ================= ACORDES ================= */
+function renderChord(name){
+  const wasActive = activeChord===name;
+  clearAll();
+  if(wasActive){ display.innerHTML='<p class="small">Elige un acorde — o toca el diapasón libremente</p>'; return; }
+  activeChord = name;
+  document.querySelectorAll('.pick-chord').forEach(b=>b.classList.toggle('active',b.textContent===name));
+  const ch = CHORDS[name];
+  const notas = [], digitacion = [];
+  // de grave (s=5) a aguda (s=0)
+  for(let s=5;s>=0;s--){
+    const p = ch.pos.find(p=>p.s===s);
+    digitacion.push(p.f===-1?'x':p.f);
+    if(p.f>=0) notas.push(NOTES[(STRINGS[s].midi+p.f)%12]);
+    if(p.f===-1){ // ✕ muda
+      const t = el('text',{class:'chord-mark',x:NUT_X-34,y:stringY(s)+5,'font-size':15,'font-weight':700,fill:'#8A8A8A','text-anchor':'middle'},svg);
+      t.textContent='✕';
+    } else if(p.f===0){ // ○ al aire
+      const t = el('text',{class:'chord-mark',x:NUT_X-34,y:stringY(s)+5,'font-size':15,'font-weight':700,fill:'#C9A84C','text-anchor':'middle'},svg);
+      t.textContent='○';
+    } else {
+      const g = pos(s,p.f); g.classList.add('in-chord');
+      const fg = ch.fingers[s];
+      g.querySelector('.nl').textContent = fg>0 ? fg : NOTES[(STRINGS[s].midi+p.f)%12];
+    }
+  }
+  // rasgueo: grave → aguda
+  let d=0;
+  for(let s=5;s>=0;s--){ const p=ch.pos.find(p=>p.s===s); if(p.f>=0){ playTone(STRINGS[s].midi+p.f, d); vibrate(s); d+=.07; } }
+  display.innerHTML = `<span class="big">Acorde ${name}</span>
+    <span class="small">Notas: ${notas.join(' – ')} · digitación (6ª→1ª): ${digitacion.join('-')} · números en los puntos = dedo (1 índice … 4 meñique)</span>`;
+}
+
+/* ================= METRÓNOMO ================= */
+function clickTick(when=0, acento=false){
+  const c=ctx(), t=c.currentTime+when;
+  const o=c.createOscillator(), g=c.createGain();
+  o.type='square'; o.frequency.value = acento?1720:1180;
+  g.gain.setValueAtTime(.0001,t);
+  g.gain.exponentialRampToValueAtTime(acento?.35:.18, t+.002);
+  g.gain.exponentialRampToValueAtTime(.0001, t+.06);
+  o.connect(g).connect(master); o.start(t); o.stop(t+.08);
+}
+
+/* ================= PROGRESIONES =================
+   Los acordes en familia: cada grado tiene una función (reposo, salida,
+   tensión, color). La voz de cada acorde se elige con las formas CAGED ya
+   verificadas: gana la del ancla más grave — la más tocable. */
+const FUNCION = {
+  'I'   :'Tónica — casa, reposo',
+  'ii'  :'Supertónica menor — prepara la dominante',
+  'iii' :'Mediante menor — puente suave entre casa y salida',
+  'IV'  :'Subdominante — te alejas de casa',
+  'V'   :'Dominante — tensión que pide volver a la tónica',
+  'vi'  :'Relativo menor — el color triste de la familia',
+  'vii°':'Sensible disminuida — máxima tensión, resuelve a casa',
+  'i'   :'Tónica menor — casa, en penumbra',
+  'ii°' :'Disminuido — empuje inquieto hacia adelante',
+  'III' :'Relativo mayor — la luz de la familia menor',
+  'iv'  :'Subdominante menor — salida melancólica',
+  'v'   :'Dominante menor — tensión suave',
+  'VI'  :'Sexta mayor — aire abierto',
+  'VII' :'Subtónica mayor — rampa de regreso a la tónica'
+};
+/* Grados como semitonos desde la tónica. modo define las etiquetas de
+   tonalidad (KEY_LABEL) y el deletreo. */
+const P_ = (g,q,rn)=>({g,q,rn});
+const PROGS = {
+  clasica: { modo:'mayor', nombre:'I – IV – V – I (la vuelta clásica)', desc:'Sales de casa y regresas.',
+    pasos:[P_(0,'mayor','I'),P_(5,'mayor','IV'),P_(7,'mayor','V'),P_(0,'mayor','I')] },
+  pop:     { modo:'mayor', nombre:'I – V – vi – IV (pop)', desc:'Miles de canciones viven aquí.',
+    pasos:[P_(0,'mayor','I'),P_(7,'mayor','V'),P_(9,'menor','vi'),P_(5,'mayor','IV')] },
+  doowop:  { modo:'mayor', nombre:'I – vi – IV – V (los 50)', desc:'Al color triste, y la tensión te trae de vuelta.',
+    pasos:[P_(0,'mayor','I'),P_(9,'menor','vi'),P_(5,'mayor','IV'),P_(7,'mayor','V')] },
+  emotiva: { modo:'mayor', nombre:'vi – IV – I – V (emotiva)', desc:'Empieza en el relativo menor: el drama del pop moderno.',
+    pasos:[P_(9,'menor','vi'),P_(5,'mayor','IV'),P_(0,'mayor','I'),P_(7,'mayor','V')] },
+  folk:    { modo:'mayor', nombre:'I – IV – I – V (folk)', desc:'Vaivén de fogata: salida, casa, tensión.',
+    pasos:[P_(0,'mayor','I'),P_(5,'mayor','IV'),P_(0,'mayor','I'),P_(7,'mayor','V')] },
+  jazz:    { modo:'mayor', nombre:'ii – V – I (jazz básico)', desc:'El giro que cierra todo el jazz: preparación, tensión, casa.',
+    pasos:[P_(2,'menor','ii'),P_(7,'mayor','V'),P_(0,'mayor','I')] },
+  soul:    { modo:'mayor', nombre:'I – iii – IV – V (soul)', desc:'Sube por el puente suave del iii.',
+    pasos:[P_(0,'mayor','I'),P_(4,'menor','iii'),P_(5,'mayor','IV'),P_(7,'mayor','V')] },
+  balada:  { modo:'mayor', nombre:'I – IV – vi – V (balada)', desc:'Casa, salida, color triste, y la tensión que resuelve.',
+    pasos:[P_(0,'mayor','I'),P_(5,'mayor','IV'),P_(9,'menor','vi'),P_(7,'mayor','V')] },
+  blues:   { modo:'mayor', nombre:'Blues de 12 compases (I IV V)', desc:'La rueda madre: cuatro de casa, dos de salida, y la vuelta.',
+    pasos:[P_(0,'mayor','I'),P_(0,'mayor','I'),P_(0,'mayor','I'),P_(0,'mayor','I'),
+           P_(5,'mayor','IV'),P_(5,'mayor','IV'),P_(0,'mayor','I'),P_(0,'mayor','I'),
+           P_(7,'mayor','V'),P_(5,'mayor','IV'),P_(0,'mayor','I'),P_(7,'mayor','V')] },
+  epica:   { modo:'menor', nombre:'i – VI – III – VII (épica menor)', desc:'El paseo épico del modo menor.',
+    pasos:[P_(0,'menor','i'),P_(8,'mayor','VI'),P_(3,'mayor','III'),P_(10,'mayor','VII')] },
+  menorpura:{ modo:'menor', nombre:'i – iv – v – i (menor pura)', desc:'La cadencia menor natural: todo en penumbra.',
+    pasos:[P_(0,'menor','i'),P_(5,'menor','iv'),P_(7,'menor','v'),P_(0,'menor','i')] },
+  andaluza:{ modo:'menor', nombre:'i – VII – VI – V (cadencia andaluza)', desc:'Escalera que baja al flamenco; el V mayor enciende la vuelta.',
+    pasos:[P_(0,'menor','i'),P_(10,'mayor','VII'),P_(8,'mayor','VI'),P_(7,'mayor','V')] }
+};
+/* 4 rasgueos simples — nivel básico */
+const PATRONES = {
+  uno:    { nombre:'↓ (1 por compás)',   hits:[{t:0,d:'D'}] },
+  pulsos: { nombre:'↓ ↓ ↓ ↓',            hits:[{t:0,d:'D'},{t:1,d:'D'},{t:2,d:'D'},{t:3,d:'D'}] },
+  alterno:{ nombre:'↓ ↑ ↓ ↑',            hits:[{t:0,d:'D'},{t:1,d:'U'},{t:2,d:'D'},{t:3,d:'U'}] },
+  adorno: { nombre:'↓ ↓↑ ↓ ↓↑',          hits:[{t:0,d:'D'},{t:1,d:'D'},{t:1.5,d:'U'},{t:2,d:'D'},{t:3,d:'D'},{t:3.5,d:'U'}] }
+};
+let progState={root:0, prog:'clasica', pat:'uno', playing:false, paso:0};
+let progTimer=null;
+
+function voiceChord(pc, q){ // forma CAGED más tocable para esa tónica
+  const shapes=CAGED_CHORDS[q]; let best=null;
+  for(const k in shapes){
+    let a=cagedChordAnchor(shapes[k], pc);
+    if(q==='dim'){ // los disminuidos viven pisados: del traste 1 en adelante
+      const rels=Object.values(shapes[k].notas);
+      while(a+Math.min(...rels)<1) a+=12;
+      if(a+Math.max(...rels)>FRETS) continue;
+    }
+    if(!best || a<best.a) best={forma:k, sh:shapes[k], a};
+  }
+  return best;
+}
+function progChordName(paso){
+  const modo=PROGS[progState.prog].modo;
+  const pc=(progState.root+paso.g)%12;
+  const rel = modo==='menor' ? (progState.root+3)%12 : progState.root; // deletreo por relativa mayor
+  const base=(SPELL[rel] && SPELL[rel][pc]) || NOTES[pc];
+  return paso.q==='menor' ? base+'m' : paso.q==='dim' ? base+'°' : base;
+}
+function drawShape(sh, a){ // dibuja una forma CAGED (sin tomar el display)
+  (sh.mute||[]).forEach(s=>{
+    const t=el('text',{class:'chord-mark',x:NUT_X-34,y:stringY(s)+5,'font-size':15,'font-weight':700,fill:'#8A8A8A','text-anchor':'middle'},svg);
+    t.textContent='✕';
+  });
+  for(const s in sh.notas){
+    const f=a+sh.notas[s], g=pos(+s,f); if(!g) continue;
+    g.classList.add('in-chord');
+    g.querySelector('.nl').textContent = f===0 ? NOTES[STRINGS[s].midi%12] : (sh.dedos[s]||'');
+  }
+}
+function strumDir(sh, a, dir, when=0){
+  // D: de la 6ª (grave) hacia la 1ª · U: de la 1ª hacia la 6ª
+  const order=Object.keys(sh.notas).map(Number).sort((x,y)=> dir==='U' ? x-y : y-x);
+  let d=when;
+  for(const s of order){ playTone(STRINGS[s].midi + a + sh.notas[s], d); vibrate(s); d+=.055; }
+}
+function renderProgChips(){
+  const box=document.getElementById('prog-chips'); box.innerHTML='';
+  PROGS[progState.prog].pasos.forEach((p,i)=>{
+    const b=document.createElement('button');
+    b.className='pick prog-chip'+(i===progState.paso?' active':'');
+    b.innerHTML=`<b>${p.rn}</b> · ${progChordName(p)}`;
+    b.onclick=()=>showProgStep(i,true);
+    box.appendChild(b);
+  });
+}
+function showProgStep(i, tocar){
+  clearAll(); progState.paso=i;
+  const p=PROGS[progState.prog].pasos[i];
+  const pc=(progState.root+p.g)%12, v=voiceChord(pc,p.q), nom=progChordName(p);
+  drawShape(v.sh, v.a);
+  renderProgChips();
+  if(tocar) strumDir(v.sh, v.a, 'D');
+  display.innerHTML = `<span class="big">${p.rn} · ${nom} <span style="font-size:16px;color:var(--sec)">(forma ${v.forma} · ${v.a ? 'ancla traste '+v.a : 'tónica al aire'})</span></span>
+    <span class="small">${FUNCION[p.rn]||''}</span>`;
+}
+function renderPatViz(activo){
+  const box=document.getElementById('prog-pat'); box.innerHTML='';
+  PATRONES[progState.pat].hits.forEach((h,i)=>{
+    const s=document.createElement('span');
+    s.textContent = h.d==='D' ? '↓' : '↑';
+    s.className = 'patchip'+(i===activo?' on':'');
+    box.appendChild(s);
+  });
+}
+function startProg(){
+  if(progState.playing){ stopProg(); return; }
+  progState.playing=true; progState.paso=-1;
+  document.getElementById('btn-prog').textContent='■ Detener';
+  const bar=()=>{
+    const P=PROGS[progState.prog];
+    progState.paso=(progState.paso+1)%P.pasos.length;
+    showProgStep(progState.paso,false);
+    const p=P.pasos[progState.paso], pc=(progState.root+p.g)%12, v=voiceChord(pc,p.q);
+    const bms=60000/ +document.getElementById('prog-bpm').value;
+    for(let b=0;b<4;b++) clickTick(b*bms/1000, b===0);         // pulso del compás
+    PATRONES[progState.pat].hits.forEach((h,i)=>{               // rasgueos agendados
+      strumDir(v.sh, v.a, h.d, h.t*bms/1000);
+      setTimeout(()=>renderPatViz(i), h.t*bms);
+    });
+    const bb=document.getElementById('prog-beats');
+    for(let b=0;b<4;b++) setTimeout(()=>{
+      bb.innerHTML=[1,2,3,4].map((n,j)=>`<span class="${j===b?'on':''}">${n}</span>`).join('');
+    }, b*bms);
+    progTimer=setTimeout(bar, 4*bms);
+  };
+  bar();
+}
+function stopProg(){
+  progState.playing=false;
+  if(progTimer){ clearTimeout(progTimer); progTimer=null; }
+  const b=document.getElementById('btn-prog'); if(b) b.textContent='▶ Tocar en bucle';
+}
+
+/* ================= CAMBIOS DE ACORDE =================
+   El cuello de botella real del principiante no es dónde va el dedo,
+   es llegar a tiempo. Dedos ancla = los que NO se levantan entre los
+   dos acordes (misma cuerda, mismo traste, mismo dedo). */
+let camState={ej:'dos', a:'C', b:'G', root:0, ktipo:'mayor', n:4, idx:0, beats:4, seq:[]};
+let camTimer=null, camBeat=0;
+let minTimer=null, minLeft=0, minCount=0, MINUTO=60;
+
+/* Campo armónico: cualidades y grados en orden. Los semitonos de cada
+   grado son los mismos pasos de la escala (SCALES). */
+const CAMPO = {
+  mayor:{ qs:['mayor','menor','menor','mayor','mayor','menor','dim'],
+          rns:['I','ii','iii','IV','V','vi','vii°'] },
+  menor:{ qs:['menor','dim','mayor','menor','menor','mayor','mayor'],
+          rns:['i','ii°','III','iv','v','VI','VII'] }
+};
+function nombreAcorde(pc, q, ktipo, root){
+  const rel = ktipo==='menor' ? (root+3)%12 : root; // deletreo por relativa mayor
+  const base=(SPELL[rel] && SPELL[rel][pc]) || NOTES[pc];
+  return q==='menor' ? base+'m' : q==='dim' ? base+'°' : base;
+}
+function buildCamSeq(){
+  if(camState.ej==='dos')
+    return [{open:true, nombre:camState.a},{open:true, nombre:camState.b}];
+  const {root,ktipo,n}=camState, pcs=SCALES[ktipo].pasos, c=CAMPO[ktipo], out=[];
+  for(let i=0;i<n;i++){
+    const pc=(root+pcs[i])%12, q=c.qs[i];
+    out.push({open:false, rn:c.rns[i], q, v:voiceChord(pc,q), nombre:nombreAcorde(pc,q,ktipo,root)});
+  }
+  return out;
+}
+function refreshCam(){ camState.seq=buildCamSeq(); camState.idx=0; }
+
+/* Posiciones pisadas (f>0) de un paso, sea acorde abierto o forma CAGED */
+function stepPositions(st){
+  if(st.open){
+    const ch=CHORDS[st.nombre];
+    return ch.pos.filter(p=>p.f>0).map(p=>({s:p.s, f:p.f, dedo:ch.fingers[p.s]}));
+  }
+  const out=[];
+  for(const s in st.v.sh.notas){
+    const f=st.v.a+st.v.sh.notas[s];
+    if(f>0) out.push({s:+s, f, dedo:st.v.sh.dedos[s]||0});
+  }
+  return out;
+}
+function anclasPar(A,B){ // misma cuerda, mismo traste, mismo dedo
+  const pb=stepPositions(B);
+  return stepPositions(A).filter(p=>p.dedo>0 && pb.some(q=>q.s===p.s && q.f===p.f && q.dedo===p.dedo));
+}
+function drawOpenChord(name, anclas){
+  const ch=CHORDS[name];
+  for(let s=5;s>=0;s--){
+    const p=ch.pos.find(p=>p.s===s);
+    if(p.f===-1){
+      const t=el('text',{class:'chord-mark',x:NUT_X-34,y:stringY(s)+5,'font-size':15,'font-weight':700,fill:'#8A8A8A','text-anchor':'middle'},svg);
+      t.textContent='✕';
+    } else if(p.f===0){
+      const t=el('text',{class:'chord-mark',x:NUT_X-34,y:stringY(s)+5,'font-size':15,'font-weight':700,fill:'#C9A84C','text-anchor':'middle'},svg);
+      t.textContent='○';
+    } else {
+      const g=pos(s,p.f); g.classList.add('in-chord');
+      g.querySelector('.nl').textContent = ch.fingers[s]||'';
+      if(anclas && anclas.some(x=>x.s===s && x.f===p.f))
+        el('circle',{class:'chord-mark ancring',cx:cellX(p.f),cy:stringY(s),r:20},svg);
+    }
+  }
+}
+function strumOpen(name){
+  const ch=CHORDS[name]; let d=0;
+  for(let s=5;s>=0;s--){ const p=ch.pos.find(p=>p.s===s); if(p.f>=0){ playTone(STRINGS[s].midi+p.f, d); vibrate(s); d+=.06; } }
+}
+function drawStep(st, anc){
+  if(st.open){ drawOpenChord(st.nombre, anc); return; }
+  drawShape(st.v.sh, st.v.a);
+  (anc||[]).forEach(x=>el('circle',{class:'chord-mark ancring',cx:cellX(x.f),cy:stringY(x.s),r:20},svg));
+}
+function strumStep(st){
+  if(st.open) strumOpen(st.nombre);
+  else strumDir(st.v.sh, st.v.a, 'D');
+}
+function renderCamSeqChips(){
+  const box=document.getElementById('cam-seq'); box.innerHTML='';
+  if(camState.ej!=='grados') return;
+  camState.seq.forEach((st,i)=>{
+    const b=document.createElement('button');
+    b.className='pick prog-chip'+(i===camState.idx?' active':'');
+    b.innerHTML=`<b>${st.rn}</b> · ${st.nombre}`;
+    b.onclick=()=>{ camState.idx=i; renderCambio(true); };
+    box.appendChild(b);
+  });
+}
+function renderCambio(tocar){
+  clearAll();
+  if(!camState.seq.length) refreshCam();
+  const seq=camState.seq, cur=seq[camState.idx], nxt=seq[(camState.idx+1)%seq.length];
+  const anc=anclasPar(cur,nxt);
+  drawStep(cur, anc);
+  renderCamSeqChips();
+  document.getElementById('cam-ancla').textContent =
+    cur.nombre===nxt.nombre
+      ? 'Mismo acorde a ambos lados — elige dos distintos para entrenar el cambio'
+      : anc.length
+        ? `Dedos ancla hacia ${nxt.nombre} (no los levantes): `+anc.map(x=>`${x.dedo} en cuerda ${6-x.s} · traste ${x.f}`).join('  y  ')
+        : `Sin dedos ancla hacia ${nxt.nombre} — practica mover la mano en bloque, como una sola pieza`;
+  if(tocar) strumStep(cur);
+  const rn = cur.rn ? `<span style="color:var(--dorado-claro)">${cur.rn}</span> · ` : '';
+  display.innerHTML = `<span class="big">${rn}${cur.nombre} <span style="color:var(--sec);font-size:18px">→ luego ${nxt.nombre}</span></span>
+    <span class="small">Con el metrónomo, el acorde cambia solo cada ${camState.beats} pulsos · anillo punteado = dedo ancla</span>`;
+}
+function startCam(){
+  if(camTimer){ stopCam(); return; }
+  cancelMinuto();
+  if(!camState.seq.length) refreshCam();
+  document.getElementById('btn-cam').textContent='■ Detener';
+  camBeat=0; camState.idx=camState.seq.length-1; // el primer pulso 1 lo lleva al paso 0
+  const tick=()=>{
+    const ms=60000/ +document.getElementById('cam-bpm').value;
+    camBeat = camBeat % camState.beats + 1;
+    if(camBeat===1){
+      camState.idx=(camState.idx+1)%camState.seq.length;
+      renderCambio(true);
+    }
+    clickTick(0, camBeat===1);
+    document.getElementById('cam-count').textContent=camBeat;
+    camTimer=setTimeout(tick, ms);
+  };
+  tick();
+}
+function stopCam(){
+  if(camTimer){ clearTimeout(camTimer); camTimer=null; }
+  const b=document.getElementById('btn-cam'); if(b) b.textContent='▶ Metrónomo de cambios';
+  const c=document.getElementById('cam-count'); if(c) c.textContent='·';
+}
+/* Reto de 1 minuto: cuenta tus cambios reales. Espejo, no examen. */
+function startMinuto(){
+  if(minTimer) return;
+  stopCam();
+  if(!camState.seq.length) refreshCam();
+  minCount=0; minLeft=MINUTO;
+  document.getElementById('btn-tap').disabled=false;
+  document.getElementById('min-res').textContent='';
+  camState.idx=0; renderCambio(false);
+  const upd=()=>document.getElementById('btn-min').textContent =
+    `⏱ ${Math.floor(minLeft/60)}:${String(minLeft%60).padStart(2,'0')} · ${minCount}`;
+  upd();
+  minTimer=setInterval(()=>{ minLeft--; upd(); if(minLeft<=0) finMinuto(); }, 1000);
+}
+function tapCambio(){
+  if(!minTimer) return;
+  minCount++;
+  camState.idx=(camState.idx+1)%camState.seq.length;
+  renderCambio(true);
+  document.getElementById('btn-min').textContent =
+    `⏱ ${Math.floor(minLeft/60)}:${String(minLeft%60).padStart(2,'0')} · ${minCount}`;
+}
+function finMinuto(){
+  clearInterval(minTimer); minTimer=null;
+  document.getElementById('btn-tap').disabled=true;
+  document.getElementById('btn-min').textContent='⏱ Reto de 1 minuto';
+  const n=minCount;
+  const tip = n<20 ? 'Perfecto: lento y limpio. La velocidad llega sola.'
+    : n<40 ? '¡Vas bien! Con 40+ los cambios ya no te frenan en canciones.'
+    : n<60 ? 'Muy sólido — listo para rasguear canciones a tempo real.'
+    : 'Cambios de sobra: el cuello de botella ya no eres tú.';
+  document.getElementById('min-res').textContent=`${n} cambios · ${tip}`;
+  display.innerHTML = `<span class="big">${n} cambios/minuto</span>
+    <span class="small">${tip} · esto es un espejo, no una nota — repítelo cuando quieras</span>`;
+}
+function cancelMinuto(){
+  if(minTimer){ clearInterval(minTimer); minTimer=null; }
+  const t=document.getElementById('btn-tap'); if(t) t.disabled=true;
+  const m=document.getElementById('btn-min'); if(m) m.textContent='⏱ Reto de 1 minuto';
+}
+
+/* ================= RETO (quiz) =================
+   Recuperación activa: recordar retiene más que mirar. Dos juegos:
+   encontrar una nota en una cuerda, y nombrar el grado de una nota
+   marcada dentro de una tonalidad. */
+let retoState={tipo:'encuentra', root:0, ktipo:'mayor', score:0, racha:0, mejor:0, target:null};
+const bonito = pc => NOTES[pc].replace('#','♯');
+function retoScoreTxt(){
+  document.getElementById('reto-score').textContent =
+    `Aciertos ${retoState.score} · Racha ${retoState.racha} · Mejor ${retoState.mejor}`;
+}
+function nuevaPregunta(){
+  clearAll();
+  document.getElementById('reto-opts').innerHTML='';
+  if(retoState.tipo==='encuentra'){
+    const s=Math.floor(Math.random()*6), f=1+Math.floor(Math.random()*12);
+    const pc=(STRINGS[s].midi+f)%12;
+    retoState.target={kind:'enc', s, pc};
+    display.innerHTML = `<span class="big">Encuentra: ${bonito(pc)}</span>
+      <span class="small">en la cuerda ${6-s} (${STRINGS[s].letra}) — toca la casilla en el diapasón</span>`;
+  } else {
+    const {root,ktipo}=retoState, pasos=SCALES[ktipo].pasos;
+    const gi=Math.floor(Math.random()*7), pc=(root+pasos[gi])%12;
+    const cands=[...document.querySelectorAll('.pos')].filter(g=>
+      +g.dataset.f<=12 && (+g.dataset.midi)%12===pc);
+    const g=cands[Math.floor(Math.random()*cands.length)];
+    g.classList.add('quiz'); g.querySelector('.nl').textContent='?';
+    retoState.target={kind:'gr', gi, g, pc};
+    const correcto=DEGREE[ktipo][gi];
+    const opts=[correcto, ...DEGREE[ktipo].filter(d=>d!==correcto).sort(()=>Math.random()-.5).slice(0,3)]
+      .sort(()=>Math.random()-.5);
+    const box=document.getElementById('reto-opts');
+    opts.forEach(o=>{
+      const b=document.createElement('button'); b.className='pick'; b.textContent=o;
+      b.onclick=()=>respGrado(o); box.appendChild(b);
+    });
+    const lbl=KEY_LABEL[ktipo][root];
+    display.innerHTML = `<span class="big">¿Qué grado es la nota marcada?</span>
+      <span class="small">Tonalidad: ${ES[lbl]||lbl} ${ktipo==='mayor'?'mayor':'menor'} — elige abajo · la tónica es el grado 1</span>`;
+  }
+}
+function retoAnswer(g){ // clic en el diapasón (tipo "encuentra")
+  const t=retoState.target;
+  const s=+g.dataset.s, m=+g.dataset.midi;
+  if(s===t.s && m%12===t.pc){
+    g.classList.add('hit'); playTone(m); pulse(g);
+    retoState.score++; retoState.racha++;
+    retoState.mejor=Math.max(retoState.mejor, retoState.racha); retoScoreTxt();
+    display.innerHTML = `<span class="big">✓ ${bonito(m%12)}</span>
+      <span class="small">Cuerda ${6-s} · ${+g.dataset.f===0?'al aire':'traste '+g.dataset.f} — siguiente en un momento…</span>`;
+    retoState.target=null;
+    setTimeout(nuevaPregunta, 750);
+  } else {
+    g.classList.add('miss'); playTone(m);
+    setTimeout(()=>g.classList.remove('miss'), 450);
+    retoState.racha=0; retoScoreTxt();
+    display.innerHTML = `<span class="big">Esa es ${bonito(m%12)}</span>
+      <span class="small">Sigue buscando ${bonito(t.pc)} en la cuerda ${6-t.s} (${STRINGS[t.s].letra})</span>`;
+  }
+}
+function respGrado(o){
+  const t=retoState.target; if(!t || t.kind!=='gr') return;
+  const correcto=DEGREE[retoState.ktipo][t.gi];
+  const rel = retoState.ktipo==='menor' ? (retoState.root+3)%12 : retoState.root;
+  const nombre=(SPELL[rel]||{})[t.pc] || bonito(t.pc);
+  if(o===correcto){
+    t.g.classList.remove('quiz'); t.g.classList.add('hit');
+    t.g.querySelector('.nl').textContent=correcto;
+    playTone(+t.g.dataset.midi);
+    retoState.score++; retoState.racha++;
+    retoState.mejor=Math.max(retoState.mejor, retoState.racha); retoScoreTxt();
+    display.innerHTML = `<span class="big">✓ ${nombre} = grado ${correcto}</span>
+      <span class="small">Siguiente en un momento…</span>`;
+    retoState.target=null;
+    setTimeout(nuevaPregunta, 900);
+  } else {
+    retoState.racha=0; retoScoreTxt();
+    display.innerHTML = `<span class="big">Grado ${o} no es</span>
+      <span class="small">Cuenta desde la tónica (grado 1) hasta la nota marcada y prueba otra vez</span>`;
+  }
+}
+
+/* ================= MODO ESPEJO (micrófono · beta) =================
+   Gobernanza: feedback visual, NO califica. La app enciende en verde lo
+   que tocas; nada se guarda ni se puntúa. Detección de pitch monofónica
+   por autocorrelación — mismo método validado en el afinador (pitch.js). */
+let mic={on:false, stream:null, an:null, buf:null, raf:0, est:{m:-1,n:0}, run:null};
+
+function autoCorrelate(buf, sampleRate){
+  const SIZE=buf.length;
+  let rms=0;
+  for(let i=0;i<SIZE;i++) rms+=buf[i]*buf[i];
+  rms=Math.sqrt(rms/SIZE);
+  if(rms<0.01) return -1;                 // silencio: no hay nota
+  let r1=0, r2=SIZE-1; const thres=0.2;
+  for(let i=0;i<SIZE/2;i++) if(Math.abs(buf[i])<thres){ r1=i; break; }
+  for(let i=1;i<SIZE/2;i++) if(Math.abs(buf[SIZE-i])<thres){ r2=SIZE-i; break; }
+  const b=buf.slice(r1,r2), N=b.length;
+  if(N<32) return -1;
+  const c=new Array(N).fill(0);
+  for(let i=0;i<N;i++) for(let j=0;j<N-i;j++) c[i]+=b[j]*b[j+i];
+  let d=0; while(d<N-1 && c[d]>c[d+1]) d++;
+  let maxval=-1, maxpos=-1;
+  for(let i=d;i<N;i++) if(c[i]>maxval){ maxval=c[i]; maxpos=i; }
+  if(maxpos<=0) return -1;
+  const x0=c[maxpos-1]??c[maxpos], x1=c[maxpos], x2=c[maxpos+1]??c[maxpos];
+  const a=(x0+x2-2*x1)/2, bq=(x2-x0)/2;
+  return sampleRate/(maxpos + (a ? -bq/(2*a) : 0));
+}
+async function micToggle(){
+  if(mic.on){ micOff(); return; }
+  const st=document.getElementById('mic-status');
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    st.textContent='Este navegador no permite usar el micrófono aquí.'; return;
+  }
+  try{
+    mic.stream=await navigator.mediaDevices.getUserMedia({
+      audio:{echoCancellation:false, noiseSuppression:false, autoGainControl:false}
+    });
+  }catch(e){
+    st.textContent='No pude usar el micrófono — revisa el permiso del navegador.'; return;
+  }
+  const c=ctx();
+  const src=c.createMediaStreamSource(mic.stream);
+  mic.an=c.createAnalyser(); mic.an.fftSize=2048;
+  src.connect(mic.an);
+  mic.buf=new Float32Array(mic.an.fftSize);
+  mic.on=true;
+  document.getElementById('btn-mic').classList.add('active');
+  document.getElementById('btn-run').disabled=false;
+  st.textContent='Escuchando… toca tu guitarra (afínala primero).';
+  micLoop();
+}
+function micOff(){
+  mic.on=false;
+  cancelAnimationFrame(mic.raf);
+  if(mic.stream) mic.stream.getTracks().forEach(t=>t.stop());
+  mic.stream=null; mic.run=null; mic.est={m:-1,n:0};
+  document.querySelectorAll('.pos.heard,.pos.expect').forEach(g=>g.classList.remove('heard','expect'));
+  const bm=document.getElementById('btn-mic'); if(bm) bm.classList.remove('active');
+  const r=document.getElementById('btn-run'); if(r){ r.disabled=true; r.textContent='▶ Tu escala (te escucho)'; }
+  const st=document.getElementById('mic-status'); if(st) st.textContent='';
+}
+function micLoop(){
+  if(!mic.on) return;
+  mic.an.getFloatTimeDomainData(mic.buf);
+  const f=autoCorrelate(mic.buf, audioCtx.sampleRate);
+  document.querySelectorAll('.pos.heard').forEach(g=>g.classList.remove('heard'));
+  if(f>0){
+    const midiF=69+12*Math.log2(f/440), m=Math.round(midiF);
+    const cents=Math.round((midiF-m)*100);
+    if(mic.est.m===m) mic.est.n++; else mic.est={m, n:1};
+    document.querySelectorAll(`.pos[data-midi="${m}"]`).forEach(g=>g.classList.add('heard'));
+    if(!mic.run){
+      const oct=Math.floor(m/12)-1;
+      document.getElementById('mic-status').textContent =
+        `Escucho: ${spellName(m)}${oct} · ${cents>0?'+':''}${cents} cents`;
+    } else if(mic.est.n>=3 && m===mic.run.seq[mic.run.i]){
+      const g=mic.run.nodes[mic.run.i];
+      g.classList.remove('expect'); g.classList.add('hit'); pulse(g);
+      mic.run.i++;
+      if(mic.run.i>=mic.run.seq.length){
+        display.innerHTML = `<span class="big">✓ Escala completada con tu guitarra</span>
+          <span class="small">${mic.run.seq.length} notas, todas tuyas — sin nota ni examen, solo el espejo</span>`;
+        document.getElementById('btn-run').textContent='▶ Tu escala (te escucho)';
+        mic.run=null;
+      } else {
+        const nx=mic.run.nodes[mic.run.i]; nx.classList.add('expect');
+        display.innerHTML = `<span class="big">${mic.run.i}/${mic.run.seq.length} · ahora ${spellName(mic.run.seq[mic.run.i])}</span>
+          <span class="small">Cuerda ${6-+nx.dataset.s} · ${+nx.dataset.f===0?'al aire':'traste '+nx.dataset.f} — la casilla punteada te espera</span>`;
+      }
+      mic.est={m:-1,n:0};
+    }
+  }
+  mic.raf=requestAnimationFrame(micLoop);
+}
+function startRun(){
+  if(!mic.on) return;
+  if(mic.run){ // detener
+    mic.run=null;
+    document.getElementById('btn-run').textContent='▶ Tu escala (te escucho)';
+    renderScale();
+    return;
+  }
+  renderScale();
+  const nodes=buildSeq();
+  if(!nodes.length) return;
+  mic.run={nodes, seq:nodes.map(g=>+g.dataset.midi), i:0};
+  nodes[0].classList.add('expect');
+  document.getElementById('btn-run').textContent='■ Detener escala';
+  display.innerHTML = `<span class="big">0/${nodes.length} · empieza en ${spellName(mic.run.seq[0])}</span>
+    <span class="small">Sube la escala nota a nota — verde = ya sonó, punteada = la que sigue</span>`;
+}
+
+/* ================= UI ================= */
+// tónicas: las 12 tonalidades canónicas del libro (etiquetas cambian mayor/menor)
+const rootsBox = document.getElementById('roots');
+function buildRoots(){
+  rootsBox.innerHTML='';
+  const labels = KEY_LABEL[scaleState.tipo];
+  for(let i=0;i<12;i++){
+    const b=document.createElement('button');
+    b.className='pick'+(i===scaleState.root?' active':'');
+    b.textContent=labels[i];
+    b.onclick=()=>{ scaleState.root=i; buildRoots(); renderScale(); };
+    rootsBox.appendChild(b);
+  }
+}
+buildRoots();
+// tipo de escala
+document.querySelectorAll('[data-tipo]').forEach(b=>b.onclick=()=>{
+  scaleState.tipo=b.dataset.tipo;
+  document.querySelectorAll('[data-tipo]').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+  buildRoots(); renderScale();
+});
+// acordes
+function chordBtn(name,parent){
+  const b=document.createElement('button'); b.className='pick pick-chord'; b.textContent=name;
+  b.onclick=()=>renderChord(name); document.getElementById(parent).appendChild(b);
+}
+Object.keys(CHORDS).forEach(n=>chordBtn(n, CHORDS[n].tipo==='mayor'?'chords-major':'chords-minor'));
+// bpm
+document.getElementById('bpm').oninput=e=>document.getElementById('bpm-val').textContent=e.target.value+' BPM';
+// etiqueta de los puntos: notas ⇄ grados
+document.querySelectorAll('[data-etq]').forEach(b=>b.onclick=()=>{
+  scaleState.etiqueta=b.dataset.etq;
+  document.querySelectorAll('[data-etq]').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+  renderScale();
+});
+// ida y vuelta
+document.getElementById('btn-vuelta').onclick=function(){
+  scaleState.vuelta=!scaleState.vuelta;
+  this.classList.toggle('active',scaleState.vuelta);
+  this.setAttribute('aria-pressed',scaleState.vuelta);
+};
+// vista: todo / abierta / ventana libre
+document.getElementById('posicion').onchange=e=>{
+  scaleState.vista=e.target.value;
+  document.getElementById('rango').style.display = scaleState.vista==='custom' ? 'inline-flex' : 'none';
+  renderScale();
+};
+// selectores desde/hasta (0–16)
+['desde','hasta'].forEach(id=>{
+  const sel=document.getElementById(id);
+  for(let f=0;f<=FRETS;f++){ const o=document.createElement('option'); o.value=f; o.textContent='traste '+f; sel.appendChild(o); }
+  sel.value = id==='desde' ? scaleState.desde : scaleState.hasta;
+  sel.onchange=()=>{
+    scaleState.desde=+document.getElementById('desde').value;
+    scaleState.hasta=+document.getElementById('hasta').value;
+    if(scaleState.hasta<scaleState.desde){ // corrige invirtiendo
+      if(id==='desde'){ scaleState.hasta=scaleState.desde; document.getElementById('hasta').value=scaleState.hasta; }
+      else { scaleState.desde=scaleState.hasta; document.getElementById('desde').value=scaleState.desde; }
+    }
+    scaleState.vista='custom';
+    document.getElementById('posicion').value='custom';
+    document.getElementById('rango').style.display='inline-flex';
+    renderScale();
+  };
+});
+/* ===== Progresiones: tonalidad, lista desplegable, patrón ===== */
+function buildProgRoots(){
+  const box=document.getElementById('prog-roots'); box.innerHTML='';
+  const labels=KEY_LABEL[PROGS[progState.prog].modo];
+  for(let i=0;i<12;i++){
+    const b=document.createElement('button');
+    b.className='pick'+(i===progState.root?' active':'');
+    b.textContent=labels[i];
+    b.onclick=()=>{ progState.root=i; buildProgRoots(); if(!progState.playing) showProgStep(progState.paso,false); };
+    box.appendChild(b);
+  }
+}
+function buildProgSel(){
+  const sel=document.getElementById('prog-sel'); sel.innerHTML='';
+  const gM=document.createElement('optgroup'); gM.label='Mayores';
+  const gm=document.createElement('optgroup'); gm.label='Menores';
+  for(const k in PROGS){
+    const o=document.createElement('option'); o.value=k; o.textContent=PROGS[k].nombre;
+    (PROGS[k].modo==='menor'?gm:gM).appendChild(o);
+  }
+  sel.appendChild(gM); sel.appendChild(gm);
+  sel.value=progState.prog;
+  document.getElementById('prog-desc').textContent=PROGS[progState.prog].desc;
+  sel.onchange=()=>{
+    stopProg();
+    progState.prog=sel.value;
+    document.getElementById('prog-desc').textContent=PROGS[sel.value].desc;
+    buildProgRoots();           // las etiquetas cambian entre mayor y menor
+    showProgStep(0,false);
+  };
+}
+function buildProgPats(){
+  const box=document.getElementById('prog-pats'); box.innerHTML='';
+  for(const k in PATRONES){
+    const b=document.createElement('button');
+    b.className='pick'+(k===progState.pat?' active':'');
+    b.textContent=PATRONES[k].nombre;
+    b.onclick=()=>{ progState.pat=k; buildProgPats(); renderPatViz(-1); };
+    box.appendChild(b);
+  }
+}
+buildProgRoots(); buildProgSel(); buildProgPats(); renderPatViz(-1);
+document.getElementById('prog-bpm').oninput=e=>document.getElementById('prog-bpm-val').textContent=e.target.value+' BPM';
+document.getElementById('btn-prog').onclick=startProg;
+
+/* ===== Cambios: ejercicios, pares de acordes, campo armónico, metrónomo, minuto ===== */
+function buildCamChips(which){
+  const box=document.getElementById('cam-'+which); box.innerHTML='';
+  Object.keys(CHORDS).forEach(n=>{
+    const b=document.createElement('button');
+    b.className='pick'+(camState[which]===n?' active':'');
+    b.textContent=n;
+    b.onclick=()=>{ camState[which]=n; buildCamChips('a'); buildCamChips('b');
+      stopCam(); cancelMinuto(); refreshCam(); renderCambio(false); };
+    box.appendChild(b);
+  });
+}
+function buildCamRoots(){
+  const box=document.getElementById('cam-roots'); box.innerHTML='';
+  const labels=KEY_LABEL[camState.ktipo];
+  for(let i=0;i<12;i++){
+    const b=document.createElement('button');
+    b.className='pick'+(i===camState.root?' active':'');
+    b.textContent=labels[i];
+    b.onclick=()=>{ camState.root=i; buildCamRoots();
+      stopCam(); cancelMinuto(); refreshCam(); renderCambio(false); };
+    box.appendChild(b);
+  }
+}
+buildCamChips('a'); buildCamChips('b'); buildCamRoots();
+document.querySelectorAll('[data-camej]').forEach(b=>b.onclick=()=>{
+  camState.ej=b.dataset.camej;
+  document.querySelectorAll('[data-camej]').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+  document.getElementById('cam-ej1').style.display = camState.ej==='dos' ? '' : 'none';
+  document.getElementById('cam-ej2').style.display = camState.ej==='grados' ? '' : 'none';
+  stopCam(); cancelMinuto(); refreshCam(); renderCambio(false);
+});
+document.querySelectorAll('[data-camk]').forEach(b=>b.onclick=()=>{
+  camState.ktipo=b.dataset.camk;
+  document.querySelectorAll('[data-camk]').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+  buildCamRoots();
+  stopCam(); cancelMinuto(); refreshCam(); renderCambio(false);
+});
+document.getElementById('cam-n').onchange=e=>{
+  camState.n=+e.target.value;
+  stopCam(); cancelMinuto(); refreshCam(); renderCambio(false);
+};
+document.getElementById('cam-bpm').oninput=e=>document.getElementById('cam-bpm-val').textContent=e.target.value+' BPM';
+document.getElementById('cam-beats').onchange=e=>{ camState.beats=+e.target.value; };
+document.getElementById('btn-cam').onclick=startCam;
+document.getElementById('btn-min').onclick=startMinuto;
+document.getElementById('btn-tap').onclick=tapCambio;
+window.addEventListener('keydown',e=>{
+  if(e.code==='Space' && minTimer && mode==='cambios'){ e.preventDefault(); tapCambio(); }
+});
+
+/* ===== Reto: tipo, tonalidad ===== */
+function buildRetoRoots(){
+  const box=document.getElementById('reto-roots'); box.innerHTML='';
+  const labels=KEY_LABEL[retoState.ktipo];
+  for(let i=0;i<12;i++){
+    const b=document.createElement('button');
+    b.className='pick'+(i===retoState.root?' active':'');
+    b.textContent=labels[i];
+    b.onclick=()=>{ retoState.root=i; buildRetoRoots(); nuevaPregunta(); };
+    box.appendChild(b);
+  }
+}
+document.querySelectorAll('[data-rtipo]').forEach(b=>b.onclick=()=>{
+  retoState.tipo=b.dataset.rtipo;
+  document.querySelectorAll('[data-rtipo]').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+  document.getElementById('reto-key').style.display = retoState.tipo==='grado' ? '' : 'none';
+  if(retoState.tipo==='grado') buildRetoRoots();
+  nuevaPregunta();
+});
+document.querySelectorAll('[data-rktipo]').forEach(b=>b.onclick=()=>{
+  retoState.ktipo=b.dataset.rktipo;
+  document.querySelectorAll('[data-rktipo]').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+  buildRetoRoots(); nuevaPregunta();
+});
+document.getElementById('btn-reto').onclick=nuevaPregunta;
+
+/* ===== Espejo ===== */
+document.getElementById('btn-mic').onclick=micToggle;
+document.getElementById('btn-run').onclick=startRun;
+
+// ===== CAGED de acordes: tónicas, tipos, formas =====
+function buildCagedRoots(){
+  const box=document.getElementById('caged-roots'); box.innerHTML='';
+  const labels=KEY_LABEL[cagedState.tipo];
+  for(let i=0;i<12;i++){
+    const b=document.createElement('button');
+    b.className='pick'+(i===cagedState.root?' active':''); b.textContent=labels[i];
+    b.onclick=()=>{ cagedState.root=i; buildCagedRoots(); renderCaged(); };
+    box.appendChild(b);
+  }
+}
+function buildCagedFormas(){
+  const box=document.getElementById('caged-formas'); box.innerHTML='';
+  [...Object.keys(CAGED_CHORDS[cagedState.tipo]), 'todas'].forEach(fk=>{
+    const b=document.createElement('button');
+    b.className='pick'+(fk===cagedState.forma?' active':'');
+    b.textContent = fk==='todas' ? 'Todas (encadenadas)' : 'Forma '+fk;
+    b.onclick=()=>{ cagedState.forma=fk; buildCagedFormas(); renderCaged(); };
+    box.appendChild(b);
+  });
+}
+document.querySelectorAll('[data-ctipo]').forEach(b=>b.onclick=()=>{
+  cagedState.tipo=b.dataset.ctipo;
+  document.querySelectorAll('[data-ctipo]').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+  if(!(cagedState.forma in CAGED_CHORDS[cagedState.tipo]) && cagedState.forma!=='todas') cagedState.forma='todas';
+  buildCagedRoots(); buildCagedFormas(); renderCaged();
+});
+buildCagedRoots(); buildCagedFormas();
+// botones
+document.getElementById('btn-play-scale').onclick=playScale;
+document.getElementById('btn-clear-1').onclick=()=>{clearAll();renderScale();};
+document.getElementById('btn-clear-2').onclick=()=>{clearAll();display.innerHTML='<p class="small">Elige un acorde — o toca el diapasón libremente</p>';};
+// tabs
+const TABS = {escalas:'tab-escalas', acordes:'tab-acordes', prog:'tab-prog', cambios:'tab-cambios', reto:'tab-reto'};
+const PANES = {escalas:'panel-escalas', acordes:'panel-acordes', prog:'panel-prog', cambios:'panel-cambios', reto:'panel-reto'};
+function setMode(m){
+  stopProg(); stopCam(); cancelMinuto();
+  if(m!=='escalas' && mic.on) micOff();   // el espejo vive en Escalas
+  retoState.target=null;
+  mode=m; clearAll();
+  for(const k in TABS){
+    document.getElementById(TABS[k]).classList.toggle('active', k===m);
+    document.getElementById(PANES[k]).style.display = k===m ? '' : 'none';
+  }
+  if(m==='escalas') renderScale();
+  else if(m==='acordes') renderCaged();          // entra mostrando el CAGED encadenado
+  else if(m==='prog'){ progState.paso=0; renderPatViz(-1); showProgStep(0,false); }
+  else if(m==='cambios'){ refreshCam(); renderCambio(false); }
+  else if(m==='reto'){ retoScoreTxt(); nuevaPregunta(); }
+}
+for(const k in TABS) document.getElementById(TABS[k]).onclick=()=>setMode(k);
+
+/* pista de deslizamiento: solo cuando el mástil no cabe en pantalla */
+const stage = document.getElementById('stage');
+function checkScroll(){ stage.classList.toggle('scrollable', stage.scrollWidth > stage.clientWidth + 4); }
+stage.addEventListener('scroll',()=>{ if(stage.scrollLeft>8) stage.classList.remove('scrollable'); },{passive:true});
+window.addEventListener('resize',checkScroll);
+
+/* init */
+buildGuitar();
+renderScale();
+checkScroll();
+</script>
+</body>
+</html>
