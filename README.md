@@ -11,12 +11,23 @@ Herramienta de práctica de guitarra en una sola página HTML — sin backend, s
 
 ## Cómo usar
 
+### En línea (GitHub Pages)
+
+**https://gmusicproyect.github.io/guitarrainteractiva/**
+
+(La raíz redirige a `guitarra-uno.html`. Modo libre: añade `?modo=libre`.)
+
+### En tu Mac (local)
+
 Abre `guitarra-uno.html` en el navegador (doble clic o servidor local):
 
 ```bash
+cd guitarrainteractiva
 python3 -m http.server 8765
 # http://127.0.0.1:8765/guitarra-uno.html
 ```
+
+> **Importante:** en github.com, al pulsar el archivo HTML solo ves el *código fuente*. La app hay que abrirla con Pages (enlace de arriba) o con servidor local — no basta con ver el repo.
 
 ### Modo guiado (Módulo 1)
 

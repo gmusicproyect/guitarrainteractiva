@@ -1350,6 +1350,10 @@ function startRun(){
 }
 
 
+/* Referencia de pestañas (modo guiado oculta paneles vía PANES) */
+const TABS = {escalas:'tab-escalas', acordes:'tab-acordes', prog:'tab-prog', cambios:'tab-cambios', reto:'tab-reto'};
+const PANES = {escalas:'panel-escalas', acordes:'panel-acordes', prog:'panel-prog', cambios:'panel-cambios', reto:'panel-reto'};
+
 /* ================= MODO GUIADO — MÓDULO 1 =================
    Capa A: flujo de 5 pasos + «¿Listo?». No hay motores nuevos: cada paso
    configura estado, esconde ruido y encadena lo que ya existe. Deep links:
@@ -1775,8 +1779,6 @@ document.getElementById('btn-play-scale').onclick=playScale;
 document.getElementById('btn-clear-1').onclick=()=>{clearAll();renderScale();};
 document.getElementById('btn-clear-2').onclick=()=>{clearAll();display.innerHTML='<p class="small">Elige un acorde — o toca el diapasón libremente</p>';};
 // tabs
-const TABS = {escalas:'tab-escalas', acordes:'tab-acordes', prog:'tab-prog', cambios:'tab-cambios', reto:'tab-reto'};
-const PANES = {escalas:'panel-escalas', acordes:'panel-acordes', prog:'panel-prog', cambios:'panel-cambios', reto:'panel-reto'};
 function setMode(m){
   stopProg(); stopCam(); cancelMinuto();
   if(m!=='escalas' && mic.on) micOff();   // el espejo vive en Escalas
