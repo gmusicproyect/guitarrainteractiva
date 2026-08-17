@@ -12,23 +12,30 @@
   },
   "prerequisites": ["g1-m1-onboarding"],
   "teaching": {
+    "purpose": "Presentar el orden de las seis cuerdas y relacionar grosor, número, nombre y sonido.",
     "card": "De la más gruesa a la más fina: Mi, La, Re, Sol, Si, Mi.",
     "video": { "required": true, "status": "pending", "brief": "Demostración del orden, grosor y perspectiva del ejecutante" },
     "pdf": { "required": true, "status": "pending", "brief": "Mapa de cuerdas con nombres en español y cifrado" }
   },
   "practice": {
+    "purpose": "Transformar el orden memorizado en localización física sobre la guitarra.",
     "engine": "find_string",
     "title": "Encuentra la cuerda",
     "sections": ["Cuerdas graves: 6ª, 5ª y 4ª", "Cuerdas agudas: 3ª, 2ª y 1ª"]
   },
   "remediation": {
+    "purpose": "Corregir confusiones entre cuerdas vecinas mediante comparación y repetición focalizada.",
     "strategy": "iluminar_objetivo",
     "message": "Se ilumina la cuerda correcta y se practica sólo esa pareja antes de volver a la ronda."
   },
   "assessment": {
+    "purpose": "Comprobar que el alumno identifica las seis cuerdas sin pistas.",
     "certifies": true,
     "practiceCriteria": "Puede recibir pistas durante la práctica",
     "exitCriteria": "Una ronda nueva con las seis cuerdas correctas y sin ayudas"
   },
-  "unlocks": "02-diapason-y-trastes"
+  "unlocks": {
+    "target": "02-diapason-y-trastes",
+    "purpose": "Añadir la segunda coordenada del instrumento: la posición dentro del diapasón."
+  }
 }

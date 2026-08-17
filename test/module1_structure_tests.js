@@ -11,6 +11,12 @@ const folders = moduleManifest.folders.map(folderName => ({
 }));
 
 assert.deepEqual(
+  moduleManifest.folderSectionFlow,
+  ['teaching', 'practice', 'remediation', 'assessment', 'unlocks'],
+  'Todas las carpetas deben seguir enseñanza, práctica, apoyo, evaluación y desbloqueo'
+);
+
+assert.deepEqual(
   folders.map(folder => folder.order),
   [0, 1, 2, 3, 4, 5, 6],
   'Las carpetas deben mantener un orden continuo del 00 al 06'
@@ -34,15 +40,27 @@ assert.equal(capstone.assessment.integratesSkills, 4);
 for (const folder of folders) {
   assert.ok(folder.id && folder.title && folder.purpose, `${folder.folderName} necesita identidad y propósito`);
   assert.ok(folder.teaching?.card, `${folder.folderName} necesita contenido de enseñanza`);
+  assert.ok(folder.teaching?.purpose, `${folder.folderName} necesita propósito de enseñanza`);
   assert.ok(folder.practice?.title, `${folder.folderName} necesita una práctica`);
+  assert.ok(folder.practice?.purpose, `${folder.folderName} necesita propósito de práctica`);
   assert.ok(
     Array.isArray(folder.practice.sections) || Array.isArray(folder.practice.steps),
     `${folder.folderName} necesita pasos o secciones de práctica`
   );
   assert.ok(folder.remediation?.message, `${folder.folderName} necesita recuperación pedagógica`);
+  assert.ok(folder.remediation?.purpose, `${folder.folderName} necesita propósito de apoyo`);
   assert.ok(folder.assessment?.exitCriteria, `${folder.folderName} necesita criterio de salida`);
-  assert.ok(folder.unlocks, `${folder.folderName} debe declarar qué desbloquea`);
+  assert.ok(folder.assessment?.purpose, `${folder.folderName} necesita propósito de evaluación`);
+  assert.ok(folder.unlocks?.target, `${folder.folderName} debe declarar qué desbloquea`);
+  assert.ok(folder.unlocks?.purpose, `${folder.folderName} necesita propósito de desbloqueo`);
 }
+
+assert.deepEqual(
+  folders.slice(0, -1).map(folder => folder.unlocks.target),
+  moduleManifest.folders.slice(1),
+  'Cada carpeta debe desbloquear la siguiente etapa del diagrama'
+);
+assert.equal(folders.at(-1).unlocks.target, moduleManifest.nextModule.id);
 
 const skillIds = new Set(skillFolders.map(folder => folder.skill.id));
 for (const folder of skillFolders) {

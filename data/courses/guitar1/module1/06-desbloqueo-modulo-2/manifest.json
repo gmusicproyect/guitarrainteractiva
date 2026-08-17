@@ -9,22 +9,29 @@
   "skill": null,
   "prerequisites": ["g1.capstone.first-riff"],
   "teaching": {
+    "purpose": "Hacer visible la relación entre las cuatro habilidades y el riff que acaba de completar el alumno.",
     "card": "Reconoces las cuerdas, ubicas los trastes 0–3, tocas Mi–Fa–Sol y mantienes tu primer riff a pulso.",
     "video": { "required": false, "status": "not-required" },
     "pdf": { "required": false, "status": "not-required" }
   },
   "practice": {
+    "purpose": "Permitir una revisión consciente de lo logrado antes de abandonar el módulo.",
     "engine": null,
     "title": "Resumen de cuatro habilidades y un reto musical",
     "sections": []
   },
   "remediation": {
+    "purpose": "Ofrecer acceso directo al repaso de cualquier habilidad que todavía genere inseguridad.",
     "strategy": null,
     "message": "Cada habilidad puede repasarse desde la ruta antes de continuar."
   },
   "assessment": {
+    "purpose": "Confirmar el cierre del módulo sin presentar el resumen como una habilidad adicional.",
     "certifies": false,
     "exitCriteria": "Confirmar el cierre y abrir el Módulo 2"
   },
-  "unlocks": "guitar1-module2"
+  "unlocks": {
+    "target": "guitar1-module2",
+    "purpose": "Dar acceso al Módulo 2, donde comienzan Mi menor y La menor."
+  }
 }

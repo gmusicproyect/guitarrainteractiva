@@ -1,6 +1,6 @@
 {
   "id": "guitar1-module1",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "title": "Tu guitarra y tus primeras notas",
   "course": "Guitarra 1",
   "purpose": "Reconocer el instrumento, ubicar las primeras notas y tocar un riff sencillo con pulso estable.",
@@ -12,6 +12,13 @@
     "g1.rhythm.pulse-60bpm"
   ],
   "capstone": "g1.capstone.first-riff",
+  "folderSectionFlow": [
+    "teaching",
+    "practice",
+    "remediation",
+    "assessment",
+    "unlocks"
+  ],
   "folders": [
     "00-onboarding",
     "01-seis-cuerdas",

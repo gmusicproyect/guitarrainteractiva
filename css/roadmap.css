@@ -622,6 +622,65 @@
   font-size: 0.92rem;
 }
 
+.flow-diagram-intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.flow-diagram-intro h3 {
+  margin: 0.35rem 0;
+  font-family: var(--font-heading);
+  font-size: 1.55rem;
+  color: var(--text-primary);
+}
+
+.flow-diagram-intro p {
+  max-width: 650px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.flow-diagram-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.55rem 1rem;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+}
+
+.flow-diagram-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border: 1px solid var(--border-medium);
+  border-radius: 50%;
+  background: var(--bg-surface-elevated);
+}
+
+.legend-dot.is-completed {
+  border-color: var(--color-success);
+  background: var(--color-success);
+}
+
+.legend-dot.is-current {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+}
+
 .module-path-eyebrow {
   color: var(--color-primary);
   font-family: var(--font-mono);
@@ -712,7 +771,7 @@
   transition: transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
 }
 
-.folder-path-card:not(:disabled):hover {
+.folder-path-card:hover {
   transform: translateY(-2px);
   border-color: var(--border-medium);
   background: var(--bg-surface-elevated);
@@ -721,11 +780,6 @@
 .folder-path-card:focus-visible {
   outline: 3px solid var(--border-focus);
   outline-offset: 2px;
-}
-
-.folder-path-card:disabled {
-  cursor: not-allowed;
-  opacity: 0.58;
 }
 
 .folder-path-topline {
@@ -759,6 +813,15 @@
   color: var(--text-secondary);
   font-size: 0.86rem;
   line-height: 1.45;
+}
+
+.folder-path-purpose-label {
+  margin-top: 0.25rem;
+  color: var(--color-primary);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .folder-path-skill {
@@ -800,6 +863,14 @@
 
 .folder-path-node.is-current .folder-path-status {
   color: var(--color-primary-hover);
+}
+
+.folder-path-node.is-locked .folder-path-card {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.folder-path-node.is-locked .folder-path-action {
+  color: var(--text-muted);
 }
 
 .folder-path-node.is-capstone .folder-path-marker {
@@ -863,12 +934,14 @@
 }
 
 @media (max-width: 640px) {
-  .module-path-summary {
-    gap: 1rem;
+  .flow-diagram-intro {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.9rem;
   }
 
-  .module-path-count {
-    min-width: 84px;
+  .flow-diagram-legend {
+    justify-content: flex-start;
   }
 
   .folder-path-node {

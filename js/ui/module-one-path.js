@@ -85,8 +85,51 @@ export class ModuleOnePathUI {
 
   getMarker(status, folder) {
     if (status === 'completed') return '✓';
-    if (status === 'current') return folder.order;
-    return '·';
+    return String(folder.order).padStart(2, '0');
+  }
+
+  getUnlockTarget(folder) {
+    const targetId = folder.unlocks.target;
+    const targetFolder = this.folders.find((item, index) => (
+      this.module.folders[index] === targetId || item.id === targetId
+    ));
+
+    return targetFolder?.title || this.module.nextModule.title;
+  }
+
+  buildFolderSections(folder) {
+    const practiceSteps = folder.practice.sections || folder.practice.steps || [];
+    const practiceContent = practiceSteps.length
+      ? `<ul>${practiceSteps.map(step => `<li>${escapeHTML(step)}</li>`).join('')}</ul>`
+      : `<p>${escapeHTML(folder.practice.title)}</p>`;
+
+    return [
+      {
+        label: 'Enseñanza',
+        purpose: folder.teaching.purpose,
+        content: `<p>${escapeHTML(folder.teaching.card)}</p>`
+      },
+      {
+        label: 'Práctica',
+        purpose: folder.practice.purpose,
+        content: practiceContent
+      },
+      {
+        label: 'Apoyo',
+        purpose: folder.remediation.purpose,
+        content: `<p>${escapeHTML(folder.remediation.message)}</p>`
+      },
+      {
+        label: 'Evaluación',
+        purpose: folder.assessment.purpose,
+        content: `<p>${escapeHTML(folder.assessment.exitCriteria)}</p>`
+      },
+      {
+        label: 'Desbloqueo',
+        purpose: folder.unlocks.purpose,
+        content: `<p>Abre: <strong>${escapeHTML(this.getUnlockTarget(folder))}</strong></p>`
+      }
+    ];
   }
 
   render() {
@@ -98,13 +141,8 @@ export class ModuleOnePathUI {
 
     const pathMarkup = this.folders.map(folder => {
       const status = this.getStatus(folder);
-      const isLocked = status === 'locked';
-      const skillLine = folder.skill
-        ? escapeHTML(folder.skill.statement)
-        : folder.kind === 'capstone'
-          ? 'Integra las cuatro habilidades del módulo.'
-          : escapeHTML(folder.practice.title);
       const kindClass = folder.kind === 'capstone' ? ' is-capstone' : '';
+      const actionCopy = status === 'current' ? 'Abrir carpeta' : 'Ver flujo interno';
 
       return `
         <article class="folder-path-node is-${status}${kindClass}">
@@ -112,15 +150,15 @@ export class ModuleOnePathUI {
             <span class="folder-path-marker">${escapeHTML(this.getMarker(status, folder))}</span>
             <span class="folder-path-line"></span>
           </div>
-          <button type="button" class="folder-path-card" data-folder-id="${escapeHTML(folder.id)}" ${isLocked ? 'disabled' : ''}>
+          <button type="button" class="folder-path-card" data-folder-id="${escapeHTML(folder.id)}">
             <span class="folder-path-topline">
               <span class="folder-path-label">${escapeHTML(folder.label)}</span>
               <span class="folder-path-status">${escapeHTML(this.getStatusCopy(status, folder))}</span>
             </span>
             <strong class="folder-path-title">${escapeHTML(folder.title)}</strong>
+            <span class="folder-path-purpose-label">Propósito</span>
             <span class="folder-path-purpose">${escapeHTML(folder.purpose)}</span>
-            <span class="folder-path-skill">${skillLine}</span>
-            ${status === 'current' ? '<span class="folder-path-action">Abrir habilidad →</span>' : ''}
+            <span class="folder-path-action">${actionCopy} →</span>
           </button>
         </article>
       `;
@@ -128,19 +166,21 @@ export class ModuleOnePathUI {
 
     const nextStatus = this.mode === 'student' ? 'current' : 'locked';
     this.container.innerHTML = `
-      <div class="module-path-summary">
+      <div class="flow-diagram-intro">
         <div>
-          <span class="module-path-eyebrow">Módulo 1</span>
-          <h3>${escapeHTML(this.module.title)}</h3>
-          <p>${escapeHTML(this.module.purpose)}</p>
+          <span class="module-path-eyebrow">Diagrama de flujo prioritario</span>
+          <h3>Del primer toque al Módulo 2</h3>
+          <p>Selecciona cualquier carpeta para ver el propósito de cada sección, incluso si todavía está bloqueada.</p>
         </div>
-        <div class="module-path-count">
-          <strong>4</strong>
-          <span>habilidades</span>
-          <small>+ 1 reto musical</small>
+        <div class="flow-diagram-legend" aria-label="Estados del diagrama">
+          <span><i class="legend-dot is-completed"></i>Completada</span>
+          <span><i class="legend-dot is-current"></i>En curso</span>
+          <span><i class="legend-dot is-locked"></i>Posterior</span>
         </div>
       </div>
-      <div class="skill-folder-path">${pathMarkup}</div>
+      <figure class="skill-folder-path" aria-label="Flujo de carpetas del Módulo 1">
+        ${pathMarkup}
+      </figure>
       <article class="next-module-preview is-${nextStatus}">
         <span class="next-module-number">Módulo 2</span>
         <div>
@@ -192,13 +232,20 @@ export class ModuleOnePathUI {
       : folder.kind === 'capstone'
         ? 'Integra las cuatro habilidades del módulo en una interpretación completa.'
         : folder.practice.title;
-    document.getElementById('moduleFolderTeaching').textContent = folder.teaching.card;
-    const practiceSteps = folder.practice.sections || folder.practice.steps || [];
-    document.getElementById('moduleFolderPractice').innerHTML = practiceSteps.length
-      ? practiceSteps.map(section => `<li>${escapeHTML(section)}</li>`).join('')
-      : `<li>${escapeHTML(folder.practice.title)}</li>`;
-    document.getElementById('moduleFolderRemediation').textContent = folder.remediation.message;
-    document.getElementById('moduleFolderAssessment').textContent = folder.assessment.exitCriteria;
+    document.getElementById('moduleFolderSections').innerHTML = this.buildFolderSections(folder)
+      .map((section, index) => `
+        <li class="module-folder-section">
+          <div class="module-folder-section-rail" aria-hidden="true">
+            <span>${String(index + 1).padStart(2, '0')}</span>
+            <i></i>
+          </div>
+          <div class="module-folder-section-content">
+            <span class="module-folder-detail-label">${escapeHTML(section.label)}</span>
+            <strong>${escapeHTML(section.purpose)}</strong>
+            ${section.content}
+          </div>
+        </li>
+      `).join('');
 
     if (this.actionButton) {
       this.actionButton.disabled = status === 'locked';

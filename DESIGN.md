@@ -25,9 +25,12 @@ Color is always paired with text and an icon or shape.
 
 ## Components
 
-- Learning path nodes use a connected vertical rail.
+- The connected folder flow is the primary representation of every module.
+- Learning path nodes use a connected vertical rail and expose their purpose even when locked.
 - Only the current node has a primary action.
-- Folder details use one modal with purpose, skill, learning material, practice, recovery, and approval criteria.
+- Every folder defines five internal sections in order: teaching, practice, support, assessment, and unlock.
+- Every internal section declares both its pedagogical purpose and its learner-facing content.
+- Folder details render those sections as a second connected flow.
 - Buttons have a minimum touch target of 44px and visible focus states.
 - Cards are not nested inside other cards.
 

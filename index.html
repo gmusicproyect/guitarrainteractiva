@@ -14,8 +14,8 @@
   <!-- CSS Stylesheets -->
   <link rel="stylesheet" href="css/main.css?v=6">
   <link rel="stylesheet" href="css/guitar.css?v=2">
-  <link rel="stylesheet" href="css/roadmap.css?v=3">
-  <link rel="stylesheet" href="css/modals.css?v=3">
+  <link rel="stylesheet" href="css/roadmap.css?v=4">
+  <link rel="stylesheet" href="css/modals.css?v=4">
 </head>
 <body class="theme-dark mode-visitor">
 
@@ -132,15 +132,15 @@
         </section>
 
         <section class="onboarding-step" data-onboarding-step="3" hidden>
-          <span class="onboarding-kicker">Tu primera ruta</span>
-          <h2>Un paso a la vez</h2>
-          <p>No necesitas ver todo el curso hoy. Empezaremos por reconocer las cuerdas al aire.</p>
+          <span class="onboarding-kicker">Diagrama del Módulo 1</span>
+          <h2>Un propósito en cada etapa</h2>
+          <p>Empezarás tocando la guitarra y avanzarás por cuatro habilidades hasta completar un riff.</p>
 
           <ol class="onboarding-route">
-            <li class="current"><span>1</span><div><strong>Conoce la guitarra</strong><small>Partes, postura y afinación</small></div></li>
-            <li><span>2</span><div><strong>Aprende las cuerdas al aire</strong><small>Mi, La, Re, Sol, Si, Mi</small></div></li>
-            <li><span>3</span><div><strong>Encuentra tus primeras notas</strong><small>Trastes 1 al 5</small></div></li>
-            <li><span>4</span><div><strong>Construye acordes</strong><small>Em, E, Am, C, G y D</small></div></li>
+            <li class="current"><span>1</span><div><strong>Presentación</strong><small>Toca y escucha la guitarra interactiva</small></div></li>
+            <li><span>2</span><div><strong>Clases 1 y 2</strong><small>Seis cuerdas y trastes 0, 1 y 3</small></div></li>
+            <li><span>3</span><div><strong>Clases 3 y 4</strong><small>Mi, Fa, Sol y pulso a 60 BPM</small></div></li>
+            <li><span>4</span><div><strong>Reto y desbloqueo</strong><small>Primer riff y acceso al Módulo 2</small></div></li>
           </ol>
         </section>
       </div>
@@ -785,24 +785,11 @@
           <strong id="moduleFolderSkill"></strong>
         </div>
 
-        <div class="module-folder-details">
-          <section>
-            <span class="module-folder-detail-label">Aprenderás</span>
-            <p id="moduleFolderTeaching"></p>
-          </section>
-          <section>
-            <span class="module-folder-detail-label">Practicarás</span>
-            <ul id="moduleFolderPractice"></ul>
-          </section>
-          <section>
-            <span class="module-folder-detail-label">Si te cuesta</span>
-            <p id="moduleFolderRemediation"></p>
-          </section>
-          <section>
-            <span class="module-folder-detail-label">Para avanzar</span>
-            <p id="moduleFolderAssessment"></p>
-          </section>
+        <div class="module-folder-flow-heading">
+          <span class="module-folder-detail-label">Flujo interno de la carpeta</span>
+          <p>Cada sección prepara la siguiente y tiene un propósito verificable.</p>
         </div>
+        <ol class="module-folder-section-flow" id="moduleFolderSections"></ol>
       </div>
 
       <div class="module-folder-footer">
@@ -935,6 +922,6 @@
   </footer>
 
   <!-- Entry Script JavaScript -->
-  <script type="module" src="js/app.js?v=8"></script>
+  <script type="module" src="js/app.js?v=10"></script>
 </body>
 </html>

@@ -4,11 +4,11 @@
  */
 
 import { audioEngine } from './engine/audio-engine.js';
-import { HeroGuitarUI } from './ui/hero-guitar.js?v=2';
+import { HeroGuitarUI } from './ui/hero-guitar.js?v=3';
 import { PracticeViewUI } from './ui/practice-view.js?v=2';
 import { FreeGuitarUI } from './ui/free-guitar.js?v=2';
 import { ProfileDemoUI } from './ui/profile-demo.js?v=5';
-import { ModuleOnePathUI } from './ui/module-one-path.js?v=2';
+import { ModuleOnePathUI } from './ui/module-one-path.js?v=3';
 
 function initApp() {
   // 1. Initialize UI Controllers

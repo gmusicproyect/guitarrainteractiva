@@ -9,22 +9,29 @@
   "skill": null,
   "prerequisites": [],
   "teaching": {
+    "purpose": "Explicar cómo responde la guitarra interactiva y reconocer visualmente la sexta cuerda.",
     "card": "La guitarra responde al tocar cada cuerda. La sexta es la más gruesa y produce un Mi grave.",
     "video": { "required": false, "status": "not-required" },
     "pdf": { "required": false, "status": "not-required" }
   },
   "practice": {
+    "purpose": "Conseguir una primera interacción correcta y audible sin exigir conocimientos previos.",
     "engine": "find_string",
     "title": "Toca y escucha",
     "steps": ["Tocar la 6ª cuerda Mi · E", "Tocar la 5ª cuerda La · A"]
   },
   "remediation": {
+    "purpose": "Evitar frustración inicial mostrando con claridad dónde debe tocar el alumno.",
     "strategy": "iluminar_objetivo",
     "message": "La cuerda correcta se ilumina y permanece disponible para otro intento."
   },
   "assessment": {
+    "purpose": "Confirmar que el alumno comprende cómo tocar una cuerda y recibir respuesta del sistema.",
     "certifies": false,
     "exitCriteria": "Completar los dos toques guiados"
   },
-  "unlocks": "01-seis-cuerdas"
+  "unlocks": {
+    "target": "01-seis-cuerdas",
+    "purpose": "Abrir la primera habilidad formal: reconocer las seis cuerdas al aire."
+  }
 }
