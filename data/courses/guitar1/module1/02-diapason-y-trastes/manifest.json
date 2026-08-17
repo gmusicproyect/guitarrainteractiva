@@ -1,0 +1,34 @@
+{
+  "id": "g1-m1-fretboard",
+  "order": 2,
+  "kind": "skill",
+  "label": "Clase 2",
+  "title": "El diapasón y los trastes",
+  "shortTitle": "Trastes 0–3",
+  "purpose": "Añadir la segunda coordenada del instrumento: distinguir una cuerda al aire de una nota pisada en los primeros tres trastes.",
+  "skill": {
+    "id": "g1.fretboard.coords",
+    "statement": "Ubica los trastes 0, 1 y 3 en la sexta cuerda y comprende cómo se numera el diapasón."
+  },
+  "prerequisites": ["g1.strings.open"],
+  "teaching": {
+    "card": "Traste 0 significa cuerda al aire. Para pisar, coloca el dedo cerca de la barra metálica sin apoyarlo sobre ella.",
+    "video": { "required": true, "status": "pending", "brief": "Cejuela, numeración y colocación segura del dedo" },
+    "pdf": { "required": true, "status": "pending", "brief": "Diagrama de la sexta cuerda entre los trastes 0 y 3" }
+  },
+  "practice": {
+    "engine": "find_fret",
+    "title": "Encuentra la coordenada",
+    "sections": ["Sexta cuerda al aire", "Sexta cuerda, traste 1", "Sexta cuerda, traste 3"]
+  },
+  "remediation": {
+    "strategy": "aislar_paso",
+    "message": "La interfaz señala la celda exacta y contrasta al aire frente a nota pisada."
+  },
+  "assessment": {
+    "certifies": true,
+    "practiceCriteria": "Tres posiciones con guía visual progresivamente reducida",
+    "exitCriteria": "Tres coordenadas correctas consecutivas sin señal visual"
+  },
+  "unlocks": "03-primeras-notas"
+}

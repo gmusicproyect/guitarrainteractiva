@@ -1,0 +1,35 @@
+{
+  "id": "g1-m1-pulse",
+  "order": 4,
+  "kind": "skill",
+  "label": "Clase 4",
+  "title": "El pulso",
+  "shortTitle": "Pulso a 60 BPM",
+  "purpose": "Incorporar el tiempo musical: tocar una nota correcta dentro de un pulso constante.",
+  "skill": {
+    "id": "g1.rhythm.pulse-60bpm",
+    "statement": "Sincroniza una secuencia sencilla con un metrónomo a 60 BPM."
+  },
+  "prerequisites": ["g1.melody.first-notes"],
+  "teaching": {
+    "card": "Cuenta 1, 2, 3, 4. Cada nota ocupa un pulso y la cuenta previa prepara la entrada.",
+    "video": { "required": true, "status": "pending", "brief": "Conteo, negra y demostración con metrónomo" },
+    "pdf": { "required": true, "status": "pending", "brief": "Cuadrícula de pulsos y secuencia rítmica" }
+  },
+  "practice": {
+    "engine": "play_sequence",
+    "title": "Mi–Mi–Fa–Fa–Sol–Sol",
+    "config": { "bpm": 60, "remediationBpm": 45, "toleranceMs": 180 },
+    "sections": ["Escuchar y contar", "Tocar a 45 BPM", "Tocar a 60 BPM"]
+  },
+  "remediation": {
+    "strategy": "reducir_bpm",
+    "message": "El tempo baja a 45 BPM con cuenta previa y vuelve a 60 tras dos compases limpios."
+  },
+  "assessment": {
+    "certifies": true,
+    "scoreFormula": "Porcentaje de eventos correctos dentro de ±180 ms respecto del pulso esperado",
+    "exitCriteria": "Al menos 85% de precisión temporal a 60 BPM"
+  },
+  "unlocks": "05-riff-destino"
+}

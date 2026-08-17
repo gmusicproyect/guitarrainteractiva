@@ -1,0 +1,30 @@
+{
+  "id": "g1-m1-completion",
+  "order": 6,
+  "kind": "completion",
+  "label": "Cierre",
+  "title": "Módulo 1 completado",
+  "shortTitle": "Desbloqueo",
+  "purpose": "Resumir con honestidad lo demostrado y presentar el siguiente objetivo musical.",
+  "skill": null,
+  "prerequisites": ["g1.capstone.first-riff"],
+  "teaching": {
+    "card": "Reconoces las cuerdas, ubicas los trastes 0–3, tocas Mi–Fa–Sol y mantienes tu primer riff a pulso.",
+    "video": { "required": false, "status": "not-required" },
+    "pdf": { "required": false, "status": "not-required" }
+  },
+  "practice": {
+    "engine": null,
+    "title": "Resumen de cuatro habilidades y un reto musical",
+    "sections": []
+  },
+  "remediation": {
+    "strategy": null,
+    "message": "Cada habilidad puede repasarse desde la ruta antes de continuar."
+  },
+  "assessment": {
+    "certifies": false,
+    "exitCriteria": "Confirmar el cierre y abrir el Módulo 2"
+  },
+  "unlocks": "guitar1-module2"
+}

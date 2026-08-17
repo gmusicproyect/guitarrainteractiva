@@ -1,0 +1,30 @@
+{
+  "id": "guitar1-module1",
+  "version": "1.0.0",
+  "title": "Tu guitarra y tus primeras notas",
+  "course": "Guitarra 1",
+  "purpose": "Reconocer el instrumento, ubicar las primeras notas y tocar un riff sencillo con pulso estable.",
+  "estimatedMinutes": 75,
+  "certifiedSkills": [
+    "g1.strings.open",
+    "g1.fretboard.coords",
+    "g1.melody.first-notes",
+    "g1.rhythm.pulse-60bpm"
+  ],
+  "capstone": "g1.capstone.first-riff",
+  "folders": [
+    "00-onboarding",
+    "01-seis-cuerdas",
+    "02-diapason-y-trastes",
+    "03-primeras-notas",
+    "04-el-pulso",
+    "05-riff-destino",
+    "06-desbloqueo-modulo-2"
+  ],
+  "nextModule": {
+    "id": "guitar1-module2",
+    "title": "Tus primeros acordes",
+    "preview": "Mi menor y La menor",
+    "unlockRequirement": "Completar el riff del Módulo 1"
+  }
+}

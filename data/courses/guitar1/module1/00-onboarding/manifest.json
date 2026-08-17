@@ -1,0 +1,30 @@
+{
+  "id": "g1-m1-onboarding",
+  "order": 0,
+  "kind": "orientation",
+  "label": "Presentación",
+  "title": "Conoce la guitarra interactiva",
+  "shortTitle": "Presentación",
+  "purpose": "Eliminar la fricción inicial: el alumno toca y escucha una cuerda durante sus primeros segundos en GMusic.",
+  "skill": null,
+  "prerequisites": [],
+  "teaching": {
+    "card": "La guitarra responde al tocar cada cuerda. La sexta es la más gruesa y produce un Mi grave.",
+    "video": { "required": false, "status": "not-required" },
+    "pdf": { "required": false, "status": "not-required" }
+  },
+  "practice": {
+    "engine": "find_string",
+    "title": "Toca y escucha",
+    "steps": ["Tocar la 6ª cuerda Mi · E", "Tocar la 5ª cuerda La · A"]
+  },
+  "remediation": {
+    "strategy": "iluminar_objetivo",
+    "message": "La cuerda correcta se ilumina y permanece disponible para otro intento."
+  },
+  "assessment": {
+    "certifies": false,
+    "exitCriteria": "Completar los dos toques guiados"
+  },
+  "unlocks": "01-seis-cuerdas"
+}

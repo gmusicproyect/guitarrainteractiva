@@ -7,8 +7,8 @@ import { audioEngine } from './engine/audio-engine.js';
 import { HeroGuitarUI } from './ui/hero-guitar.js?v=2';
 import { PracticeViewUI } from './ui/practice-view.js?v=2';
 import { FreeGuitarUI } from './ui/free-guitar.js?v=2';
-import { RoadmapUI } from './ui/roadmap.js?v=2';
-import { ProfileDemoUI } from './ui/profile-demo.js?v=4';
+import { ProfileDemoUI } from './ui/profile-demo.js?v=5';
+import { ModuleOnePathUI } from './ui/module-one-path.js?v=2';
 
 function initApp() {
   // 1. Initialize UI Controllers
@@ -16,12 +16,6 @@ function initApp() {
   const practiceView = new PracticeViewUI();
   const freeGuitar = new FreeGuitarUI();
   const profileDemo = new ProfileDemoUI();
-
-  const roadmap = new RoadmapUI({
-    onContinueChord: (chordId) => {
-      practiceView.open();
-    }
-  });
 
   // 2. Keep each area of the product in its own view.
   const appViewSections = Array.from(document.querySelectorAll('[data-app-view]'));
@@ -54,6 +48,13 @@ function initApp() {
   document.getElementById('logoLink')?.addEventListener('click', (event) => {
     event.preventDefault();
     setAppView('home');
+  });
+
+  const viewByHash = { '#inicio': 'home', '#ruta': 'route', '#habilidades': 'progress' };
+  setAppView(viewByHash[window.location.hash] || 'home');
+
+  new ModuleOnePathUI({
+    onNavigateHome: () => setAppView('home')
   });
 
   // 3. Guide first-time visitors before showing the course interface.

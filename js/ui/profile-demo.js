@@ -58,5 +58,7 @@ export class ProfileDemoUI {
         this.heroSubtitleText.textContent = 'Tu primera misión es reconocer las seis cuerdas por su nombre, grosor y sonido.';
       }
     }
+
+    document.dispatchEvent(new CustomEvent('gmusic:modechange', { detail: { mode } }));
   }
 }

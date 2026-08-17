@@ -14,8 +14,8 @@
   <!-- CSS Stylesheets -->
   <link rel="stylesheet" href="css/main.css?v=6">
   <link rel="stylesheet" href="css/guitar.css?v=2">
-  <link rel="stylesheet" href="css/roadmap.css?v=2">
-  <link rel="stylesheet" href="css/modals.css?v=2">
+  <link rel="stylesheet" href="css/roadmap.css?v=3">
+  <link rel="stylesheet" href="css/modals.css?v=3">
 </head>
 <body class="theme-dark mode-visitor">
 
@@ -254,73 +254,7 @@
       </div>
     </section>
 
-    <!-- SECCIÓN 2: FRANJA RÁPIDA "APRENDERÁS HACIENDO" -->
-    <section class="learning-strip-section" aria-label="Metodología GMusic" data-app-view="route" hidden>
-      <div class="learning-strip-container">
-        <div class="strip-header">
-          <span class="strip-tag">Metodología activa</span>
-          <h2 class="strip-title">Aprenderás haciendo</h2>
-        </div>
-        <div class="strip-steps-track">
-
-          <div class="strip-step-item">
-            <span class="step-icon">🎸</span>
-            <div class="step-info">
-              <span class="step-name">1. Reconoce</span>
-              <span class="step-desc">Cuerdas y notas al oído</span>
-            </div>
-            <span class="step-arrow">→</span>
-          </div>
-
-          <div class="strip-step-item">
-            <span class="step-icon">🎵</span>
-            <div class="step-info">
-              <span class="step-name">2. Encuentra notas</span>
-              <span class="step-desc">Trastes y digitación limpia</span>
-            </div>
-            <span class="step-arrow">→</span>
-          </div>
-
-          <div class="strip-step-item highlight-step">
-            <span class="step-icon">🤘</span>
-            <div class="step-info">
-              <span class="step-name">3. Construye acordes</span>
-              <span class="step-desc">Formas clave Em, Am, C, G...</span>
-            </div>
-            <span class="step-arrow">→</span>
-          </div>
-
-          <div class="strip-step-item">
-            <span class="step-icon">🔄</span>
-            <div class="step-info">
-              <span class="step-name">4. Cambia</span>
-              <span class="step-desc">Dedos ancla y agilidad</span>
-            </div>
-            <span class="step-arrow">→</span>
-          </div>
-
-          <div class="strip-step-item">
-            <span class="step-icon">🥁</span>
-            <div class="step-info">
-              <span class="step-name">5. Siente el ritmo</span>
-              <span class="step-desc">Pulso 4/4, rasgueos básicos</span>
-            </div>
-            <span class="step-arrow">→</span>
-          </div>
-
-          <div class="strip-step-item">
-            <span class="step-icon">🎶</span>
-            <div class="step-info">
-              <span class="step-name">6. Toca progresiones</span>
-              <span class="step-desc">Combinaciones de acordes</span>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- SECCIÓN 3: TU SIGUIENTE PASO (MÓDULO PROTAGONISTA) -->
+    <!-- SECCIÓN 2: TU SIGUIENTE PASO (MÓDULO PROTAGONISTA) -->
     <section class="next-step-section student-only" id="siguiente-paso" data-app-view="home">
       <div class="section-container">
 
@@ -510,7 +444,7 @@
       </div>
     </section>
 
-    <!-- SECCIÓN 4: TU CAMINO EN GUITARRA (TIMELINE PEDAGÓGICA) -->
+    <!-- SECCIÓN 3: TU CAMINO EN GUITARRA (TIMELINE PEDAGÓGICA) -->
     <section class="roadmap-section" id="tu-camino" data-app-view="route" hidden>
       <div class="section-container">
 
@@ -831,6 +765,53 @@
 
   <!-- ==================== MODALES INTERACTIVOS ==================== -->
 
+  <!-- DETALLE DE CARPETA PEDAGÓGICA DEL MÓDULO 1 -->
+  <div class="modal-overlay" id="moduleFolderModal" role="dialog" aria-modal="true" aria-labelledby="moduleFolderTitle" hidden>
+    <div class="modal-card module-folder-modal-card">
+      <div class="modal-header">
+        <div class="modal-badge-row">
+          <span class="mod-pill-tag" id="moduleFolderBadge">Clase</span>
+          <span class="mod-lesson-step" id="moduleFolderStatus">Estado</span>
+        </div>
+        <button type="button" class="btn-close-modal" id="btnCloseModuleFolderModal" aria-label="Cerrar detalle">✕</button>
+      </div>
+
+      <div class="module-folder-content">
+        <h2 id="moduleFolderTitle">Habilidad</h2>
+        <p class="module-folder-purpose" id="moduleFolderPurpose"></p>
+
+        <div class="module-folder-skill">
+          <span>Habilidad</span>
+          <strong id="moduleFolderSkill"></strong>
+        </div>
+
+        <div class="module-folder-details">
+          <section>
+            <span class="module-folder-detail-label">Aprenderás</span>
+            <p id="moduleFolderTeaching"></p>
+          </section>
+          <section>
+            <span class="module-folder-detail-label">Practicarás</span>
+            <ul id="moduleFolderPractice"></ul>
+          </section>
+          <section>
+            <span class="module-folder-detail-label">Si te cuesta</span>
+            <p id="moduleFolderRemediation"></p>
+          </section>
+          <section>
+            <span class="module-folder-detail-label">Para avanzar</span>
+            <p id="moduleFolderAssessment"></p>
+          </section>
+        </div>
+      </div>
+
+      <div class="module-folder-footer">
+        <button type="button" class="btn btn-secondary" id="btnCloseModuleFolderFooter">Volver a la ruta</button>
+        <button type="button" class="btn btn-primary" id="btnModuleFolderAction">Empezar habilidad</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL 1: PRÁCTICA GUIADA INTERACTIVA DEL ACORDE Am (7 PASOS) -->
   <div class="modal-overlay" id="practiceModal" role="dialog" aria-modal="true" aria-labelledby="practiceModalTitle" hidden>
     <div class="modal-card practice-modal-card">
@@ -954,6 +935,6 @@
   </footer>
 
   <!-- Entry Script JavaScript -->
-  <script type="module" src="js/app.js?v=5"></script>
+  <script type="module" src="js/app.js?v=8"></script>
 </body>
 </html>

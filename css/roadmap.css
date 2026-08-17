@@ -597,3 +597,306 @@
     font-size: 0.8rem;
   }
 }
+
+/* ==================== MODULE 1 FOLDER PATH ==================== */
+.module-path-summary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.module-path-summary h3 {
+  margin: 0.35rem 0;
+  font-family: var(--font-heading);
+  font-size: 1.55rem;
+  color: var(--text-primary);
+}
+
+.module-path-summary p {
+  max-width: 620px;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+}
+
+.module-path-eyebrow {
+  color: var(--color-primary);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.module-path-count {
+  min-width: 120px;
+  display: grid;
+  justify-items: end;
+  color: var(--text-secondary);
+}
+
+.module-path-count strong {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.module-path-count span {
+  font-weight: 700;
+}
+
+.module-path-count small {
+  color: var(--text-muted);
+}
+
+.skill-folder-path {
+  display: grid;
+}
+
+.folder-path-node {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 1rem;
+  min-width: 0;
+}
+
+.folder-path-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.folder-path-marker {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-medium);
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-weight: 800;
+}
+
+.folder-path-line {
+  width: 2px;
+  min-height: 22px;
+  flex: 1;
+  background: var(--border-medium);
+}
+
+.folder-path-node:last-child .folder-path-line {
+  width: 0;
+  background: transparent;
+  border-left: 2px dashed var(--border-medium);
+}
+
+.folder-path-card {
+  width: 100%;
+  min-height: 132px;
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  padding: 1.1rem 1.25rem;
+  text-align: left;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.folder-path-card:not(:disabled):hover {
+  transform: translateY(-2px);
+  border-color: var(--border-medium);
+  background: var(--bg-surface-elevated);
+}
+
+.folder-path-card:focus-visible {
+  outline: 3px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.folder-path-card:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.folder-path-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.folder-path-label,
+.folder-path-status {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.folder-path-label {
+  color: var(--text-muted);
+}
+
+.folder-path-status {
+  color: var(--text-secondary);
+}
+
+.folder-path-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+}
+
+.folder-path-purpose {
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.folder-path-skill {
+  margin-top: 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.folder-path-action {
+  margin-top: 0.45rem;
+  color: var(--color-primary-hover);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.folder-path-node.is-completed .folder-path-marker {
+  background: rgba(46, 206, 145, 0.14);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.folder-path-node.is-completed .folder-path-line {
+  background: rgba(46, 206, 145, 0.45);
+}
+
+.folder-path-node.is-current .folder-path-marker {
+  background: var(--color-primary);
+  border-color: var(--color-primary-hover);
+  color: #fff;
+  box-shadow: 0 0 0 6px rgba(255, 99, 60, 0.12);
+}
+
+.folder-path-node.is-current .folder-path-card {
+  border: 2px solid var(--color-primary);
+  background: rgba(255, 99, 60, 0.08);
+  box-shadow: var(--shadow-md);
+}
+
+.folder-path-node.is-current .folder-path-status {
+  color: var(--color-primary-hover);
+}
+
+.folder-path-node.is-capstone .folder-path-marker {
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
+.folder-path-node.is-capstone.is-completed .folder-path-marker {
+  background: rgba(242, 189, 75, 0.12);
+}
+
+.next-module-preview {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0 0 60px;
+  padding: 1.15rem 1.25rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+}
+
+.next-module-preview.is-locked {
+  opacity: 0.62;
+}
+
+.next-module-preview.is-current {
+  border-color: var(--color-accent);
+}
+
+.next-module-number {
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.next-module-preview h3 {
+  margin-bottom: 0.15rem;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+}
+
+.next-module-preview p,
+.next-module-state {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.next-module-state {
+  text-align: right;
+  font-weight: 700;
+}
+
+.module-path-error {
+  padding: 1rem;
+  color: var(--text-secondary);
+  border-left: 3px solid var(--color-danger);
+}
+
+@media (max-width: 640px) {
+  .module-path-summary {
+    gap: 1rem;
+  }
+
+  .module-path-count {
+    min-width: 84px;
+  }
+
+  .folder-path-node {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 0.7rem;
+  }
+
+  .folder-path-marker {
+    width: 32px;
+    height: 32px;
+  }
+
+  .folder-path-card {
+    padding: 0.95rem;
+  }
+
+  .folder-path-topline {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .next-module-preview {
+    grid-template-columns: 1fr;
+    margin-left: 42px;
+  }
+
+  .next-module-state {
+    text-align: left;
+  }
+}
