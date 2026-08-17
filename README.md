@@ -1,44 +1,56 @@
-# Guitarra Interactiva / Guitarra Uno
+# GMusic · Guitarra interactiva
 
-Herramienta de práctica de guitarra en una sola página HTML — sin backend, sin dependencias.
+Experiencia web para aprender guitarra mediante recorridos guiados, ejercicios interactivos y síntesis de audio en el navegador.
 
-## Archivos
+## Probar la aplicación
 
-| Archivo | Descripción |
-|---------|-------------|
-| `guitarra-uno.html` | **Entrada principal** — Módulo 1 guiado (5 pasos) + laboratorio libre |
-| `guitarra-interactiva.html` | Versión laboratorio (escalas, acordes CAGED, progresiones, cambios, reto) |
-
-## Cómo usar
-
-### En línea (GitHub Pages)
+### GitHub Pages
 
 **https://gmusicproyect.github.io/guitarrainteractiva/**
 
-(La raíz redirige a `guitarra-uno.html`. Modo libre: añade `?modo=libre`.)
-
-### En tu Mac (local)
-
-Abre `guitarra-uno.html` en el navegador (doble clic o servidor local):
+### En local
 
 ```bash
-cd guitarrainteractiva
-python3 -m http.server 8765
-# http://127.0.0.1:8765/guitarra-uno.html
+python3 -m http.server 3000
 ```
 
-> **Importante:** en github.com, al pulsar el archivo HTML solo ves el *código fuente*. La app hay que abrirla con Pages (enlace de arriba) o con servidor local — no basta con ver el repo.
+Abre `http://localhost:3000/`.
 
-### Modo guiado (Módulo 1)
+## Recorrido principal
 
-- `?paso=1` … `?paso=5` — paso concreto del ejercicio
-- `?modo=libre` — explorar sin guía
+1. Elige guitarra como instrumento.
+2. Conoce el espacio de práctica interactivo.
+3. Revisa la primera ruta de aprendizaje.
+4. Aprende las seis cuerdas al aire.
+5. Avanza por módulos, habilidades y práctica libre.
 
-## Características
+La interfaz separa el contenido en tres vistas para evitar una página extensa:
 
-- Diapasón interactivo con síntesis de cuerda (Karplus–Strong)
-- Escalas, acordes, sistema CAGED, progresiones, cambios con metrónomo
-- Modo espejo con micrófono (opcional, solo feedback visual)
-- Reto de notas y grados
+- **Inicio:** misión y ejercicio actual.
+- **Ruta:** módulos ordenados del curso.
+- **Habilidades:** progreso y acceso a la guitarra libre.
 
-Sonido sintetizado; el micrófono solo se usa si activas el modo espejo.
+## Estructura
+
+| Ruta | Contenido |
+| --- | --- |
+| `index.html` | Aplicación y recorrido de bienvenida |
+| `css/` | Sistema visual, guitarra, módulos y modales |
+| `js/` | Interfaz, audio, ejercicios y motores musicales |
+| `data/` | Curso y progreso de demostración |
+| `test/contract_tests.js` | Contratos del motor musical |
+
+## Versiones anteriores
+
+Las demostraciones originales se conservan en:
+
+- `guitarra-uno.html`: módulo guiado anterior.
+- `guitarra-interactiva.html`: laboratorio anterior de escalas, acordes y retos.
+
+## Verificación
+
+```bash
+node test/contract_tests.js
+```
+
+La aplicación no requiere backend ni proceso de compilación.

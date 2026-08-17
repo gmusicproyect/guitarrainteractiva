@@ -1,0 +1,870 @@
+/* ==========================================================================
+   GMUSIC · GUITAR COMPONENT & STRING VIBRATION STYLESHEET (v1.1)
+   Supports unified GuitarEngine, string gauges, accessible focus states,
+   micro-lesson pulse, and mini chord diagram.
+   ========================================================================== */
+
+/* ==================== HERO GUITAR CARD ==================== */
+.hero-guitar-wrapper {
+  position: relative;
+}
+
+.guitar-card {
+  background: #181b18;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-lg), 0 0 50px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.guitar-card::before {
+  display: none;
+}
+
+.guitar-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.guitar-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.live-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 8px var(--color-success);
+  animation: pulseGreen 2s infinite;
+}
+
+@keyframes pulseGreen {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.guitar-sound-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ==================== INTERACTIVE GUITAR STRINGS ==================== */
+.interactive-guitar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  background: #0d0e0c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1rem 1rem 1.25rem;
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+/* Guitar Nut (Cejuela de hueso / marfil) */
+.guitar-nut {
+  position: absolute;
+  top: 10px;
+  bottom: 45px;
+  left: 68px;
+  width: 5px;
+  background: linear-gradient(180deg, #fef3c7, #d97706, #fef3c7);
+  border-radius: 2px;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.6);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* String Row */
+.guitar-string-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  position: relative;
+  outline: none;
+  transition: background var(--transition-fast), outline var(--transition-fast);
+}
+
+.guitar-string-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.guitar-string-row:focus-visible {
+  outline: 2px solid var(--color-primary);
+  background: rgba(249, 115, 22, 0.12);
+}
+
+.guitar-string-row:active {
+  background: rgba(249, 115, 22, 0.08);
+}
+
+/* String Badge (1·E, 2·B, etc.) */
+.string-badge {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  width: 44px;
+  text-align: right;
+  flex-shrink: 0;
+  transition: color var(--transition-fast);
+}
+
+.guitar-string-row:hover .string-badge,
+.guitar-string-row:focus-visible .string-badge {
+  color: var(--color-primary);
+}
+
+/* String Track & Visual Line */
+.string-track {
+  flex: 1;
+  position: relative;
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.string-line {
+  width: 100%;
+  border-radius: 999px;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+/* String Gauges */
+.string-line.string-1 {
+  height: 1.5px;
+  background: linear-gradient(90deg, #94a3b8, #cbd5e1, #94a3b8);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.string-line.string-2 {
+  height: 2.0px;
+  background: linear-gradient(90deg, #94a3b8, #e2e8f0, #94a3b8);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.string-line.string-3 {
+  height: 2.5px;
+  background: linear-gradient(90deg, #a1a1aa, #f4f4f5, #a1a1aa);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
+.string-line.string-4 {
+  height: 3.2px;
+  background: linear-gradient(90deg, #b45309, #fde68a, #b45309);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.7);
+}
+
+.string-line.string-5 {
+  height: 4.0px;
+  background: linear-gradient(90deg, #92400e, #fef08a, #92400e);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+.string-line.string-6 {
+  height: 5.0px;
+  background: linear-gradient(90deg, #78350f, #fef08a, #78350f);
+  box-shadow: 0 1px 5px rgba(0,0,0,0.9);
+}
+
+/* Vibration Animation */
+.guitar-string-row.plucked .string-line {
+  animation: stringVibrate 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  box-shadow: 0 0 12px var(--color-primary), 0 0 20px rgba(249, 115, 22, 0.4);
+}
+
+@keyframes stringVibrate {
+  0% { transform: translateY(0px) scaleY(1.3); }
+  10% { transform: translateY(-3px) scaleY(1.2); }
+  20% { transform: translateY(3px) scaleY(1.2); }
+  30% { transform: translateY(-2.2px) scaleY(1.1); }
+  40% { transform: translateY(2.2px) scaleY(1.1); }
+  55% { transform: translateY(-1.2px) scaleY(1.05); }
+  70% { transform: translateY(1.2px) scaleY(1.05); }
+  85% { transform: translateY(-0.5px); }
+  100% { transform: translateY(0px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guitar-string-row.plucked .string-line {
+    animation: none;
+    background: var(--color-primary);
+  }
+}
+
+/* String Note Pill */
+.string-note-pill {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  min-width: 38px;
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.guitar-string-row.plucked .string-note-pill {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary-hover);
+  transform: scale(1.15);
+  box-shadow: 0 0 12px var(--color-primary-glow);
+}
+
+/* Target String Highlight for Micro-lesson */
+.guitar-string-row.target-string {
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px dashed rgba(249, 115, 22, 0.5);
+  animation: pulseTargetRow 2s infinite ease-in-out;
+}
+
+@keyframes pulseTargetRow {
+  0%, 100% { background: rgba(249, 115, 22, 0.08); border-color: rgba(249, 115, 22, 0.4); }
+  50% { background: rgba(249, 115, 22, 0.2); border-color: rgba(249, 115, 22, 0.8); }
+}
+
+/* Fret Indicator Bar */
+.fret-indicator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--border-subtle);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.strum-all-btn {
+  font-size: 0.75rem;
+  color: var(--color-accent);
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.strum-all-btn:hover {
+  background: rgba(56, 189, 248, 0.2);
+  transform: scale(1.03);
+}
+
+/* ==================== MICROLECCIÓN INTERACTIVA BOX ==================== */
+.guitar-micro-lesson {
+  margin-top: 1.25rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all var(--transition-normal);
+}
+
+.guitar-micro-lesson.success {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.micro-lesson-status {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.micro-lesson-text {
+  flex: 1;
+}
+
+.lesson-prompt {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.35;
+}
+
+.lesson-prompt strong {
+  color: var(--color-primary);
+}
+
+.lesson-subtext {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 0.2rem;
+}
+
+.lesson-feedback-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-md);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.note-string-lbl {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.note-name-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* ==================== NEXT STEP & MINI CHORD BOX ==================== */
+.next-step-section {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.next-step-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Active Hero Card (Módulo 3 - Am) */
+.hero-active-card {
+  background: var(--bg-surface);
+  border: 2px solid rgba(249, 115, 22, 0.45);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  box-shadow: var(--shadow-glow-orange), var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-active-card::after {
+  display: none;
+}
+
+.active-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.module-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.mod-pill-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.05em;
+}
+
+.mod-cat-name {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mod-time-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+}
+
+.lesson-target-badge {
+  margin-bottom: 0.75rem;
+}
+
+.target-lead {
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.target-title {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  margin-top: 0.15rem;
+}
+
+.active-card-description {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+/* ==================== MINI CHORD VISUALIZER ==================== */
+.mini-chord-visualizer {
+  background: #090c13;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.chord-diag-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.chord-name-tag {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.chord-root {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.chord-sub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.btn-strum-chord {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(249, 115, 22, 0.15);
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  color: var(--color-primary-hover);
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.btn-strum-chord:hover {
+  background: rgba(249, 115, 22, 0.25);
+  transform: scale(1.02);
+}
+
+/* Chord Fretbox Grid */
+.chord-fretbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  max-width: 280px;
+}
+
+.fretbox-nut {
+  width: 180px;
+  height: 4px;
+  background: #d97706;
+  border-radius: 2px;
+  margin-bottom: 4px;
+}
+
+.fretbox-markers {
+  display: flex;
+  justify-content: space-between;
+  width: 180px;
+  margin-bottom: 4px;
+}
+
+.fretbox-markers .marker {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  width: 20px;
+  text-align: center;
+}
+
+.fretbox-markers .marker.mute { color: var(--color-danger); }
+.fretbox-markers .marker.open { color: var(--color-success); }
+.fretbox-markers .marker.fret { color: var(--color-primary); }
+
+.fretbox-grid {
+  position: relative;
+  width: 180px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 9px;
+}
+
+.fretbox-string {
+  width: 2px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  position: relative;
+}
+
+.fretbox-fret-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.fretbox-fret-line.fret-1 { top: 33.3%; }
+.fretbox-fret-line.fret-2 { top: 66.6%; }
+.fretbox-fret-line.fret-3 { top: 100%; }
+
+.finger-dot {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.finger-dot.dot-index { top: 16.6%; background: #3b82f6; }
+.finger-dot.dot-mid { top: 50%; background: #10b981; }
+.finger-dot.dot-ring { top: 50%; background: #f97316; }
+
+.chord-finger-legend {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.75rem;
+}
+
+.f-idx { color: #3b82f6; }
+.f-mid { color: #10b981; }
+.f-rng { color: #f97316; }
+
+/* Skills Pills Row */
+.module-skills-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.skill-chip {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+}
+
+.skill-chip.completed {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: var(--color-success);
+}
+
+.skill-chip.current {
+  background: rgba(249, 115, 22, 0.2);
+  border-color: var(--color-primary);
+  color: var(--color-primary-hover);
+  box-shadow: 0 0 10px var(--color-primary-glow);
+}
+
+.skill-chip.pending {
+  opacity: 0.6;
+}
+
+/* Progress Container */
+.active-progress-container {
+  margin-bottom: 1.75rem;
+}
+
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+}
+
+.progress-label { color: var(--text-secondary); }
+.progress-pct { font-weight: 700; color: var(--color-primary); }
+
+.progress-bar-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), #fb923c);
+  border-radius: var(--radius-full);
+  transition: width 0.5s ease-out;
+}
+
+.active-card-actions .btn-large {
+  width: 100%;
+}
+
+/* ==================== TODAY'S SESSION CARD ==================== */
+.today-session-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-md);
+}
+
+.today-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.today-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.today-icon { font-size: 1.4rem; }
+
+.today-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.today-duration {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.today-day-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  background: rgba(56, 189, 248, 0.1);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+}
+
+.today-intro {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+}
+
+.practice-tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.practice-task {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  transition: all var(--transition-fast);
+}
+
+.practice-task.done { opacity: 0.75; }
+
+.practice-task.active-task {
+  background: rgba(249, 115, 22, 0.08);
+  border-color: rgba(249, 115, 22, 0.4);
+  box-shadow: 0 0 14px rgba(249, 115, 22, 0.12);
+}
+
+.task-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.practice-task.done .task-check {
+  background: var(--color-success);
+  color: #fff;
+}
+
+.task-check.current-dot {
+  background: var(--color-primary);
+  color: #fff;
+  animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.task-check.lock-dot {
+  border: 1px dashed var(--text-muted);
+  color: var(--text-muted);
+}
+
+.task-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.task-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.task-time {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.task-status-lbl {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.task-status-lbl.current-lbl {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.btn-outline-today {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.btn-outline-today:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-focus);
+}
+
+/* Responsiveness */
+@media (max-width: 900px) {
+  .next-step-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .guitar-card {
+    padding: 1rem;
+  }
+
+  .guitar-sound-hint {
+    display: none;
+  }
+
+  .guitar-string-row {
+    gap: 0.55rem;
+    padding-inline: 0.35rem;
+  }
+
+  .string-badge {
+    width: 34px;
+    font-size: 0.68rem;
+  }
+
+  .guitar-nut {
+    left: 52px;
+  }
+
+  .guitar-micro-lesson {
+    align-items: flex-start;
+    padding: 0.9rem;
+    gap: 0.75rem;
+  }
+
+  .lesson-feedback-badge {
+    min-width: 68px;
+    padding-inline: 0.5rem;
+  }
+}

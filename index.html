@@ -1,12 +1,959 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="refresh" content="0; url=guitarra-uno.html">
-<title>Guitarra Uno</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GMusic · Aprende guitarra tocando desde el primer minuto</title>
+  <meta name="description" content="Aprende cuerdas, notas, acordes, ritmo y progresiones mediante ejercicios interactivos paso a paso.">
+
+  <!-- Google Fonts: Outfit & Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/main.css?v=6">
+  <link rel="stylesheet" href="css/guitar.css?v=2">
+  <link rel="stylesheet" href="css/roadmap.css?v=2">
+  <link rel="stylesheet" href="css/modals.css?v=2">
 </head>
-<body style="font-family:system-ui,sans-serif;background:#080808;color:#F5F0E8;text-align:center;padding:48px 20px">
-<p>Si no redirige solo, abre <a href="guitarra-uno.html" style="color:#C9A84C">Guitarra Uno — Módulo 1</a>.</p>
+<body class="theme-dark mode-visitor">
+
+  <!-- ==================== HEADER & TOP NAV ==================== -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="#" class="brand-logo" id="logoLink" aria-label="Inicio GMusic">
+        <span class="logo-icon" aria-hidden="true">G</span>
+        <span class="logo-text">GMUSIC</span>
+      </a>
+
+      <!-- Selector de Experiencia (Prototipo: Alumno Demo vs Nuevo Visitante) -->
+      <div class="view-mode-selector" title="Alternar entre vista de nuevo visitante y alumno registrado">
+        <span class="mode-label">Perfil:</span>
+        <button type="button" class="mode-btn" id="btnModeStudent" data-mode="student" aria-pressed="false">
+          <span class="mode-avatar">C</span>
+          <span class="mode-name">Carlos</span>
+        </button>
+        <button type="button" class="mode-btn active" id="btnModeVisitor" data-mode="visitor" aria-pressed="true">
+          <span class="mode-icon">✨</span>
+          <span class="mode-name">Visitante</span>
+        </button>
+      </div>
+
+      <!-- Navegación Principal -->
+      <nav class="main-nav" aria-label="Navegación principal">
+        <a href="#inicio" class="nav-link active" id="navHome" data-nav-view="home">Inicio</a>
+        <a href="#ruta" class="nav-link" id="navAprender" data-nav-view="route">Ruta</a>
+        <button type="button" class="nav-link nav-btn-free-guitar" id="navFreeGuitar">
+          <span class="nav-icon">🎸</span> Guitarra Libre
+        </button>
+        <a href="#habilidades" class="nav-link" id="navProgreso" data-nav-view="progress">Habilidades</a>
+      </nav>
+
+      <!-- Controles de Audio y Perfil -->
+      <div class="header-actions">
+        <button type="button" class="audio-toggle-btn" id="audioToggleBtn" title="Activar/Silenciar sonido de guitarra" aria-label="Control de audio">
+          <span class="audio-icon" id="audioIcon">🔊</span>
+          <span class="audio-text">Audio ON</span>
+        </button>
+
+        <div class="user-profile-badge" id="userProfileBadge">
+          <div class="avatar-circle">C</div>
+          <div class="user-meta">
+            <span class="user-name">Carlos</span>
+            <span class="user-streak">🔥 3 días de racha</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== RECORRIDO DE BIENVENIDA ==================== -->
+  <div class="onboarding-overlay" id="onboardingFlow" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+    <div class="onboarding-shell">
+      <header class="onboarding-header">
+        <a href="#" class="brand-logo" aria-label="GMusic">
+          <span class="logo-icon" aria-hidden="true">G</span>
+          <span class="logo-text">GMUSIC</span>
+        </a>
+        <div class="onboarding-progress-wrap" aria-label="Progreso de bienvenida">
+          <span id="onboardingStepLabel">Paso 1 de 3</span>
+          <div class="onboarding-progress-track" aria-hidden="true">
+            <span id="onboardingProgressBar" style="width: 33.33%;"></span>
+          </div>
+        </div>
+        <button type="button" class="onboarding-student-link" id="onboardingStudentLogin">Ya soy alumno</button>
+      </header>
+
+      <div class="onboarding-content">
+        <section class="onboarding-step" data-onboarding-step="1">
+          <span class="onboarding-kicker">Bienvenido a GMusic</span>
+          <h1 id="onboardingTitle">¿Qué instrumento quieres aprender?</h1>
+          <p>Empezaremos con una ruta corta y práctica. Podrás cambiar de instrumento más adelante.</p>
+
+          <div class="instrument-options" role="radiogroup" aria-label="Elige un instrumento">
+            <button type="button" class="instrument-option selected" role="radio" aria-checked="true" data-instrument="guitar">
+              <span class="instrument-symbol" aria-hidden="true">🎸</span>
+              <strong>Guitarra</strong>
+              <small>Ruta disponible</small>
+            </button>
+            <button type="button" class="instrument-option" disabled>
+              <span class="instrument-symbol" aria-hidden="true">🎹</span>
+              <strong>Piano</strong>
+              <small>Próximamente</small>
+            </button>
+            <button type="button" class="instrument-option" disabled>
+              <span class="instrument-symbol" aria-hidden="true">🎸</span>
+              <strong>Bajo</strong>
+              <small>Próximamente</small>
+            </button>
+          </div>
+        </section>
+
+        <section class="onboarding-step" data-onboarding-step="2" hidden>
+          <span class="onboarding-kicker">Tu espacio de práctica</span>
+          <h2>Escucha, toca y recibe respuesta al instante</h2>
+          <p>La guitarra interactiva convierte cada concepto en una acción. Primero reconoces el instrumento; después avanzas nota por nota.</p>
+
+          <div class="onboarding-demo" aria-label="Vista previa de la guitarra interactiva">
+            <div class="demo-guitar-head">
+              <span><i></i> Guitarra interactiva</span>
+              <small>6 cuerdas · Afinación estándar</small>
+            </div>
+            <div class="demo-strings" aria-hidden="true">
+              <span><b>1 · E</b><i></i><em>E4</em></span>
+              <span><b>2 · B</b><i></i><em>B3</em></span>
+              <span><b>3 · G</b><i></i><em>G3</em></span>
+              <span><b>4 · D</b><i></i><em>D3</em></span>
+              <span><b>5 · A</b><i></i><em>A2</em></span>
+              <span class="demo-target"><b>6 · E</b><i></i><em>E2</em></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="onboarding-step" data-onboarding-step="3" hidden>
+          <span class="onboarding-kicker">Tu primera ruta</span>
+          <h2>Un paso a la vez</h2>
+          <p>No necesitas ver todo el curso hoy. Empezaremos por reconocer las cuerdas al aire.</p>
+
+          <ol class="onboarding-route">
+            <li class="current"><span>1</span><div><strong>Conoce la guitarra</strong><small>Partes, postura y afinación</small></div></li>
+            <li><span>2</span><div><strong>Aprende las cuerdas al aire</strong><small>Mi, La, Re, Sol, Si, Mi</small></div></li>
+            <li><span>3</span><div><strong>Encuentra tus primeras notas</strong><small>Trastes 1 al 5</small></div></li>
+            <li><span>4</span><div><strong>Construye acordes</strong><small>Em, E, Am, C, G y D</small></div></li>
+          </ol>
+        </section>
+      </div>
+
+      <footer class="onboarding-footer">
+        <button type="button" class="btn btn-secondary" id="onboardingBack" hidden>Volver</button>
+        <button type="button" class="btn btn-primary" id="onboardingNext">Continuar</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="main-content">
+
+    <!-- SECCIÓN 1: HERO CON GUITARRA INTERACTIVA Y MICROLECCIÓN -->
+    <section class="hero-section" id="hero" data-app-view="home">
+      <div class="hero-container">
+
+        <!-- Contenido textual del Hero -->
+        <div class="hero-content">
+          <div class="hero-badge visitor-only">
+            <span class="badge-dot"></span>
+            <span>Experiencia de aprendizaje interactiva</span>
+          </div>
+
+          <div class="hero-welcome-badge student-only">
+            <span class="wave-hand">👋</span>
+            <span>Hola, <strong>Carlos</strong> · Es hora de practicar</span>
+          </div>
+
+          <h1 class="hero-title" id="heroTitleText">
+            Aprende las cuerdas al aire.
+          </h1>
+
+          <p class="hero-subtitle" id="heroSubtitleText">
+            Tu primera misión es reconocer las seis cuerdas por su nombre, grosor y sonido.
+          </p>
+
+          <!-- Acciones principales del Hero -->
+          <div class="hero-actions">
+            <button type="button" class="btn btn-primary btn-glow" id="btnHeroContinue">
+              <span class="btn-icon">⚡</span>
+              <span class="btn-text" id="heroContinueText">Tocar la 6ª cuerda</span>
+              <span class="btn-arrow">→</span>
+            </button>
+
+            <button type="button" class="btn btn-secondary" id="btnHeroExplore">
+              <span class="btn-icon">🎸</span>
+              <span>Explorar guitarra</span>
+            </button>
+          </div>
+
+          <!-- Micro-estadísticas de Carlos (Solo en modo alumno) -->
+          <div class="hero-quick-stats student-only">
+            <div class="quick-stat-item">
+              <span class="stat-num">12</span>
+              <span class="stat-desc">Habilidades dominadas</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="quick-stat-item">
+              <span class="stat-num">62%</span>
+              <span class="stat-desc">Curso completado</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="quick-stat-item">
+              <span class="stat-num">8 min</span>
+              <span class="stat-desc">Práctica de hoy</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- GUITARRA INTERACTIVA DEL HERO (Renderizada vía GuitarEngine) -->
+        <div class="hero-guitar-wrapper">
+          <div class="guitar-card">
+
+            <div class="guitar-card-header">
+              <div class="guitar-card-title">
+                <span class="live-pulse"></span>
+                <span>Guitarra Interactiva en Vivo</span>
+              </div>
+              <div class="guitar-sound-hint">
+                <span>Toca o pulsa cualquier cuerda (s:5 a s:0)</span>
+              </div>
+            </div>
+
+            <!-- Contenedor donde se monta el GuitarEngine -->
+            <div class="interactive-guitar" id="heroGuitar" role="region" aria-label="Guitarra interactiva de 6 cuerdas">
+              <!-- Renderizado dinámicamente por GuitarEngine -->
+            </div>
+
+            <!-- FEEDBACK DINÁMICO & MICROLECCIÓN INTERACTIVA (find_string) -->
+            <div class="guitar-micro-lesson" id="microLessonBox">
+              <div class="micro-lesson-status" id="lessonStatusIcon">💡</div>
+              <div class="micro-lesson-text">
+                <div class="lesson-prompt" id="lessonPromptText">
+                  ¿Probamos? <strong>Toca la cuerda más gruesa</strong> (6ª cuerda: Mi grave).
+                </div>
+                <div class="lesson-subtext" id="lessonSubtext">
+                  Haz clic, toca o pulsa la tecla Espacio en la 6ª cuerda.
+                </div>
+              </div>
+              <div class="lesson-feedback-badge" id="lessonNoteBadge">
+                <span class="note-string-lbl" id="feedbackStringLbl">6ª Cuerda</span>
+                <span class="note-name-lbl" id="feedbackNoteLbl">Mi · E</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: FRANJA RÁPIDA "APRENDERÁS HACIENDO" -->
+    <section class="learning-strip-section" aria-label="Metodología GMusic" data-app-view="route" hidden>
+      <div class="learning-strip-container">
+        <div class="strip-header">
+          <span class="strip-tag">Metodología activa</span>
+          <h2 class="strip-title">Aprenderás haciendo</h2>
+        </div>
+        <div class="strip-steps-track">
+
+          <div class="strip-step-item">
+            <span class="step-icon">🎸</span>
+            <div class="step-info">
+              <span class="step-name">1. Reconoce</span>
+              <span class="step-desc">Cuerdas y notas al oído</span>
+            </div>
+            <span class="step-arrow">→</span>
+          </div>
+
+          <div class="strip-step-item">
+            <span class="step-icon">🎵</span>
+            <div class="step-info">
+              <span class="step-name">2. Encuentra notas</span>
+              <span class="step-desc">Trastes y digitación limpia</span>
+            </div>
+            <span class="step-arrow">→</span>
+          </div>
+
+          <div class="strip-step-item highlight-step">
+            <span class="step-icon">🤘</span>
+            <div class="step-info">
+              <span class="step-name">3. Construye acordes</span>
+              <span class="step-desc">Formas clave Em, Am, C, G...</span>
+            </div>
+            <span class="step-arrow">→</span>
+          </div>
+
+          <div class="strip-step-item">
+            <span class="step-icon">🔄</span>
+            <div class="step-info">
+              <span class="step-name">4. Cambia</span>
+              <span class="step-desc">Dedos ancla y agilidad</span>
+            </div>
+            <span class="step-arrow">→</span>
+          </div>
+
+          <div class="strip-step-item">
+            <span class="step-icon">🥁</span>
+            <div class="step-info">
+              <span class="step-name">5. Siente el ritmo</span>
+              <span class="step-desc">Pulso 4/4, rasgueos básicos</span>
+            </div>
+            <span class="step-arrow">→</span>
+          </div>
+
+          <div class="strip-step-item">
+            <span class="step-icon">🎶</span>
+            <div class="step-info">
+              <span class="step-name">6. Toca progresiones</span>
+              <span class="step-desc">Combinaciones de acordes</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3: TU SIGUIENTE PASO (MÓDULO PROTAGONISTA) -->
+    <section class="next-step-section student-only" id="siguiente-paso" data-app-view="home">
+      <div class="section-container">
+
+        <div class="section-label-group">
+          <span class="section-badge-pill">Foco de hoy</span>
+          <h2 class="section-main-heading">Tu siguiente paso</h2>
+          <p class="section-sub-heading">Retoma exactamente donde lo dejaste y completa la lección de hoy.</p>
+        </div>
+
+        <div class="next-step-grid">
+
+          <!-- TARJETA PRINCIPAL DEL SIGUIENTE PASO (CHORDS["Am-open"]) -->
+          <div class="hero-active-card">
+            <div class="active-card-top">
+              <div class="module-indicator">
+                <span class="mod-pill-tag">MÓDULO 3</span>
+                <span class="mod-cat-name">TUS PRIMEROS ACORDES</span>
+              </div>
+              <div class="mod-time-pill">
+                <span class="clock-icon">⏱</span>
+                <span>35 min aprox.</span>
+              </div>
+            </div>
+
+            <div class="active-card-body">
+              <div class="lesson-target-badge">
+                <span class="target-lead">Lección 4 de 7:</span>
+                <h3 class="target-title">La menor · Am</h3>
+              </div>
+
+              <p class="active-card-description">
+                Ya conoces <strong>Em</strong> y <strong>E</strong>. Ahora aprenderás La menor (Am), el acorde fundamental que abre la puerta a cientos de canciones en guitarra.
+              </p>
+
+              <!-- DIAGRAMA INTERACTIVO DEL ACORDE Am (x 0 2 2 1 0) -->
+              <div class="mini-chord-visualizer">
+                <div class="chord-diag-header">
+                  <div class="chord-name-tag">
+                    <span class="chord-root">Am</span>
+                    <span class="chord-sub">La menor</span>
+                  </div>
+                  <button type="button" class="btn-strum-chord" id="btnTestAmChord" title="Escuchar sonido del acorde La menor">
+                    <span>🔊 Escuchar acorde Am</span>
+                  </button>
+                </div>
+
+                <div class="chord-fretbox">
+                  <div class="fretbox-nut"></div>
+
+                  <div class="fretbox-markers">
+                    <span class="marker mute" title="6ª Cuerda (s:5): Silenciada">✕</span>
+                    <span class="marker open" title="5ª Cuerda (s:4): Al aire (La tónica)">○</span>
+                    <span class="marker fret" title="4ª Cuerda (s:3): Traste 2 (Dedo 2 - Medio)">2</span>
+                    <span class="marker fret" title="3ª Cuerda (s:2): Traste 2 (Dedo 3 - Anular)">3</span>
+                    <span class="marker fret" title="2ª Cuerda (s:1): Traste 1 (Dedo 1 - Índice)">1</span>
+                    <span class="marker open" title="1ª Cuerda (s:0): Al aire (Mi)">○</span>
+                  </div>
+
+                  <div class="fretbox-grid">
+                    <div class="fretbox-string str-6"></div>
+                    <div class="fretbox-string str-5"></div>
+                    <div class="fretbox-string str-4">
+                      <div class="finger-dot dot-mid" title="Dedo 2 (Medio) - Traste 2">2</div>
+                    </div>
+                    <div class="fretbox-string str-3">
+                      <div class="finger-dot dot-ring" title="Dedo 3 (Anular) - Traste 2">3</div>
+                    </div>
+                    <div class="fretbox-string str-2">
+                      <div class="finger-dot dot-index" title="Dedo 1 (Índice) - Traste 1">1</div>
+                    </div>
+                    <div class="fretbox-string str-1"></div>
+
+                    <div class="fretbox-fret-line fret-1"></div>
+                    <div class="fretbox-fret-line fret-2"></div>
+                    <div class="fretbox-fret-line fret-3"></div>
+                  </div>
+
+                  <div class="chord-finger-legend">
+                    <span><strong class="f-idx">1</strong> Índice (s:1, f:1)</span>
+                    <span><strong class="f-mid">2</strong> Medio (s:3, f:2)</span>
+                    <span><strong class="f-rng">3</strong> Anular (s:2, f:2)</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Skills del módulo 3 -->
+              <div class="module-skills-pills">
+                <span class="skill-chip completed" title="Mi menor - Completado">Em ✓</span>
+                <span class="skill-chip completed" title="Mi mayor - Completado">E ✓</span>
+                <span class="skill-chip current" title="La menor - Lección actual">Am ●</span>
+                <span class="skill-chip pending" title="La mayor - Pendiente">A ○</span>
+                <span class="skill-chip pending" title="Do mayor - Pendiente">C ○</span>
+                <span class="skill-chip pending" title="Re mayor - Pendiente">D ○</span>
+                <span class="skill-chip pending" title="Sol mayor - Pendiente">G ○</span>
+              </div>
+
+              <!-- Barra de Progreso del Módulo -->
+              <div class="active-progress-container">
+                <div class="progress-meta">
+                  <span class="progress-label">Progreso del Módulo 3</span>
+                  <span class="progress-pct">40% completado</span>
+                </div>
+                <div class="progress-bar-track">
+                  <div class="progress-bar-fill" style="width: 40%;"></div>
+                </div>
+              </div>
+
+              <!-- CTA PRINCIPAL -->
+              <div class="active-card-actions">
+                <button type="button" class="btn btn-primary btn-large btn-glow" id="btnContinueAm">
+                  <span class="btn-icon">⚡</span>
+                  <span>Continuar con Am</span>
+                  <span class="btn-arrow">→</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- TARJETA LATERAL: TU PRÁCTICA DE HOY (8 MINUTOS) -->
+          <div class="today-session-card">
+            <div class="today-header">
+              <div class="today-title-wrap">
+                <span class="today-icon">🎯</span>
+                <div>
+                  <h4 class="today-title">Tu práctica de hoy</h4>
+                  <span class="today-duration">8 min estimados</span>
+                </div>
+              </div>
+              <span class="today-day-tag">Día 3 / 7</span>
+            </div>
+
+            <p class="today-intro">
+              Rutina optimizada para fijar memoria muscular y cambios limpios:
+            </p>
+
+            <div class="practice-tasks-list">
+
+              <div class="practice-task done">
+                <div class="task-check">✓</div>
+                <div class="task-details">
+                  <span class="task-name">Reconocimiento de cuerdas</span>
+                  <span class="task-time">1 min · Al aire</span>
+                </div>
+                <span class="task-status-lbl">Completado</span>
+              </div>
+
+              <div class="practice-task done">
+                <div class="task-check">✓</div>
+                <div class="task-details">
+                  <span class="task-name">Construir Mi menor (Em)</span>
+                  <span class="task-time">2 min · Sin mirar</span>
+                </div>
+                <span class="task-status-lbl">Completado</span>
+              </div>
+
+              <div class="practice-task active-task">
+                <div class="task-check current-dot">●</div>
+                <div class="task-details">
+                  <span class="task-name">Construir La menor (Am)</span>
+                  <span class="task-time">2 min · Ejercicio interactivo</span>
+                </div>
+                <span class="task-status-lbl current-lbl">¡En curso!</span>
+              </div>
+
+              <div class="practice-task upcoming">
+                <div class="task-check lock-dot">○</div>
+                <div class="task-details">
+                  <span class="task-name">Cambio fluido: Em ➔ Am</span>
+                  <span class="task-time">3 min · Con metrónomo</span>
+                </div>
+                <span class="task-status-lbl">Siguiente</span>
+              </div>
+
+            </div>
+
+            <div class="practice-card-footer">
+              <button type="button" class="btn btn-outline-today" id="btnStartTodaySession">
+                <span>Empezar práctica</span>
+                <span>▶</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECCIÓN 4: TU CAMINO EN GUITARRA (TIMELINE PEDAGÓGICA) -->
+    <section class="roadmap-section" id="tu-camino" data-app-view="route" hidden>
+      <div class="section-container">
+
+        <div class="roadmap-header-wrap">
+          <div class="roadmap-title-group">
+            <span class="section-badge-pill">GUITARRA 1 · FUNDAMENTOS</span>
+            <h2 class="section-main-heading">Tu camino en guitarra</h2>
+            <p class="section-sub-heading">
+              Un recorrido ordenado paso a paso. Avanzas habilidad por habilidad.
+            </p>
+          </div>
+
+          <!-- Resumen global de progreso -->
+          <div class="course-global-progress">
+            <div class="global-prog-top">
+              <span class="prog-title">Progreso general</span>
+              <span class="prog-score">62%</span>
+            </div>
+            <div class="global-prog-bar">
+              <div class="global-prog-fill" style="width: 62%;"></div>
+            </div>
+            <div class="global-prog-meta">
+              <span>✓ 12 habilidades dominadas</span>
+              <span>🔥 3 días seguidos</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIMELINE VERTICAL CONECTADA -->
+        <div class="roadmap-timeline">
+
+          <!-- MÓDULO 1: CONOCE TU GUITARRA (COMPLETADO) -->
+          <div class="module-node completed-mod" data-color="blue">
+            <div class="node-rail">
+              <div class="node-marker"><span class="marker-check">✓</span></div>
+              <div class="node-line"></div>
+            </div>
+            <div class="module-card">
+              <div class="mod-header">
+                <span class="mod-num">01 · FUNDAMENTOS</span>
+                <span class="mod-status-tag tag-done">Dominado ✓</span>
+              </div>
+              <h3 class="mod-title">Conoce tu guitarra</h3>
+              <p class="mod-desc">Las seis cuerdas, afinación estándar, nombres de notas al aire y postura cómoda de mano.</p>
+
+              <div class="mod-lessons-list">
+                <span class="lesson-item done"><span class="check">✓</span> Las seis cuerdas</span>
+                <span class="lesson-item done"><span class="check">✓</span> Notas al aire</span>
+                <span class="lesson-item done"><span class="check">✓</span> Reconocimiento de cuerdas</span>
+              </div>
+
+              <div class="mod-footer">
+                <button type="button" class="btn-mod-review" data-module="1">Repasar módulo</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- MÓDULO 2: DESCUBRE EL DIAPASÓN (COMPLETADO) -->
+          <div class="module-node completed-mod" data-color="violet">
+            <div class="node-rail">
+              <div class="node-marker"><span class="marker-check">✓</span></div>
+              <div class="node-line"></div>
+            </div>
+            <div class="module-card">
+              <div class="mod-header">
+                <span class="mod-num">02 · DIAPASÓN</span>
+                <span class="mod-status-tag tag-done">Dominado ✓</span>
+              </div>
+              <h3 class="mod-title">Descubre el diapasón</h3>
+              <p class="mod-desc">Los trastes, colocación de dedos cerca del metal, digitación limpia y tus primeras notas musicales.</p>
+
+              <div class="mod-lessons-list">
+                <span class="lesson-item done"><span class="check">✓</span> Trastes</span>
+                <span class="lesson-item done"><span class="check">✓</span> Primeras posiciones</span>
+                <span class="lesson-item done"><span class="check">✓</span> Primeras notas</span>
+              </div>
+
+              <div class="mod-footer">
+                <button type="button" class="btn-mod-review" data-module="2">Repasar módulo</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- MÓDULO 3: TUS PRIMEROS ACORDES (ACTIVO · DESTACADO) -->
+          <div class="module-node active-mod" data-color="orange">
+            <div class="node-rail">
+              <div class="node-marker pulsing"><span class="marker-active">●</span></div>
+              <div class="node-line"></div>
+            </div>
+            <div class="module-card card-active-glow">
+              <div class="mod-header">
+                <span class="mod-num">03 · ACORDES BÁSICOS</span>
+                <span class="mod-status-tag tag-active">En curso · 40%</span>
+              </div>
+              <h3 class="mod-title">Tus primeros acordes</h3>
+              <p class="mod-desc">Empieza a hacer música. Aprende las formas fundamentales que usarás en miles de canciones.</p>
+
+              <div class="mod-skills-chips-row">
+                <span class="chip-item done">Em ✓</span>
+                <span class="chip-item done">E ✓</span>
+                <span class="chip-item active">Am ●</span>
+                <span class="chip-item">A ○</span>
+                <span class="chip-item">C ○</span>
+                <span class="chip-item">D ○</span>
+                <span class="chip-item">G ○</span>
+              </div>
+
+              <div class="mod-footer-active">
+                <div class="mod-time-text">7 habilidades · 35 min aprox.</div>
+                <button type="button" class="btn btn-primary btn-sm btn-glow" id="btnRoadmapContinueAm">
+                  Continuar con Am →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- MÓDULO 4: CAMBIA DE ACORDE (BLOQUEADO) -->
+          <div class="module-node locked-mod" data-color="yellow">
+            <div class="node-rail">
+              <div class="node-marker"><span class="marker-lock">🔒</span></div>
+              <div class="node-line"></div>
+            </div>
+            <div class="module-card">
+              <div class="mod-header">
+                <span class="mod-num">04 · TRANSICIONES</span>
+                <span class="mod-status-tag tag-locked">Bloqueado</span>
+              </div>
+              <h3 class="mod-title">Cambia de acorde</h3>
+              <p class="mod-desc">Dedos ancla, transiciones de mínima distancia y ejercicios con temporizador.</p>
+              <div class="locked-hint">Completa el Módulo 3 para desbloquear</div>
+            </div>
+          </div>
+
+          <!-- MÓDULO 5: RITMO Y PULSO (BLOQUEADO) -->
+          <div class="module-node locked-mod" data-color="green">
+            <div class="node-rail">
+              <div class="node-marker"><span class="marker-lock">🔒</span></div>
+              <div class="node-line"></div>
+            </div>
+            <div class="module-card">
+              <div class="mod-header">
+                <span class="mod-num">05 · RITMO</span>
+                <span class="mod-status-tag tag-locked">Bloqueado</span>
+              </div>
+              <h3 class="mod-title">Siente el pulso</h3>
+              <p class="mod-desc">Conteo 1-2-3-4, metrónomo interactivo, rasgueos hacia abajo y arriba, y subdivisiones.</p>
+              <div class="locked-hint">Bloqueado</div>
+            </div>
+          </div>
+
+          <!-- MÓDULO 6: PROGRESIONES (BLOQUEADO) -->
+          <div class="module-node locked-mod" data-color="magenta">
+            <div class="node-rail">
+              <div class="node-marker"><span class="marker-lock">🔒</span></div>
+              <div class="node-line"></div>
+            </div>
+            <div class="module-card">
+              <div class="mod-header">
+                <span class="mod-num">06 · ARMONÍA</span>
+                <span class="mod-status-tag tag-locked">Bloqueado</span>
+              </div>
+              <h3 class="mod-title">Tus primeras progresiones</h3>
+              <p class="mod-desc">Combinaciones de 2, 3 y 4 acordes clásicos y grados básicos.</p>
+              <div class="locked-hint">Bloqueado</div>
+            </div>
+          </div>
+
+          <!-- MÓDULO 7: TOCA MÚSICA (BLOQUEADO) -->
+          <div class="module-node locked-mod" data-color="cyan">
+            <div class="node-rail">
+              <div class="node-marker"><span class="marker-lock">🔒</span></div>
+            </div>
+            <div class="module-card">
+              <div class="mod-header">
+                <span class="mod-num">07 · CANCIONES</span>
+                <span class="mod-status-tag tag-locked">Bloqueado</span>
+              </div>
+              <h3 class="mod-title">Toca música</h3>
+              <p class="mod-desc">Ejercicios completos que combinan acordes, cambios y ritmo tocando acompañamientos.</p>
+              <div class="locked-hint">Bloqueado</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECCIÓN 5: TUS HABILIDADES (MATRIZ DE COMPETENCIAS) -->
+    <section class="skills-matrix-section" id="mis-habilidades" data-app-view="progress" hidden>
+      <div class="section-container">
+
+        <div class="section-label-group">
+          <span class="section-badge-pill">Evaluación continua</span>
+          <h2 class="section-main-heading">Mis habilidades</h2>
+          <p class="section-sub-heading">
+            Progreso por competencia real evaluada en ejercicios.
+          </p>
+        </div>
+
+        <div class="skills-matrix-grid">
+
+          <div class="skill-meter-card">
+            <div class="meter-head">
+              <span class="meter-name">🎸 Cuerdas y Afinación</span>
+              <span class="meter-val text-done">100% · Dominado</span>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill fill-done" style="width: 100%;"></div>
+            </div>
+            <span class="meter-detail">6 cuerdas al aire, nombres, grosor y tonos identificados.</span>
+          </div>
+
+          <div class="skill-meter-card">
+            <div class="meter-head">
+              <span class="meter-name">🎵 Notas en Diapasón</span>
+              <span class="meter-val text-high">70% · Avanzado</span>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill fill-high" style="width: 70%;"></div>
+            </div>
+            <span class="meter-detail">Trastes 1 al 5, digitación limpia y localización rápida.</span>
+          </div>
+
+          <div class="skill-meter-card">
+            <div class="meter-head">
+              <span class="meter-name">🤘 Acordes Abiertos</span>
+              <span class="meter-val text-mid">50% · En progreso</span>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill fill-mid" style="width: 50%;"></div>
+            </div>
+            <span class="meter-detail">Em, E dominados. Aprendiendo Am. Faltan C, G, D, A.</span>
+          </div>
+
+          <div class="skill-meter-card">
+            <div class="meter-head">
+              <span class="meter-name">🔄 Cambios de Acorde</span>
+              <span class="meter-val text-low">20% · Inicial</span>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill fill-low" style="width: 20%;"></div>
+            </div>
+            <span class="meter-detail">Primeras transiciones básicas con dedos pivote.</span>
+          </div>
+
+          <div class="skill-meter-card">
+            <div class="meter-head">
+              <span class="meter-name">🥁 Ritmo y Pulso</span>
+              <span class="meter-val text-mute">0% · Por iniciar</span>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill fill-none" style="width: 0%;"></div>
+            </div>
+            <span class="meter-detail">Patrones de rasgueo y precisión temporal.</span>
+          </div>
+
+          <div class="skill-meter-card locked-skill">
+            <div class="meter-head">
+              <span class="meter-name">🎶 Progresiones Musicales</span>
+              <span class="meter-val text-mute">🔒 Bloqueado</span>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill fill-none" style="width: 0%;"></div>
+            </div>
+            <span class="meter-detail">Desbloquea completando cambios y ritmo.</span>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECCIÓN 6: GUITARRA LIBRE (ENTRADA PERMANENTE Y SEPARADA) -->
+    <section class="free-guitar-banner-section" id="guitarra-libre" data-app-view="progress" hidden>
+      <div class="section-container">
+
+        <div class="free-guitar-banner">
+          <div class="banner-content">
+            <div class="banner-tag">
+              <span>🎸 EXPLORADOR LIBRE</span>
+            </div>
+            <h2 class="banner-title">Guitarra Libre</h2>
+            <p class="banner-text">
+              Explora el instrumento sin ejercicios ni puntuación. Prueba acordes, visualiza notas de cualquier escala, practica afinaciones y escucha cada traste.
+            </p>
+            <div class="banner-features-row">
+              <span class="feat-pill">🎵 Todas las notas</span>
+              <span class="feat-pill">🎼 Escalas Pentatónicas y Mayores</span>
+              <span class="feat-pill">📖 Biblioteca de Acordes</span>
+              <span class="feat-pill">🔊 Sintetizador en tiempo real</span>
+            </div>
+            <div class="banner-actions">
+              <button type="button" class="btn btn-primary btn-large" id="btnOpenFreeGuitar">
+                <span class="btn-icon">🎸</span>
+                <span>Abrir guitarra →</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="banner-visual-graphic" aria-hidden="true">
+            <div class="mini-fretboard-preview">
+              <div class="preview-fret"><span>C</span></div>
+              <div class="preview-fret"><span>D</span></div>
+              <div class="preview-fret active-dot"><span>E</span></div>
+              <div class="preview-fret"><span>F</span></div>
+              <div class="preview-fret active-dot"><span>G</span></div>
+              <div class="preview-fret active-dot"><span>A</span></div>
+              <div class="preview-fret"><span>B</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODALES INTERACTIVOS ==================== -->
+
+  <!-- MODAL 1: PRÁCTICA GUIADA INTERACTIVA DEL ACORDE Am (7 PASOS) -->
+  <div class="modal-overlay" id="practiceModal" role="dialog" aria-modal="true" aria-labelledby="practiceModalTitle" hidden>
+    <div class="modal-card practice-modal-card">
+
+      <div class="modal-header">
+        <div class="modal-badge-row">
+          <span class="mod-pill-tag">MÓDULO 3 · LECCIÓN 4</span>
+          <span class="mod-lesson-step" id="practiceStepCounter">Paso 1 de 7</span>
+        </div>
+        <button type="button" class="btn-close-modal" id="btnClosePracticeModal" aria-label="Cerrar lección">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <h2 class="practice-title" id="practiceModalTitle">La menor · Am</h2>
+        <p class="practice-instruction" id="practiceInstruction">
+          <strong>La menor (Am)</strong>: Acorde fundamental con tónica en 5ª cuerda al aire. Escucha su sonido.
+        </p>
+
+        <!-- DIAPASÓN INTERACTIVO DE LA LECCIÓN -->
+        <div class="practice-fretboard-wrap">
+          <div class="practice-fretboard" id="practiceFretboard">
+            <!-- Renderizado dinámicamente por practice-view.js -->
+          </div>
+        </div>
+
+        <!-- Feedback del ejercicio -->
+        <div class="practice-feedback-box" id="practiceFeedbackBox">
+          <span class="feed-icon">💡</span>
+          <span class="feed-text" id="practiceFeedbackText">Pulsa el botón de rasgueo para familiarizarte con su color armónico.</span>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btnPracticeStrumChord">
+          <span>🔊 Rasguear acorde Am</span>
+        </button>
+        <button type="button" class="btn btn-primary" id="btnNextPracticeStep">
+          <span>Comenzar colocación</span>
+          <span>→</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL 2: EXPLORADOR COMPLETO "GUITARRA LIBRE" (0..12 SOBRE MOTOR 0..16) -->
+  <div class="modal-overlay" id="freeGuitarModal" role="dialog" aria-modal="true" aria-labelledby="freeGuitarModalTitle" hidden>
+    <div class="modal-card free-guitar-modal-card">
+
+      <div class="modal-header">
+        <div class="modal-badge-row">
+          <span class="mod-pill-tag">EXPLORADOR LIBRE</span>
+          <h2 class="free-modal-title" id="freeGuitarModalTitle">Guitarra Libre · Diapasón Completo</h2>
+        </div>
+        <button type="button" class="btn-close-modal" id="btnCloseFreeGuitarModal" aria-label="Cerrar guitarra libre">✕</button>
+      </div>
+
+      <!-- Barra de herramientas del diapasón libre -->
+      <div class="free-toolbar">
+
+        <div class="tool-group">
+          <label for="fretboardViewMode">Mostrar:</label>
+          <select id="fretboardViewMode" class="form-select">
+            <option value="notes">Todas las Notas (C, D, E...)</option>
+            <option value="am-pentatonic">Escala Pentatónica Menor (Am / C)</option>
+            <option value="c-major">Escala Mayor de Do (C)</option>
+            <option value="clean">Diapasón Limpio</option>
+          </select>
+        </div>
+
+        <div class="tool-group">
+          <label>Acordes rápidos:</label>
+          <div class="chord-quick-buttons">
+            <button type="button" class="btn-chord-chip" data-chord="Am">Am</button>
+            <button type="button" class="btn-chord-chip" data-chord="Em">Em</button>
+            <button type="button" class="btn-chord-chip" data-chord="C">C</button>
+            <button type="button" class="btn-chord-chip" data-chord="G">G</button>
+            <button type="button" class="btn-chord-chip" data-chord="D">D</button>
+            <button type="button" class="btn-chord-chip" data-chord="E">E</button>
+          </div>
+        </div>
+
+        <div class="tool-group tool-actions">
+          <button type="button" class="btn btn-sm btn-primary" id="btnFreeGuitarStrum">
+            <span>🔊 Rasguear Todo</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Diapasón montado por GuitarEngine -->
+      <div class="free-fretboard-scrollable">
+        <div class="full-fretboard" id="fullFretboardContainer">
+          <!-- Renderizado dinámicamente por GuitarEngine vía free-guitar.js -->
+        </div>
+      </div>
+
+      <div class="free-footer">
+        <div class="free-note-detected">
+          <span>Última nota tocada:</span>
+          <strong id="freeNoteDetectedText">Toca cualquier traste para escuchar</strong>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="btnCloseFreeFooter">Cerrar Explorador</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <span class="brand-name">🎸 GMUSIC</span>
+        <p class="brand-tagline">Aprende guitarra tocando desde el primer minuto.</p>
+      </div>
+      <div class="footer-nav">
+        <span>Diseñado como una experiencia de aprendizaje activa.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Entry Script JavaScript -->
+  <script type="module" src="js/app.js?v=5"></script>
 </body>
 </html>

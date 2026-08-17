@@ -1,0 +1,551 @@
+/* ==========================================================================
+   GMUSIC · INTERACTIVE MODALS & EXERCISE RUNNER STYLESHEET (v1.0 Contrato)
+   Includes: 7-Step Guided Am Practice Modal, 16-Fret Free Guitar Explorer,
+   Position Zoom, Anchor Finger Rings, and Exercise Visualizers.
+   ========================================================================== */
+
+/* ==================== OVERLAY & BASE MODAL ==================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(4, 7, 13, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.modal-overlay:not([hidden]) {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg), 0 0 60px rgba(0, 0, 0, 0.8);
+  width: 100%;
+  max-width: 840px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(20px) scale(0.97);
+  transition: all var(--transition-bounce);
+}
+
+.modal-overlay:not([hidden]) .modal-card {
+  transform: translateY(0) scale(1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface-elevated);
+}
+
+.modal-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mod-lesson-step {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-primary);
+  font-weight: 700;
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+}
+
+.btn-close-modal {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  transition: all var(--transition-fast);
+}
+
+.btn-close-modal:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+  transform: scale(1.05);
+}
+
+.modal-body {
+  padding: 1.75rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.modal-footer {
+  padding: 1.25rem 1.75rem;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface-elevated);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ==================== PRACTICE MODAL (Am GUITAR LESSON) ==================== */
+.practice-title {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.practice-instruction {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid var(--color-primary);
+  padding: 0.75rem 1rem;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.practice-instruction strong {
+  color: var(--color-primary);
+}
+
+/* Practice Fretboard Visualizer */
+.practice-fretboard-wrap {
+  background: #080c14;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.practice-fretboard {
+  display: grid;
+  grid-template-columns: 80px repeat(3, 1fr);
+  gap: 0;
+  background: #111827;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.fret-col {
+  display: flex;
+  flex-direction: column;
+  border-right: 3px solid #64748b;
+  position: relative;
+}
+
+.fret-col:last-child {
+  border-right: none;
+}
+
+.fret-col.fret-0 {
+  background: #0d1320;
+  border-right: 6px solid #d97706; /* Heavy Ivory/Brass Nut */
+}
+
+.fret-header-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 0.4rem 0;
+  background: rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.fret-cell {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.fret-cell::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+}
+
+.fret-cell[data-s="4"]::before,
+.fret-cell[data-s="5"]::before {
+  height: 3.5px;
+  background: rgba(217, 119, 6, 0.4);
+}
+
+.fret-cell span {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  z-index: 2;
+}
+
+.fret-cell.open-active span {
+  color: var(--color-success);
+  font-weight: 800;
+}
+
+.fret-cell.muted-cell span {
+  color: var(--color-danger);
+  font-weight: 800;
+}
+
+.fret-cell.target-spot {
+  cursor: pointer;
+}
+
+.fret-cell.target-spot:hover {
+  background: rgba(249, 115, 22, 0.15);
+}
+
+.fret-cell.target-spot .finger-prompt {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-subtle);
+  z-index: 2;
+  transition: all var(--transition-fast);
+}
+
+.fret-cell.pulse-target {
+  background: rgba(249, 115, 22, 0.2);
+}
+
+.fret-cell.pulse-target .finger-prompt {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary-hover);
+  box-shadow: 0 0 12px var(--color-primary-glow);
+  animation: pulseSpot 1.5s infinite;
+}
+
+@keyframes pulseSpot {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.fret-cell.finger-placed {
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.fret-cell.finger-placed .finger-prompt {
+  background: var(--color-success);
+  color: #fff;
+  border: none;
+  font-size: 0.8rem;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.practice-feedback-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.practice-feedback-box.success-feedback {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+/* ==================== FREE GUITAR MODAL & 16-FRET MATRIX ==================== */
+.free-guitar-modal-card {
+  max-width: 1080px;
+}
+
+.free-modal-title {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.free-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1rem 1.75rem;
+  background: var(--bg-surface-elevated);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+}
+
+.tool-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.form-select {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  color: var(--text-primary);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.form-select:focus {
+  border-color: var(--color-accent);
+}
+
+.chord-quick-buttons {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.btn-chord-chip {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.btn-chord-chip:hover,
+.btn-chord-chip.active {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.free-fretboard-scrollable {
+  overflow-x: auto;
+  padding: 1.5rem;
+  background: #060911;
+}
+
+.fretboard-grid-wrapper {
+  display: grid;
+  background: #141b2a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  min-width: 880px;
+  position: relative;
+}
+
+.fretboard-fret-col {
+  display: flex;
+  flex-direction: column;
+  border-right: 3px solid #475569;
+  position: relative;
+}
+
+.fretboard-fret-col.fret-nut-col {
+  background: #0b101c;
+  border-right: 6px solid #d97706;
+}
+
+.fretboard-fret-header {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.35rem 0;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Inlays (§1.2): 3, 5, 7, 9, 12, 15 */
+.fretboard-fret-col.inlay-single::after {
+  content: '●';
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.65rem;
+  pointer-events: none;
+}
+
+.fretboard-fret-col.inlay-double::after {
+  content: '● ●';
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  pointer-events: none;
+}
+
+.fret-matrix-cell {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.fret-matrix-cell::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+}
+
+.fret-matrix-cell[data-s="4"]::before,
+.fret-matrix-cell[data-s="5"]::before {
+  height: 3.5px;
+  background: rgba(217, 119, 6, 0.3);
+}
+
+.fret-matrix-cell:hover,
+.fret-matrix-cell:focus-visible {
+  background: rgba(56, 189, 248, 0.15);
+}
+
+.fret-matrix-cell.highlighted-note {
+  background: rgba(56, 189, 248, 0.2);
+}
+
+.fret-matrix-cell.highlighted-root {
+  background: rgba(249, 115, 22, 0.25);
+}
+
+/* Dedos Ancla con anillo punteado (§4.8) */
+.fret-matrix-cell.anchor-finger-ring::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 2px dashed #f59e0b;
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+  animation: pulseAnchor 1.8s infinite ease-in-out;
+}
+
+@keyframes pulseAnchor {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+
+/* Zoom de posición (§1.5) */
+.full-fretboard-matrix.fretboard-zoomed .fret-matrix-cell {
+  height: 50px;
+}
+
+.full-fretboard-matrix.fretboard-zoomed .fret-note-bubble {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.55rem;
+}
+
+.fret-note-bubble {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--radius-sm);
+  z-index: 2;
+  transition: all var(--transition-fast);
+}
+
+.fret-matrix-cell.highlighted-note .fret-note-bubble {
+  background: var(--color-accent);
+  color: #000;
+  font-weight: 800;
+  border-color: #fff;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+}
+
+.fret-matrix-cell.highlighted-root .fret-note-bubble {
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 800;
+  border-color: #fff;
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.6);
+}
+
+.free-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.75rem;
+  background: var(--bg-surface-elevated);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.free-note-detected {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.free-note-detected strong {
+  color: var(--color-accent);
+  margin-left: 0.4rem;
+  font-family: var(--font-mono);
+}
