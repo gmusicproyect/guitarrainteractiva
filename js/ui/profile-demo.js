@@ -3,7 +3,7 @@
  * Manages switching between New Visitor view and Registered Student view (fixtures).
  */
 
-import { DEMO_PROGRESS_FIXTURE } from '../../data/demo-progress.js?v=2';
+import { DEMO_PROGRESS_FIXTURE } from '../../data/demo-progress.js?v=3';
 
 export class ProfileDemoUI {
   constructor() {
@@ -37,11 +37,11 @@ export class ProfileDemoUI {
       this.btnStudent?.setAttribute('aria-pressed', 'true');
       this.btnVisitor?.setAttribute('aria-pressed', 'false');
       if (this.heroContinueText) {
-        this.heroContinueText.textContent = 'Continuar con Am';
+        this.heroContinueText.textContent = 'Continuar Clase 3';
       }
-      if (this.heroTitleText) this.heroTitleText.textContent = 'Hoy vas a dominar La menor.';
+      if (this.heroTitleText) this.heroTitleText.textContent = 'Continúa con las seis cuerdas.';
       if (this.heroSubtitleText) {
-        this.heroSubtitleText.textContent = 'Una práctica guiada de 8 minutos para formar el acorde Am y cambiar desde Mi menor con más seguridad.';
+        this.heroSubtitleText.textContent = 'Módulo 1 · Tu guitarra: práctica guiada para dominar las 6 cuerdas al aire y sus calibres.';
       }
     } else {
       document.body.classList.remove('mode-student');

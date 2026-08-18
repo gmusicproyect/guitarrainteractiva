@@ -11,37 +11,39 @@ export const DEMO_PROGRESS_FIXTURE = {
     avatarLetter: 'C',
     streakDays: 3
   },
-  currentCourseId: 'guitar-1-fundamentals',
-  currentModuleId: 'mod-3',
+  currentCourseId: 'guitarra-1',
+  currentModuleId: 'guitar1-module1',
   currentLesson: {
-    chordId: 'Am-open',
-    stepNumber: 4,
-    totalSteps: 7,
-    progressPercent: 40
+    folderId: '03-las-seis-cuerdas',
+    title: 'Las seis cuerdas (Calibres y alturas)',
+    subtitle: 'Reconocimiento de cuerdas graves entorchadas y agudas lisas',
+    stepNumber: 3,
+    totalSteps: 5,
+    progressPercent: 60
   },
-  globalCoursePercent: 62,
-  completedSkillsCount: 12,
+  globalCoursePercent: 20,
+  completedSkillsCount: 2,
   
-  // Daily Practice Session (estimated 8 min)
+  // Daily Practice Session (estimated 6 min)
   todaySession: {
-    totalEstimatedMinutes: 8,
+    totalEstimatedMinutes: 6,
     dayIndex: 3,
-    totalDays: 7,
+    totalDays: 5,
     tasks: [
-      { id: 't1', name: 'Reconocimiento de cuerdas', timeEst: '1 min', status: 'completed' },
-      { id: 't2', name: 'Construir Mi menor (Em)', timeEst: '2 min', status: 'completed' },
-      { id: 't3', name: 'Construir La menor (Am)', timeEst: '2 min', status: 'current' },
-      { id: 't4', name: 'Cambio fluido: Em ➔ Am', timeEst: '3 min', status: 'available' }
+      { id: 't1', name: 'Anatomía de la guitarra', timeEst: '1 min', status: 'completed' },
+      { id: 't2', name: 'El clavijero y la afinación', timeEst: '2 min', status: 'completed' },
+      { id: 't3', name: 'Las seis cuerdas al aire', timeEst: '2 min', status: 'current' },
+      { id: 't4', name: 'La cejuela y los trastes', timeEst: '2 min', status: 'available' },
+      { id: 't5', name: 'Primeras pulsaciones limpias', timeEst: '2 min', status: 'locked' }
     ]
   },
 
-  // Competency breakdown
+  // Competency breakdown for Module 1 (El Instrumento)
   skillsMatrix: [
-    { id: 'cuerdas', name: '🎸 Cuerdas y Afinación', percent: 100, level: 'Dominado', status: 'done', detail: '6 cuerdas al aire, nombres, grosor y tonos identificados.' },
-    { id: 'notas', name: '🎵 Notas en Diapasón', percent: 70, level: 'Avanzado', status: 'high', detail: 'Trastes 1 al 5, digitación limpia y localización rápida.' },
-    { id: 'acordes', name: '🤘 Acordes Abiertos', percent: 50, level: 'En progreso', status: 'mid', detail: 'Em, E dominados. Aprendiendo Am. Faltan C, G, D, A.' },
-    { id: 'cambios', name: '🔄 Cambios de Acorde', percent: 20, level: 'Inicial', status: 'low', detail: 'Primeras transiciones básicas con dedos pivote.' },
-    { id: 'ritmo', name: '🥁 Ritmo y Pulso', percent: 0, level: 'Por iniciar', status: 'none', detail: 'Patrones de rasgueo y precisión temporal.' },
-    { id: 'progresiones', name: '🎶 Progresiones Musicales', percent: 0, level: 'Bloqueado', status: 'locked', detail: 'Desbloquea completando cambios y ritmo.' }
+    { id: 'anatomia', name: '🔍 Anatomía de la guitarra', percent: 100, level: 'Dominado', status: 'done', detail: 'Pala, clavijero, cejuela, mástil, trastes, cuerpo, boca y puente.' },
+    { id: 'clavijero', name: '⚙️ Clavijero y afinación', percent: 100, level: 'Dominado', status: 'done', detail: 'Tensión de cuerdas, afinación estándar y correspondencia de clavijas.' },
+    { id: 'cuerdas', name: '🎸 Las seis cuerdas', percent: 60, level: 'En curso', status: 'mid', detail: 'Calibres entorchados (graves) vs lisos (agudos), notas Mi a Mi.' },
+    { id: 'trastes', name: '📐 Cejuela y trastes', percent: 0, level: 'Por iniciar', status: 'none', detail: 'Traste 0 al aire vs longitud de cuerda acortada.' },
+    { id: 'pulsaciones', name: '🎵 Primeras pulsaciones', percent: 0, level: 'Bloqueado', status: 'locked', detail: 'Pulsación limpia de 6 cuerdas al aire a 60 BPM.' }
   ]
 };

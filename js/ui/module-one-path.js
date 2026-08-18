@@ -313,11 +313,15 @@ export class ModuleOnePathUI {
     const { folder } = this.activeFolder;
     this.closeModal();
 
-    if (this.onNavigateHome) this.onNavigateHome();
-    window.setTimeout(() => {
-      const guitar = document.getElementById('heroGuitar');
-      guitar?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      if (folder.order <= 1) guitar?.querySelector('[data-s="5"]')?.focus({ preventScroll: true });
-    }, 250);
+    if (this.onStartFolder) {
+      this.onStartFolder(folder);
+    } else if (this.onNavigateHome) {
+      this.onNavigateHome();
+      window.setTimeout(() => {
+        const guitar = document.getElementById('heroGuitar');
+        guitar?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (folder.order <= 1) guitar?.querySelector('[data-s="5"]')?.focus({ preventScroll: true });
+      }, 250);
+    }
   }
 }

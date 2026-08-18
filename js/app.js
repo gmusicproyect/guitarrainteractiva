@@ -4,11 +4,11 @@
  */
 
 import { audioEngine } from './engine/audio-engine.js';
-import { HeroGuitarUI } from './ui/hero-guitar.js?v=4';
-import { PracticeViewUI } from './ui/practice-view.js?v=2';
-import { FreeGuitarUI } from './ui/free-guitar.js?v=2';
-import { ProfileDemoUI } from './ui/profile-demo.js?v=5';
-import { ModuleOnePathUI } from './ui/module-one-path.js?v=5';
+import { HeroGuitarUI } from './ui/hero-guitar.js?v=5';
+import { PracticeViewUI } from './ui/practice-view.js?v=5';
+import { FreeGuitarUI } from './ui/free-guitar.js?v=3';
+import { ProfileDemoUI } from './ui/profile-demo.js?v=6';
+import { ModuleOnePathUI } from './ui/module-one-path.js?v=6';
 
 function initApp() {
   // 1. Initialize UI Controllers
@@ -53,29 +53,38 @@ function initApp() {
   const viewByHash = { '#inicio': 'home', '#ruta': 'route', '#habilidades': 'progress' };
   setAppView(viewByHash[window.location.hash] || 'home');
 
-  new ModuleOnePathUI({
-    onNavigateHome: () => setAppView('home')
+  // Connected Module One Path with explicit folder practice dispatch
+  const moduleOnePath = new ModuleOnePathUI({
+    onNavigateHome: () => setAppView('home'),
+    onStartFolder: (folder) => {
+      practiceView.open(folder);
+    }
   });
 
   // 3. Guide first-time visitors before showing the course interface.
   const onboardingFlow = document.getElementById('onboardingFlow');
-  const onboardingSteps = Array.from(document.querySelectorAll('[data-onboarding-step]'));
   const onboardingStepLabel = document.getElementById('onboardingStepLabel');
   const onboardingProgressBar = document.getElementById('onboardingProgressBar');
   const onboardingBack = document.getElementById('onboardingBack');
   const onboardingNext = document.getElementById('onboardingNext');
   const onboardingStudentLogin = document.getElementById('onboardingStudentLogin');
+  const onboardingSteps = Array.from(document.querySelectorAll('[data-onboarding-step]'));
   let onboardingStep = 1;
 
   const renderOnboardingStep = () => {
-    onboardingSteps.forEach(step => {
-      step.hidden = Number(step.dataset.onboardingStep) !== onboardingStep;
+    onboardingSteps.forEach(stepEl => {
+      const stepNumber = Number(stepEl.dataset.onboardingStep);
+      stepEl.hidden = stepNumber !== onboardingStep;
     });
+
     if (onboardingStepLabel) onboardingStepLabel.textContent = `Paso ${onboardingStep} de 3`;
     if (onboardingProgressBar) onboardingProgressBar.style.width = `${(onboardingStep / 3) * 100}%`;
-    if (onboardingBack) onboardingBack.hidden = onboardingStep === 1;
+    if (onboardingBack) onboardingBack.disabled = onboardingStep === 1;
+
     if (onboardingNext) {
-      onboardingNext.textContent = onboardingStep === 3 ? 'Hacer mi primer toque' : 'Continuar';
+      if (onboardingStep === 1) onboardingNext.textContent = 'Continuar';
+      else if (onboardingStep === 2) onboardingNext.textContent = 'Ver mi ruta';
+      else onboardingNext.textContent = 'Empezar primera misión';
     }
   };
 
@@ -91,9 +100,9 @@ function initApp() {
     if (!onboardingFlow) return;
     onboardingFlow.hidden = true;
     document.body.style.overflow = '';
-    setAppView('home');
 
     if (focusGuitar) {
+      setAppView('home');
       window.setTimeout(() => {
         const guitar = document.getElementById('heroGuitar');
         guitar?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -164,20 +173,20 @@ function initApp() {
         document.getElementById('heroGuitar')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         document.querySelector('#heroGuitar [data-s="5"]')?.focus({ preventScroll: true });
       } else {
-        practiceView.open();
+        practiceView.open('03-cuerdas');
       }
     });
   }
 
   if (btnContinueAm) {
     btnContinueAm.addEventListener('click', () => {
-      practiceView.open();
+      practiceView.open('03-cuerdas');
     });
   }
 
   if (btnStartTodaySession) {
     btnStartTodaySession.addEventListener('click', () => {
-      practiceView.open();
+      practiceView.open('03-cuerdas');
     });
   }
 
@@ -212,8 +221,9 @@ function initApp() {
   window.addEventListener('touchstart', initAudioGesture, { once: true });
 }
 
+// Bootstrap once DOM content is fully parsed
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp, { once: true });
+  document.addEventListener('DOMContentLoaded', initApp);
 } else {
   initApp();
 }
