@@ -1,0 +1,52 @@
+{
+  "id": "g1-m1-nut-frets",
+  "order": 4,
+  "kind": "skill",
+  "label": "Clase 4",
+  "title": "Cejuela y trastes",
+  "shortTitle": "Cómo cambia el sonido",
+  "purpose": "Comprender cómo la longitud de la cuerda determina la altura del sonido.",
+  "skill": {
+    "id": "g1.m1.nut-and-frets",
+    "statement": "Explica el traste 0 y demuestra cómo pisar un traste acorta la cuerda y eleva la nota."
+  },
+  "prerequisites": ["g1.m1.strings-open"],
+  "content": {
+    "concepts": [
+      { "id": "open", "name": "Traste 0", "definition": "La cuerda vibra completa entre cejuela y puente." },
+      { "id": "fretted", "name": "Trastes 1, 2, 3...", "definition": "El dedo acorta la parte que vibra y la nota sube." }
+    ]
+  },
+  "teaching": {
+    "purpose": "Relacionar cejuela, puente, longitud de vibración y altura musical.",
+    "card": "Al aire, la cuerda vibra desde la cejuela hasta el puente. Al pisar un traste, la sección vibrante se acorta y el sonido sube.",
+    "video": { "required": true, "status": "pending", "brief": "Comparación audible entre trastes 0, 1 y 3" },
+    "pdf": { "required": true, "status": "pending", "brief": "Diagrama de longitud vibrante al aire y pisada" }
+  },
+  "practice": {
+    "purpose": "Experimentar directamente la diferencia entre cuerda al aire y cuerda acortada.",
+    "engine": "find_fret",
+    "title": "Traste 0 frente a nota pisada",
+    "sections": ["Primera cuerda al aire", "Primera cuerda en traste 1", "Primera cuerda en traste 3"],
+    "exercises": [
+      { "id": "g1-m1-c4-e1", "type": "find_fret", "pregunta": "Toca la primera cuerda al aire.", "respuesta": { "s": 0, "f": 0 }, "feedbackOk": "Mi al aire: traste 0.", "xp": 10 },
+      { "id": "g1-m1-c4-e2", "type": "find_fret", "pregunta": "Pisa la primera cuerda en el traste 1.", "respuesta": { "s": 0, "f": 1 }, "feedbackOk": "La cuerda se acortó y subió de Mi a Fa.", "xp": 15 },
+      { "id": "g1-m1-c4-e3", "type": "find_fret", "pregunta": "Pisa la primera cuerda en el traste 3.", "respuesta": { "s": 0, "f": 3 }, "feedbackOk": "El traste 3 produce Sol.", "xp": 15 }
+    ]
+  },
+  "remediation": {
+    "purpose": "Hacer visible la longitud que vibra cuando el concepto físico no resulta claro.",
+    "strategy": "mostrar_longitud",
+    "message": "La interfaz dibuja el tramo de cuerda activo entre el dedo y el puente."
+  },
+  "assessment": {
+    "purpose": "Verificar la comprensión conceptual y la localización de los trastes 0, 1 y 3.",
+    "certifies": true,
+    "practiceCriteria": "Contrastar posiciones con guía visual",
+    "exitCriteria": "Explicar por qué sube la nota y tocar correctamente los trastes 0, 1 y 3"
+  },
+  "unlocks": {
+    "target": "05-primeras-pulsaciones",
+    "purpose": "Aplicar el conocimiento del instrumento a una primera ejecución controlada."
+  }
+}

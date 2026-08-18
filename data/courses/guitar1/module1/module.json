@@ -1,17 +1,19 @@
 {
   "id": "guitar1-module1",
-  "version": "1.1.0",
-  "title": "Tu guitarra y tus primeras notas",
+  "version": "2.0.0",
+  "title": "Conoce tu guitarra",
+  "subtitle": "El instrumento",
   "course": "Guitarra 1",
-  "purpose": "Reconocer el instrumento, ubicar las primeras notas y tocar un riff sencillo con pulso estable.",
-  "estimatedMinutes": 75,
+  "purpose": "Familiarizar al alumno con la anatomía, el funcionamiento y las seis cuerdas de su guitarra antes de estudiar acordes.",
+  "estimatedMinutes": 80,
+  "totalXp": 180,
   "certifiedSkills": [
-    "g1.strings.open",
-    "g1.fretboard.coords",
-    "g1.melody.first-notes",
-    "g1.rhythm.pulse-60bpm"
+    "g1.m1.anatomy",
+    "g1.m1.tuning-pegs",
+    "g1.m1.strings-open",
+    "g1.m1.nut-and-frets",
+    "g1.m1.first-plucks"
   ],
-  "capstone": "g1.capstone.first-riff",
   "folderSectionFlow": [
     "teaching",
     "practice",
@@ -21,17 +23,17 @@
   ],
   "folders": [
     "00-onboarding",
-    "01-seis-cuerdas",
-    "02-diapason-y-trastes",
-    "03-primeras-notas",
-    "04-el-pulso",
-    "05-riff-destino",
+    "01-anatomia-guitarra",
+    "02-clavijero-y-afinacion",
+    "03-las-seis-cuerdas",
+    "04-cejuela-y-trastes",
+    "05-primeras-pulsaciones",
     "06-desbloqueo-modulo-2"
   ],
   "nextModule": {
     "id": "guitar1-module2",
-    "title": "Tus primeros acordes",
+    "title": "Primeros acordes",
     "preview": "Mi menor y La menor",
-    "unlockRequirement": "Completar el riff del Módulo 1"
+    "unlockRequirement": "Certificar las cinco habilidades del instrumento"
   }
 }

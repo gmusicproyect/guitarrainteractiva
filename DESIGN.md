@@ -8,10 +8,11 @@ GMusic presents one meaningful learning action at a time. The interface may show
 
 `Course > Module > Folder > Skill > Practice > Assessment > Unlock`
 
+- Guitarra 1 presents five modules as one course-level flow.
 - A folder is one pedagogical responsibility.
-- Folders 01-04 certify individual skills.
-- Folder 05 is an integrative capstone, not a fifth independent skill.
-- Folders 00 and 06 orient and close the module; they do not certify skills.
+- Module 1 is limited to understanding and handling the instrument before chords.
+- Folders 01-05 certify anatomy, tuning pegs, strings, nut and frets, and first plucks.
+- Folders 00 and 06 orient and certify the module; they do not add independent skills.
 - Mistakes trigger teaching support, never punishment.
 
 ## Visual states

@@ -1,0 +1,73 @@
+{
+  "id": "g1-m1-anatomy",
+  "order": 1,
+  "kind": "skill",
+  "label": "Clase 1",
+  "title": "Anatomía de la guitarra",
+  "shortTitle": "Las ocho partes",
+  "purpose": "Construir un mapa visual del instrumento antes de explicar cómo funciona cada elemento.",
+  "skill": {
+    "id": "g1.m1.anatomy",
+    "statement": "Identifica pala, clavijero, cejuela, mástil, trastes, cuerpo, boca y puente."
+  },
+  "prerequisites": ["g1-m1-onboarding"],
+  "content": {
+    "parts": [
+      { "id": "pala", "name": "Pala o cabeza", "purpose": "Sostiene el clavijero." },
+      { "id": "clavijero", "name": "Clavijero", "purpose": "Controla la tensión de las cuerdas." },
+      { "id": "cejuela", "name": "Cejuela", "purpose": "Apoya las cuerdas e inicia el traste 0." },
+      { "id": "mastil", "name": "Mástil y diapasón", "purpose": "Recibe la mano que modifica las notas." },
+      { "id": "trastes", "name": "Trastes", "purpose": "Dividen el diapasón en alturas definidas." },
+      { "id": "cuerpo", "name": "Cuerpo", "purpose": "Amplifica la vibración de las cuerdas." },
+      { "id": "boca", "name": "Boca", "purpose": "Proyecta la resonancia de la caja." },
+      { "id": "puente", "name": "Puente", "purpose": "Ancla las cuerdas al cuerpo." }
+    ]
+  },
+  "teaching": {
+    "purpose": "Presentar las tres zonas principales y las ocho partes que el alumno utilizará durante el curso.",
+    "card": "La guitarra se organiza en cabeza, mástil y cuerpo. Cada zona contiene partes con una función concreta.",
+    "video": { "required": true, "status": "pending", "brief": "Recorrido visual por las ocho partes desde la perspectiva del alumno" },
+    "pdf": { "required": true, "status": "pending", "brief": "Guitarra etiquetada con las ocho partes" }
+  },
+  "practice": {
+    "purpose": "Relacionar el nombre de cada parte con su ubicación y función.",
+    "engine": "multiple_choice",
+    "title": "Ubica y reconoce",
+    "sections": ["Cabeza: pala, clavijero y cejuela", "Mástil: diapasón y trastes", "Cuerpo: caja, boca y puente"],
+    "exercises": [
+      {
+        "id": "g1-m1-c1-e1",
+        "type": "multiple_choice",
+        "pregunta": "¿Dónde se encuentran las clavijas para afinar?",
+        "opciones": ["En el puente", "En la pala o cabeza", "Dentro de la boca"],
+        "respuesta": "En la pala o cabeza",
+        "feedbackOk": "Las clavijas se ubican en la pala.",
+        "xp": 10
+      },
+      {
+        "id": "g1-m1-c1-e2",
+        "type": "multiple_choice",
+        "pregunta": "¿Qué pieza apoya las cuerdas al inicio del diapasón?",
+        "opciones": ["La cejuela", "El puente", "La boca"],
+        "respuesta": "La cejuela",
+        "feedbackOk": "La cejuela marca el apoyo inicial de las cuerdas.",
+        "xp": 15
+      }
+    ]
+  },
+  "remediation": {
+    "purpose": "Reducir la carga visual repasando una zona de la guitarra por vez.",
+    "strategy": "agrupar_por_zona",
+    "message": "La interfaz aísla cabeza, mástil o cuerpo y vuelve a señalar sus partes."
+  },
+  "assessment": {
+    "purpose": "Comprobar que el alumno reconoce las ocho partes y su función básica.",
+    "certifies": true,
+    "practiceCriteria": "Puede consultar etiquetas durante la práctica",
+    "exitCriteria": "Identificar correctamente las ocho partes sin etiquetas"
+  },
+  "unlocks": {
+    "target": "02-clavijero-y-afinacion",
+    "purpose": "Profundizar en el primer mecanismo del instrumento: el clavijero."
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "id": "g1-m1-tuning-pegs",
+  "order": 2,
+  "kind": "skill",
+  "label": "Clase 2",
+  "title": "Clavijero y afinación",
+  "shortTitle": "Tensión y altura",
+  "purpose": "Comprender cómo cada clavija controla una cuerda y modifica la altura de su sonido.",
+  "skill": {
+    "id": "g1.m1.tuning-pegs",
+    "statement": "Relaciona las seis clavijas con sus cuerdas y comprende la relación entre tensión y altura."
+  },
+  "prerequisites": ["g1.m1.anatomy"],
+  "content": {
+    "tuningPegs": [
+      { "peg": 6, "string": 6, "s": 5, "note": "Mi grave · E2" },
+      { "peg": 5, "string": 5, "s": 4, "note": "La · A2" },
+      { "peg": 4, "string": 4, "s": 3, "note": "Re · D3" },
+      { "peg": 3, "string": 3, "s": 2, "note": "Sol · G3" },
+      { "peg": 2, "string": 2, "s": 1, "note": "Si · B3" },
+      { "peg": 1, "string": 1, "s": 0, "note": "Mi aguda · E4" }
+    ]
+  },
+  "teaching": {
+    "purpose": "Explicar que tensar eleva la nota y aflojar la vuelve más grave.",
+    "card": "Cada clavija controla una cuerda. Más tensión produce un sonido más agudo; menos tensión, uno más grave.",
+    "video": { "required": true, "status": "pending", "brief": "Giro seguro de clavijas y cambio audible de altura" },
+    "pdf": { "required": true, "status": "pending", "brief": "Mapa de las seis clavijas hacia sus cuerdas" }
+  },
+  "practice": {
+    "purpose": "Asociar visualmente cada clavija con la cuerda que controla.",
+    "engine": "multiple_choice",
+    "title": "Clavija, cuerda y tensión",
+    "sections": ["Tensar frente a aflojar", "Mapa de seis clavijas", "Selección de la cuerda a afinar"],
+    "exercises": [
+      {
+        "id": "g1-m1-c2-e1",
+        "type": "multiple_choice",
+        "pregunta": "¿Qué ocurre cuando aumentas la tensión de una cuerda?",
+        "opciones": ["La nota sube", "La nota baja", "La nota no cambia"],
+        "respuesta": "La nota sube",
+        "feedbackOk": "Mayor tensión produce una nota más aguda.",
+        "xp": 15
+      },
+      {
+        "id": "g1-m1-c2-e2",
+        "type": "find_string",
+        "pregunta": "Pulsa la sexta cuerda para comprobar su afinación.",
+        "respuesta": { "s": 5 },
+        "feedbackOk": "La sexta cuerda corresponde a Mi grave.",
+        "xp": 15
+      }
+    ]
+  },
+  "remediation": {
+    "purpose": "Evitar giros inseguros y corregir asociaciones clavija-cuerda una por una.",
+    "strategy": "mapa_guiado",
+    "message": "Se ilumina una clavija y la cuerda conectada antes de pedir una nueva asociación."
+  },
+  "assessment": {
+    "purpose": "Verificar comprensión del principio de tensión y del mapa de clavijas.",
+    "certifies": true,
+    "practiceCriteria": "Resolver asociaciones con apoyo visual",
+    "exitCriteria": "Explicar tensión-altura y asociar las seis clavijas sin ayuda"
+  },
+  "unlocks": {
+    "target": "03-las-seis-cuerdas",
+    "purpose": "Estudiar las cuerdas como elementos físicos con grosor, material y sonido propios."
+  }
+}

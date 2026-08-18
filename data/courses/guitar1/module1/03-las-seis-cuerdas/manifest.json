@@ -1,0 +1,55 @@
+{
+  "id": "g1-m1-strings-open",
+  "order": 3,
+  "kind": "skill",
+  "label": "Clase 3",
+  "title": "Las seis cuerdas",
+  "shortTitle": "Calibres y sonidos",
+  "purpose": "Reconocer las seis cuerdas por número, grosor, material, nombre y altura.",
+  "skill": {
+    "id": "g1.m1.strings-open",
+    "statement": "Distingue las tres cuerdas graves entorchadas y las tres agudas lisas, de Mi grave a Mi aguda."
+  },
+  "prerequisites": ["g1.m1.tuning-pegs"],
+  "content": {
+    "stringGroups": {
+      "wound": ["6ª Mi · E2", "5ª La · A2", "4ª Re · D3"],
+      "plain": ["3ª Sol · G3", "2ª Si · B3", "1ª Mi · E4"]
+    }
+  },
+  "teaching": {
+    "purpose": "Diferenciar cuerdas graves y agudas mediante grosor, material y sonido.",
+    "card": "Las cuerdas 6ª, 5ª y 4ª son graves y entorchadas; las cuerdas 3ª, 2ª y 1ª son agudas y lisas.",
+    "video": { "required": true, "status": "pending", "brief": "Comparación cercana de calibres, textura y sonido" },
+    "pdf": { "required": true, "status": "pending", "brief": "Mapa E-A-D-G-B-e con grupos graves y agudos" }
+  },
+  "practice": {
+    "purpose": "Convertir las diferencias físicas en reconocimiento inmediato sobre la guitarra.",
+    "engine": "find_string",
+    "title": "Encuentra cada cuerda",
+    "sections": ["Tres graves entorchadas", "Tres agudas lisas", "Secuencia completa E-A-D-G-B-e"],
+    "exercises": [
+      { "id": "g1-m1-c3-e1", "type": "find_string", "pregunta": "Toca la 6ª cuerda, Mi grave.", "respuesta": { "s": 5 }, "feedbackOk": "Sexta cuerda: Mi grave.", "xp": 5 },
+      { "id": "g1-m1-c3-e2", "type": "find_string", "pregunta": "Toca la 5ª cuerda, La.", "respuesta": { "s": 4 }, "feedbackOk": "Quinta cuerda: La.", "xp": 5 },
+      { "id": "g1-m1-c3-e3", "type": "find_string", "pregunta": "Toca la 4ª cuerda, Re.", "respuesta": { "s": 3 }, "feedbackOk": "Cuarta cuerda: Re.", "xp": 5 },
+      { "id": "g1-m1-c3-e4", "type": "find_string", "pregunta": "Toca la 3ª cuerda, Sol.", "respuesta": { "s": 2 }, "feedbackOk": "Tercera cuerda: Sol.", "xp": 5 },
+      { "id": "g1-m1-c3-e5", "type": "find_string", "pregunta": "Toca la 2ª cuerda, Si.", "respuesta": { "s": 1 }, "feedbackOk": "Segunda cuerda: Si.", "xp": 5 },
+      { "id": "g1-m1-c3-e6", "type": "find_string", "pregunta": "Toca la 1ª cuerda, Mi aguda.", "respuesta": { "s": 0 }, "feedbackOk": "Primera cuerda: Mi aguda.", "xp": 10 }
+    ]
+  },
+  "remediation": {
+    "purpose": "Corregir confusiones comparando primero cuerdas de grupos distintos y después cuerdas vecinas.",
+    "strategy": "comparar_calibres",
+    "message": "La interfaz contrasta grosor y textura antes de repetir la cuerda confundida."
+  },
+  "assessment": {
+    "purpose": "Comprobar reconocimiento de las seis cuerdas y de sus dos grupos físicos.",
+    "certifies": true,
+    "practiceCriteria": "Puede recibir pistas de grosor y color",
+    "exitCriteria": "Seis cuerdas correctas de grave a aguda sin ayudas"
+  },
+  "unlocks": {
+    "target": "04-cejuela-y-trastes",
+    "purpose": "Explicar cómo la cejuela y los trastes modifican la longitud vibrante de esas cuerdas."
+  }
+}

@@ -2,36 +2,52 @@
   "id": "g1-m1-completion",
   "order": 6,
   "kind": "completion",
-  "label": "Cierre",
-  "title": "Módulo 1 completado",
-  "shortTitle": "Desbloqueo",
-  "purpose": "Resumir con honestidad lo demostrado y presentar el siguiente objetivo musical.",
+  "label": "Certificación",
+  "title": "Ya conoces tu guitarra",
+  "shortTitle": "Módulo 1 completado",
+  "purpose": "Reconocer las cinco habilidades demostradas y tender un puente claro hacia los primeros acordes.",
   "skill": null,
-  "prerequisites": ["g1.capstone.first-riff"],
+  "prerequisites": [
+    "g1.m1.anatomy",
+    "g1.m1.tuning-pegs",
+    "g1.m1.strings-open",
+    "g1.m1.nut-and-frets",
+    "g1.m1.first-plucks"
+  ],
+  "completion": {
+    "totalXp": 180,
+    "skillsCertified": [
+      "g1.m1.anatomy",
+      "g1.m1.tuning-pegs",
+      "g1.m1.strings-open",
+      "g1.m1.nut-and-frets",
+      "g1.m1.first-plucks"
+    ]
+  },
   "teaching": {
-    "purpose": "Hacer visible la relación entre las cuatro habilidades y el riff que acaba de completar el alumno.",
-    "card": "Reconoces las cuerdas, ubicas los trastes 0–3, tocas Mi–Fa–Sol y mantienes tu primer riff a pulso.",
+    "purpose": "Hacer visible todo lo que el alumno ya comprende sobre su instrumento.",
+    "card": "Reconoces las partes, comprendes el clavijero, distingues las cuerdas, entiendes la cejuela y completas la secuencia virtual de pulsaciones.",
     "video": { "required": false, "status": "not-required" },
     "pdf": { "required": false, "status": "not-required" }
   },
   "practice": {
-    "purpose": "Permitir una revisión consciente de lo logrado antes de abandonar el módulo.",
+    "purpose": "Permitir un repaso consciente de las cinco habilidades antes de continuar.",
     "engine": null,
-    "title": "Resumen de cuatro habilidades y un reto musical",
-    "sections": []
+    "title": "Resumen del instrumento",
+    "sections": ["Anatomía", "Clavijero", "Seis cuerdas", "Cejuela y trastes", "Pulsaciones limpias"]
   },
   "remediation": {
-    "purpose": "Ofrecer acceso directo al repaso de cualquier habilidad que todavía genere inseguridad.",
-    "strategy": null,
-    "message": "Cada habilidad puede repasarse desde la ruta antes de continuar."
+    "purpose": "Dirigir al alumno a la clase exacta que todavía necesita reforzar.",
+    "strategy": "repaso_por_habilidad",
+    "message": "Cada habilidad puede abrirse nuevamente desde el diagrama del módulo."
   },
   "assessment": {
-    "purpose": "Confirmar el cierre del módulo sin presentar el resumen como una habilidad adicional.",
+    "purpose": "Confirmar la certificación sin convertir el cierre en una sexta habilidad.",
     "certifies": false,
-    "exitCriteria": "Confirmar el cierre y abrir el Módulo 2"
+    "exitCriteria": "Cinco habilidades certificadas y 180 XP acumulados"
   },
   "unlocks": {
     "target": "guitar1-module2",
-    "purpose": "Dar acceso al Módulo 2, donde comienzan Mi menor y La menor."
+    "purpose": "Abrir el Módulo 2 para formar Mi menor y La menor."
   }
 }

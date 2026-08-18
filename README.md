@@ -21,8 +21,8 @@ Abre `http://localhost:3000/`.
 1. Elige guitarra como instrumento.
 2. Conoce el espacio de práctica interactivo.
 3. Revisa la primera ruta de aprendizaje.
-4. Aprende las seis cuerdas al aire.
-5. Avanza por módulos, habilidades y práctica libre.
+4. Recorre los cinco módulos de Guitarra 1.
+5. Comienza el Módulo 1 con anatomía, clavijero, cuerdas, cejuela y primeras pulsaciones.
 
 La interfaz separa el contenido en tres vistas para evitar una página extensa:
 
@@ -39,6 +39,7 @@ La interfaz separa el contenido en tres vistas para evitar una página extensa:
 | `js/` | Interfaz, audio, ejercicios y motores musicales |
 | `data/` | Curso y progreso de demostración |
 | `test/contract_tests.js` | Contratos del motor musical |
+| `test/modulo1_instrumento_tests.js` | 17 verificaciones del Módulo 1 |
 
 ## Versiones anteriores
 
@@ -51,6 +52,8 @@ Las demostraciones originales se conservan en:
 
 ```bash
 node test/contract_tests.js
+node test/module1_structure_tests.js
+node test/modulo1_instrumento_tests.js
 ```
 
 La aplicación no requiere backend ni proceso de compilación.

@@ -4,6 +4,7 @@
  */
 
 const MODULE_BASE = 'data/courses/guitar1/module1';
+const COURSE_MANIFEST = 'data/courses/guitar1/course.json';
 
 function escapeHTML(value = '') {
   return String(value)
@@ -35,8 +36,13 @@ export class ModuleOnePathUI {
     if (!this.container) return;
 
     try {
-      const moduleResponse = await fetch(`${MODULE_BASE}/module.json`);
+      const [courseResponse, moduleResponse] = await Promise.all([
+        fetch(COURSE_MANIFEST),
+        fetch(`${MODULE_BASE}/module.json`)
+      ]);
+      if (!courseResponse.ok) throw new Error('No se pudo cargar el manifiesto del curso');
       if (!moduleResponse.ok) throw new Error('No se pudo cargar el manifiesto del módulo');
+      this.course = await courseResponse.json();
       this.module = await moduleResponse.json();
 
       this.folders = await Promise.all(this.module.folders.map(async folderName => {
@@ -132,6 +138,41 @@ export class ModuleOnePathUI {
     ];
   }
 
+  renderCourseFlow() {
+    const modules = this.course.modules.map(module => {
+      const isFirst = module.id === this.module.id;
+      const isSecond = module.order === 2;
+      const state = isFirst
+        ? this.mode === 'student' ? 'completed' : 'current'
+        : isSecond && this.mode === 'student'
+          ? 'current'
+          : 'locked';
+      const stateCopy = state === 'completed' ? 'Completado' : state === 'current' ? 'En curso' : 'Posterior';
+
+      return `
+        <article class="course-module-node is-${state}">
+          <span class="course-module-number">${String(module.order).padStart(2, '0')}</span>
+          <strong>${escapeHTML(module.title)}</strong>
+          <small>${escapeHTML(module.shortTitle)}</small>
+          <span class="course-module-state">${stateCopy}</span>
+        </article>
+      `;
+    }).join('');
+
+    return `
+      <section class="course-flow-overview" aria-labelledby="courseFlowTitle">
+        <div class="course-flow-heading">
+          <div>
+            <span class="module-path-eyebrow">Mapa de Guitarra 1</span>
+            <h3 id="courseFlowTitle">Cinco módulos, una progresión clara</h3>
+          </div>
+          <strong>${this.course.modules.length} módulos</strong>
+        </div>
+        <div class="course-module-track">${modules}</div>
+      </section>
+    `;
+  }
+
   render() {
     if (!this.module || !this.folders) return;
 
@@ -166,10 +207,11 @@ export class ModuleOnePathUI {
 
     const nextStatus = this.mode === 'student' ? 'current' : 'locked';
     this.container.innerHTML = `
+      ${this.renderCourseFlow()}
       <div class="flow-diagram-intro">
         <div>
           <span class="module-path-eyebrow">Diagrama de flujo prioritario</span>
-          <h3>Del primer toque al Módulo 2</h3>
+          <h3>Módulo 1 · Conoce tu guitarra</h3>
           <p>Selecciona cualquier carpeta para ver el propósito de cada sección, incluso si todavía está bloqueada.</p>
         </div>
         <div class="flow-diagram-legend" aria-label="Estados del diagrama">
@@ -187,7 +229,7 @@ export class ModuleOnePathUI {
           <h3>${escapeHTML(this.module.nextModule.title)}</h3>
           <p>${escapeHTML(this.module.nextModule.preview)}</p>
         </div>
-        <span class="next-module-state">${nextStatus === 'current' ? 'Disponible' : 'Completa el riff para desbloquear'}</span>
+        <span class="next-module-state">${nextStatus === 'current' ? 'Disponible' : escapeHTML(this.module.nextModule.unlockRequirement)}</span>
       </article>
     `;
 
@@ -208,14 +250,14 @@ export class ModuleOnePathUI {
     const progressFill = document.querySelector('#tu-camino .global-prog-fill');
     const progressMeta = document.querySelector('#tu-camino .global-prog-meta');
 
-    if (badge) badge.textContent = 'GUITARRA 1 · MÓDULO 1';
-    if (heading) heading.textContent = 'Tu guitarra y tus primeras notas';
-    if (subheading) subheading.textContent = 'Avanza por cuatro habilidades y termina tocando tu primer riff.';
-    if (progressTitle) progressTitle.textContent = 'Habilidades certificadas';
-    if (progressScore) progressScore.textContent = `${completedSkills} / 4`;
+    if (badge) badge.textContent = 'GUITARRA 1 · 5 MÓDULOS';
+    if (heading) heading.textContent = 'Módulo 1 · Conoce tu guitarra';
+    if (subheading) subheading.textContent = this.module.purpose;
+    if (progressTitle) progressTitle.textContent = 'Habilidades del instrumento';
+    if (progressScore) progressScore.textContent = `${completedSkills} / ${this.module.certifiedSkills.length}`;
     if (progressFill) progressFill.style.width = `${progress}%`;
     if (progressMeta) {
-      progressMeta.innerHTML = `<span>${progress}% del módulo</span><span>1 reto final</span>`;
+      progressMeta.innerHTML = `<span>${progress}% del módulo</span><span>${this.module.totalXp} XP</span>`;
     }
   }
 

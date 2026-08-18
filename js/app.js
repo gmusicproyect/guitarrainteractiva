@@ -4,11 +4,11 @@
  */
 
 import { audioEngine } from './engine/audio-engine.js';
-import { HeroGuitarUI } from './ui/hero-guitar.js?v=3';
+import { HeroGuitarUI } from './ui/hero-guitar.js?v=4';
 import { PracticeViewUI } from './ui/practice-view.js?v=2';
 import { FreeGuitarUI } from './ui/free-guitar.js?v=2';
 import { ProfileDemoUI } from './ui/profile-demo.js?v=5';
-import { ModuleOnePathUI } from './ui/module-one-path.js?v=3';
+import { ModuleOnePathUI } from './ui/module-one-path.js?v=5';
 
 function initApp() {
   // 1. Initialize UI Controllers
@@ -75,7 +75,7 @@ function initApp() {
     if (onboardingProgressBar) onboardingProgressBar.style.width = `${(onboardingStep / 3) * 100}%`;
     if (onboardingBack) onboardingBack.hidden = onboardingStep === 1;
     if (onboardingNext) {
-      onboardingNext.textContent = onboardingStep === 3 ? 'Empezar con las cuerdas' : 'Continuar';
+      onboardingNext.textContent = onboardingStep === 3 ? 'Hacer mi primer toque' : 'Continuar';
     }
   };
 

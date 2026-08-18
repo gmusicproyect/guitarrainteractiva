@@ -1,0 +1,44 @@
+{
+  "id": "guitar1",
+  "version": "1.0.0",
+  "title": "Guitarra 1",
+  "purpose": "Pasar de conocer el instrumento a tocar una primera progresión con acordes y pulso estable.",
+  "modules": [
+    {
+      "id": "guitar1-module1",
+      "order": 1,
+      "title": "Conoce tu guitarra",
+      "shortTitle": "El instrumento",
+      "purpose": "Reconocer las partes de la guitarra, comprender cómo produce sonido y pulsar sus seis cuerdas al aire.",
+      "manifest": "module1/module.json"
+    },
+    {
+      "id": "guitar1-module2",
+      "order": 2,
+      "title": "Primeros acordes",
+      "shortTitle": "Mi menor y La menor",
+      "purpose": "Reconocer y construir en la guitarra interactiva las digitaciones de Em y Am, y comprender su transición."
+    },
+    {
+      "id": "guitar1-module3",
+      "order": 3,
+      "title": "Acordes mayores abiertos",
+      "shortTitle": "Do, Sol y Re",
+      "purpose": "Reconocer y construir las formas abiertas de Do, Sol y Re mayor."
+    },
+    {
+      "id": "guitar1-module4",
+      "order": 4,
+      "title": "Ritmo y rasgueos",
+      "shortTitle": "Pulso de cuatro tiempos",
+      "purpose": "Coordinar la mano de rasgueo con un pulso constante y patrones básicos."
+    },
+    {
+      "id": "guitar1-module5",
+      "order": 5,
+      "title": "Progresiones y graduación",
+      "shortTitle": "Progresiones y riff final",
+      "purpose": "Integrar acordes, cambios y ritmo en progresiones armónicas y un riff final de graduación."
+    }
+  ]
+}

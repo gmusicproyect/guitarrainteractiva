@@ -117,7 +117,7 @@ export class HeroGuitarUI {
       this.lessonPromptText.innerHTML = '🎉 <strong>Completaste tu primer ejercicio interactivo en GMusic</strong>.';
     }
     if (this.lessonSubtext) {
-      this.lessonSubtext.innerHTML = '<span class="text-done">✓ Presentación completada.</span> Abre Ruta y continúa con la Clase 1: Las seis cuerdas.';
+      this.lessonSubtext.innerHTML = '<span class="text-done">✓ Presentación completada.</span> Abre Ruta y continúa con la Clase 1: Anatomía de la guitarra.';
     }
     if (this.feedbackStringLbl) this.feedbackStringLbl.textContent = '¡Listo!';
     if (this.feedbackNoteLbl) this.feedbackNoteLbl.textContent = '✓ Logrado';

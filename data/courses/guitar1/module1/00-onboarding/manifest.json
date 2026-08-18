@@ -3,35 +3,45 @@
   "order": 0,
   "kind": "orientation",
   "label": "Presentación",
-  "title": "Conoce la guitarra interactiva",
-  "shortTitle": "Presentación",
-  "purpose": "Eliminar la fricción inicial: el alumno toca y escucha una cuerda durante sus primeros segundos en GMusic.",
+  "title": "Bienvenida a tu guitarra",
+  "shortTitle": "Primer toque",
+  "purpose": "Eliminar la fricción inicial mediante un primer sonido correcto en la sexta cuerda.",
   "skill": null,
   "prerequisites": [],
   "teaching": {
-    "purpose": "Explicar cómo responde la guitarra interactiva y reconocer visualmente la sexta cuerda.",
-    "card": "La guitarra responde al tocar cada cuerda. La sexta es la más gruesa y produce un Mi grave.",
+    "purpose": "Presentar la guitarra como un instrumento que responde inmediatamente al toque.",
+    "card": "La sexta cuerda es la más gruesa y produce el Mi más grave de la guitarra.",
     "video": { "required": false, "status": "not-required" },
     "pdf": { "required": false, "status": "not-required" }
   },
   "practice": {
-    "purpose": "Conseguir una primera interacción correcta y audible sin exigir conocimientos previos.",
+    "purpose": "Conseguir que el alumno produzca su primer sonido y comprenda la interacción.",
     "engine": "find_string",
-    "title": "Toca y escucha",
-    "steps": ["Tocar la 6ª cuerda Mi · E", "Tocar la 5ª cuerda La · A"]
+    "title": "Toca la sexta cuerda",
+    "steps": ["Tocar la 6ª cuerda · Mi grave · E2"],
+    "exercises": [
+      {
+        "id": "g1-m1-onboarding-e1",
+        "type": "find_string",
+        "pregunta": "Toca la cuerda más gruesa: sexta cuerda, Mi grave.",
+        "respuesta": { "s": 5 },
+        "feedbackOk": "Esa es la sexta cuerda: Mi grave.",
+        "xp": 5
+      }
+    ]
   },
   "remediation": {
-    "purpose": "Evitar frustración inicial mostrando con claridad dónde debe tocar el alumno.",
+    "purpose": "Evitar frustración mostrando visualmente la cuerda objetivo.",
     "strategy": "iluminar_objetivo",
-    "message": "La cuerda correcta se ilumina y permanece disponible para otro intento."
+    "message": "La sexta cuerda permanece iluminada hasta que el alumno la toca."
   },
   "assessment": {
-    "purpose": "Confirmar que el alumno comprende cómo tocar una cuerda y recibir respuesta del sistema.",
+    "purpose": "Confirmar que el alumno comprende cómo interactuar con la guitarra.",
     "certifies": false,
-    "exitCriteria": "Completar los dos toques guiados"
+    "exitCriteria": "Tocar correctamente la sexta cuerda"
   },
   "unlocks": {
-    "target": "01-seis-cuerdas",
-    "purpose": "Abrir la primera habilidad formal: reconocer las seis cuerdas al aire."
+    "target": "01-anatomia-guitarra",
+    "purpose": "Abrir la primera clase para conocer las partes físicas del instrumento."
   }
 }

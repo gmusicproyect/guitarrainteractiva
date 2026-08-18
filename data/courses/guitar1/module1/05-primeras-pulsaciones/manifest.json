@@ -1,0 +1,50 @@
+{
+  "id": "g1-m1-first-plucks",
+  "order": 5,
+  "kind": "skill",
+  "label": "Clase 5",
+  "title": "Primeras pulsaciones",
+  "shortTitle": "Sonido limpio",
+  "purpose": "Comprender el orden de pulsación y completar en la guitarra interactiva una secuencia de seis cuerdas al aire.",
+  "skill": {
+    "id": "g1.m1.first-plucks",
+    "statement": "Completa en la guitarra interactiva la secuencia de seis cuerdas al aire y reconoce cuándo debe detenerse cada sonido."
+  },
+  "prerequisites": ["g1.m1.nut-and-frets"],
+  "teaching": {
+    "purpose": "Mostrar cómo pulsar con precisión y cómo detener una resonancia no deseada.",
+    "card": "Pulsa una cuerda cada vez, deja que suene con claridad y prepara la mano antes de avanzar a la siguiente.",
+    "video": { "required": true, "status": "pending", "brief": "Pulsación alternada y control básico de resonancia" },
+    "pdf": { "required": true, "status": "pending", "brief": "Secuencia descendente de las seis cuerdas" }
+  },
+  "practice": {
+    "purpose": "Convertir el reconocimiento del instrumento en una primera ejecución continua.",
+    "engine": "play_sequence",
+    "title": "De Mi grave a Mi aguda",
+    "config": { "bpm": 60, "remediationBpm": 45 },
+    "sections": ["Cuerdas graves 6ª–4ª", "Cuerdas agudas 3ª–1ª", "Secuencia completa"],
+    "sequence": [
+      { "s": 5, "f": 0, "note": "Mi grave · E2" },
+      { "s": 4, "f": 0, "note": "La · A2" },
+      { "s": 3, "f": 0, "note": "Re · D3" },
+      { "s": 2, "f": 0, "note": "Sol · G3" },
+      { "s": 1, "f": 0, "note": "Si · B3" },
+      { "s": 0, "f": 0, "note": "Mi aguda · E4" }
+    ]
+  },
+  "remediation": {
+    "purpose": "Recuperar claridad aislando la cuerda que trastea o no suena limpia.",
+    "strategy": "aislar_cuerda",
+    "message": "Se repite sólo la cuerda problemática a 45 BPM antes de reconstruir la secuencia."
+  },
+  "assessment": {
+    "purpose": "Comprobar reconocimiento del orden y ejecución correcta dentro de la guitarra interactiva.",
+    "certifies": true,
+    "practiceCriteria": "Practicar por grupos con tempo reducido",
+    "exitCriteria": "Completar en la interfaz las seis cuerdas de grave a aguda en el orden esperado"
+  },
+  "unlocks": {
+    "target": "06-desbloqueo-modulo-2",
+    "purpose": "Certificar las cinco habilidades del instrumento y preparar el primer acorde."
+  }
+}
