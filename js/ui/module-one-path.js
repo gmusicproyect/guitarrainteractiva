@@ -16,9 +16,10 @@ function escapeHTML(value = '') {
 }
 
 export class ModuleOnePathUI {
-  constructor({ onNavigateHome } = {}) {
+  constructor({ onNavigateHome, onStartFolder } = {}) {
     this.container = document.querySelector('#tu-camino .roadmap-timeline');
     this.onNavigateHome = onNavigateHome || null;
+    this.onStartFolder = onStartFolder || null;
     this.mode = document.body.classList.contains('mode-student') ? 'student' : 'visitor';
 
     this.modal = document.getElementById('moduleFolderModal');

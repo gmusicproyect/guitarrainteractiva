@@ -175,6 +175,10 @@ export class PracticeViewUI {
     const { title, exercises, isSequence, sequence, isCompletion, completion } = this.activeFolderData;
 
     if (this.modalTitle) this.modalTitle.textContent = title;
+    const moduleTag = document.getElementById('practiceModuleTag');
+    if (moduleTag) moduleTag.textContent = 'MÓDULO 1 · EL INSTRUMENTO';
+    const strumLabel = document.getElementById('btnPracticeStrumLabel');
+    if (strumLabel) strumLabel.textContent = '🔊 Rasguear cuerdas';
     if (this.feedbackBox) this.feedbackBox.classList.remove('success-feedback');
     if (this.btnStrum) this.btnStrum.disabled = false;
 
