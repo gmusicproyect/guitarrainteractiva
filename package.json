@@ -1,0 +1,17 @@
+{
+  "name": "gmusic-guitarra-interactiva",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Aprendizaje interactivo de guitarra con audio y progreso local.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "serve": "node scripts/serve.mjs",
+    "test": "node --test test/*.js",
+    "check:static": "node scripts/check.mjs",
+    "check": "npm run check:static && npm test"
+  }
+}

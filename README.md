@@ -1,59 +1,94 @@
 # GMusic · Guitarra interactiva
 
-Experiencia web para aprender guitarra mediante recorridos guiados, ejercicios interactivos y síntesis de audio en el navegador.
+Un espacio de práctica de guitarra en español: lecciones guiadas, instrumento interactivo, ejercicios con respuesta inmediata y sonido generado en el navegador. HTML, CSS y módulos JavaScript nativos, sin dependencias de ejecución ni compilación.
 
-## Probar la aplicación
+[Abrir la versión publicada](https://gmusicproyect.github.io/guitarrainteractiva/)
 
-### GitHub Pages
+## Qué incluye
 
-**https://gmusicproyect.github.io/guitarrainteractiva/**
+- Un panel de estudio con la siguiente misión, la ruta y las habilidades aprendidas.
+- El **Módulo 1: Conoce tu guitarra**, con bienvenida y cinco habilidades: anatomía, clavijero, cuerdas al aire, cejuela y trastes, y primeras pulsaciones.
+- Ejercicios que comprueban la respuesta antes de avanzar y permiten volver a intentarlo.
+- Progreso local, desbloqueo secuencial y XP por completar una clase; los repasos no duplican la recompensa.
+- Una guitarra libre para explorar notas, acordes y escalas con Web Audio.
+- Navegación con teclado, diálogos con gestión de foco y adaptación a pantallas pequeñas.
 
-### En local
+**Alcance actual:** los módulos 2–5 aparecen como próximos contenidos. No están implementados como cursos completos. El progreso pertenece al navegador y al dispositivo: no hay cuentas, autenticación, servidor ni sincronización entre dispositivos. Los ejercicios evalúan la interacción en pantalla; no califican el sonido de una guitarra real mediante el micrófono.
+
+## Guardado del avance
+
+Se recuerdan las clases completadas, la bienvenida vista y las fechas de práctica. Una clase pendiente comienza de nuevo; no se guarda la posición dentro de sus ejercicios. El XP se calcula desde las clases completadas: las cinco habilidades suman 180 XP y la introducción aporta 5 XP adicionales.
+
+Los datos se guardan en `localStorage` bajo la clave `gmusic.learner-progress.v1`. Borrar los datos del sitio elimina ese progreso; otro navegador, puerto o dominio tiene su propio registro. Si el almacenamiento está bloqueado, la interfaz lo indica y conserva el avance en memoria mientras la página permanece abierta.
+
+## Ejecutar en local
+
+Necesitas Node.js **22.13 o posterior**; el archivo `.nvmrc` selecciona Node 24. Desde la carpeta del repositorio:
 
 ```bash
-python3 -m http.server 3000
+npm ci
+npm run serve
 ```
 
-Abre `http://localhost:3000/`.
+Abre [http://127.0.0.1:3000/](http://127.0.0.1:3000/). El servidor de desarrollo solo escucha en tu equipo. Para otro puerto:
 
-## Recorrido principal
+```bash
+npm run serve -- --port 3001
+```
 
-1. Elige guitarra como instrumento.
-2. Conoce el espacio de práctica interactivo.
-3. Revisa la primera ruta de aprendizaje.
-4. Recorre los cinco módulos de Guitarra 1.
-5. Comienza el Módulo 1 con anatomía, clavijero, cuerdas, cejuela y primeras pulsaciones.
+También puedes usar cualquier servidor de archivos estáticos, por ejemplo `python3 -m http.server 3000`. Abre la aplicación por HTTP, no mediante `file://`: los módulos y los manifiestos JSON necesitan un servidor.
 
-La interfaz separa el contenido en tres vistas para evitar una página extensa:
+El navegador debe admitir módulos JavaScript, `fetch` y Web Audio. El audio se activa al interactuar con la página. Las tipografías de Google Fonts requieren conexión; si no están disponibles, se utilizan las fuentes de respaldo.
 
-- **Inicio:** misión y ejercicio actual.
-- **Ruta:** módulos ordenados del curso.
-- **Habilidades:** progreso y acceso a la guitarra libre.
+## Verificar cambios
 
-## Estructura
+```bash
+npm run check
+```
 
-| Ruta | Contenido |
+Este comando ejecuta dos capas de verificación:
+
+| Comando | Qué comprueba |
 | --- | --- |
-| `index.html` | Aplicación y recorrido de bienvenida |
-| `css/` | Sistema visual, guitarra, módulos y modales |
-| `js/` | Interfaz, audio, ejercicios y motores musicales |
-| `data/` | Curso y progreso de demostración |
-| `test/contract_tests.js` | Contratos del motor musical |
-| `test/modulo1_instrumento_tests.js` | 17 verificaciones del Módulo 1 |
+| `npm run check:static` | Sintaxis JavaScript, scripts integrados en las páginas históricas, JSON válido y existencia de imports, recursos locales y manifiestos referenciados. |
+| `npm test` | Contratos musicales, estructura y ejercicios del Módulo 1, y pruebas de regresión del comportamiento. |
 
-## Versiones anteriores
+Las pruebas usan el ejecutor integrado de Node. No requieren paquetes ni conexión. La validación estática comprueba referencias literales; las rutas calculadas en tiempo de ejecución y el diseño visual deben comprobarse en el navegador.
 
-Las demostraciones originales se conservan en:
+El flujo de GitHub Actions ejecuta `npm ci` y `npm run check` con Node 22 y 24 en cada push y pull request. Usa permisos de lectura y versiones de las acciones fijadas a un commit. Dependabot propone actualizaciones de esas acciones.
 
-- `guitarra-uno.html`: módulo guiado anterior.
-- `guitarra-interactiva.html`: laboratorio anterior de escalas, acordes y retos.
+Antes de publicar un cambio visual o de interacción, comprueba también en el navegador:
 
-## Verificación
+1. Completar la bienvenida y abrir la siguiente clase desde el panel y la ruta.
+2. Responder incorrectamente, volver a intentar y confirmar que solo una respuesta válida permite avanzar.
+3. Completar una clase, recargar y comprobar el progreso y el siguiente desbloqueo.
+4. Repasar una clase y comprobar que el XP no se duplica.
+5. Recorrer botones y diálogos con Tab, Mayús+Tab y Escape, y revisar la vista móvil.
+6. Activar el sonido, cambiar de vista durante una reproducción y abrir la guitarra libre.
 
-```bash
-node test/contract_tests.js
-node test/module1_structure_tests.js
-node test/modulo1_instrumento_tests.js
-```
+## Organización
 
-La aplicación no requiere backend ni proceso de compilación.
+| Ruta | Responsabilidad |
+| --- | --- |
+| `index.html` | Aplicación principal y bienvenida. |
+| `css/` | Estilos del panel, guitarra, ruta y diálogos. |
+| `js/app.js` | Inicio de la aplicación y navegación. |
+| `js/ui/` | Controladores de las vistas y las prácticas. |
+| `js/engine/` | Audio, guitarra y evaluación de ejercicios. |
+| `js/state/` | Guardado, validación y cálculo del progreso local. |
+| `js/music/` | Cuerdas, notas, acordes, escalas y formas CAGED. |
+| `data/courses/guitar1/course.json` | Mapa de los cinco módulos. |
+| `data/courses/guitar1/module1/` | Manifiesto del módulo y contenido de cada carpeta. |
+| `test/` | Pruebas automatizadas sin dependencias. |
+| `scripts/` | Servidor local y validación estática. |
+| `.github/` | Integración continua y actualización de acciones. |
+
+La aplicación principal carga el Módulo 1 desde sus manifiestos JSON. Los datos JavaScript anteriores se conservan porque otros ejercicios y pruebas todavía los utilizan. Al modificar un contenido, revisa sus consumidores y mantén coherentes la enseñanza, la respuesta y la condición de desbloqueo.
+
+Las páginas `guitarra-uno.html` y `guitarra-interactiva.html` se conservan como demostraciones históricas. Su comportamiento y sus datos son independientes del panel principal.
+
+## Publicación
+
+El sitio se puede servir directamente desde la raíz del repositorio en GitHub Pages o en cualquier alojamiento estático. Publica `index.html` junto con `css/`, `js/`, `data/` y los recursos que referencie. No hay una carpeta `dist` ni variables de entorno obligatorias.
+
+El flujo de calidad valida los cambios; no despliega el sitio. La publicación depende de la configuración de Pages del repositorio.

@@ -6,9 +6,10 @@
 
 import { GuitarEngine } from '../engine/guitar-engine.js';
 import { CHORDS } from '../music/chords.js';
-import { SCALES } from '../music/scales.js?v=2';
-import { SPELL } from '../music/spelling.js';
-import { audioEngine } from '../engine/audio-engine.js?v=2';
+import { SCALES } from '../music/scales.js';
+import { getSpelledNote } from '../music/spelling.js';
+import { audioEngine } from '../engine/audio-engine.js';
+import { DialogController } from './dialog-controller.js';
 
 export class FreeGuitarUI {
   constructor() {
@@ -26,6 +27,12 @@ export class FreeGuitarUI {
 
   init() {
     if (!this.modal || !this.container) return;
+    this.dialog = new DialogController(this.modal, { initialFocus: this.btnClose, onClose: () => {
+      audioEngine.stopAll();
+      this.guitar?.clearAnimations();
+    } });
+    this.noteDetectedText?.setAttribute('role', 'status');
+    this.noteDetectedText?.setAttribute('aria-live', 'polite');
 
     // Instantiate unified GuitarEngine on 0..12 window (engine supports 0..16)
     this.guitar = new GuitarEngine({
@@ -35,21 +42,12 @@ export class FreeGuitarUI {
       toFret: 12,
       showInlays: true,
       interactive: true,
-      onNoteClick: ({ s, f, note, stringData }) => {
-        if (this.noteDetectedText) {
-          const es = SPELL.getNoteEs(note);
-          this.noteDetectedText.textContent = `${note} (${es}) · Cuerda ${stringData.stringNumber} (s:${s}), Traste ${f === 0 ? 'al aire' : f}`;
-        }
-      }
+      onNoteClick: note => this.showNote(note)
     });
 
     // Close handlers
     if (this.btnClose) this.btnClose.addEventListener('click', () => this.close());
     if (this.btnCloseFooter) this.btnCloseFooter.addEventListener('click', () => this.close());
-
-    this.modal.addEventListener('click', (e) => {
-      if (e.target === this.modal) this.close();
-    });
 
     // View filter selector
     if (this.viewModeSelect) {
@@ -62,8 +60,6 @@ export class FreeGuitarUI {
     const chordButtons = this.modal.querySelectorAll('.btn-chord-chip');
     chordButtons.forEach(btn => {
       btn.addEventListener('click', () => {
-        chordButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
         const chordKey = `${btn.dataset.chord}-open`;
         this.highlightChord(chordKey);
       });
@@ -72,25 +68,36 @@ export class FreeGuitarUI {
     // Strum All button
     if (this.btnStrum) {
       this.btnStrum.addEventListener('click', () => {
-        audioEngine.strumChord([0, 0, 0, 0, 0, 0], true, 35);
+        audioEngine.strumChord(CHORDS[this.currentChordId]?.strumArray || [0, 0, 0, 0, 0, 0], true, 35);
       });
     }
   }
 
   open() {
-    this.modal.removeAttribute('hidden');
-    document.body.style.overflow = 'hidden';
+    if (!this.dialog) return;
     this.applyFilter(this.viewModeSelect ? this.viewModeSelect.value : 'notes');
+    this.dialog.open();
   }
 
   close() {
-    this.modal.setAttribute('hidden', '');
-    document.body.style.overflow = '';
+    this.dialog?.close();
+  }
+
+  showNote({ f, stringData }) {
+    if (!this.noteDetectedText) return;
+    const { en, es } = getSpelledNote((stringData.midi + f) % 12, this.guitar?.tonality);
+    this.noteDetectedText.textContent = `${en} (${es}) · ${stringData.stringNumber}ª cuerda, ${f === 0 ? 'al aire' : `traste ${f}`}`;
   }
 
   applyFilter(mode) {
     if (!this.guitar) return;
     this.guitar.clearFretHighlights();
+    this.currentChordId = null;
+    this.modal.querySelectorAll('.btn-chord-chip').forEach(button => {
+      button.classList.remove('active');
+      button.setAttribute('aria-pressed', 'false');
+    });
+    if (this.btnStrum) this.btnStrum.textContent = 'Rasguear cuerdas al aire';
 
     const cells = this.container.querySelectorAll('.fret-matrix-cell');
     cells.forEach(c => {
@@ -109,8 +116,8 @@ export class FreeGuitarUI {
       return;
     }
 
-    if (mode === 'am-pentatonic') {
-      const scale = SCALES['am-pentatonic'];
+    const scale = SCALES[mode];
+    if (scale) {
       cells.forEach(cell => {
         const note = cell.dataset.note;
         if (scale.notes.includes(note)) {
@@ -121,19 +128,7 @@ export class FreeGuitarUI {
           }
         } else {
           const bubble = cell.querySelector('.fret-note-bubble');
-          if (bubble) bubble.style.opacity = '0.25';
-        }
-      });
-    } else if (mode === 'c-major') {
-      const scale = SCALES['c-major'];
-      cells.forEach(cell => {
-        const note = cell.dataset.note;
-        if (scale.notes.includes(note)) {
-          if (note === scale.root) {
-            cell.classList.add('highlighted-root');
-          } else {
-            cell.classList.add('highlighted-note');
-          }
+          if (bubble) bubble.style.display = 'none';
         }
       });
     }
@@ -143,7 +138,15 @@ export class FreeGuitarUI {
     const chord = CHORDS[chordId];
     if (!chord || !this.guitar) return;
 
-    this.guitar.clearFretHighlights();
+    this.applyFilter('notes');
+    if (this.viewModeSelect) this.viewModeSelect.value = 'notes';
+    this.currentChordId = chordId;
+    this.modal.querySelectorAll('.btn-chord-chip').forEach(button => {
+      const selected = `${button.dataset.chord}-open` === chordId;
+      button.classList.toggle('active', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+    if (this.btnStrum) this.btnStrum.textContent = `Rasguear ${chord.symbol}`;
 
     // Play strum
     audioEngine.strumChord(chord.strumArray, true, 35);

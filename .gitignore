@@ -1,2 +1,9 @@
 .DS_Store
 _extracted/
+node_modules/
+coverage/
+test-results/
+playwright-report/
+.playwright-cli/
+work/
+*.log
