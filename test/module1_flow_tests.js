@@ -70,3 +70,4 @@ assert(MODULO_1_COMPLETION.nextModule.id === 'g1-m2', 'Puente configurado hacia 
 console.log(`\n========================================`);
 console.log(`TEST DE FLUJO MÓDULO 1: ${passed} PASADAS, ${failed} FALLIDAS`);
 console.log(`========================================\n`);
+if (failed > 0) process.exitCode = 1;

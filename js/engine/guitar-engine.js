@@ -10,8 +10,8 @@
  * - Anillos de dedos ancla punteados (§4.8)
  */
 
-import { STRINGS, STRING_BY_S, getMidiNote } from '../music/strings.js';
-import { SPELL, getSpelledNote } from '../music/spelling.js';
+import { STRINGS, STRING_BY_S } from '../music/strings.js';
+import { getSpelledNote } from '../music/spelling.js';
 import { audioEngine } from './audio-engine.js';
 
 export class GuitarEngine {
@@ -26,7 +26,7 @@ export class GuitarEngine {
     this.maxFrets = 16;
 
     // Zoom de posición (§1.5) si la ventana abarca <= 5 trastes
-    this.enableZoom = options.enableZoom || (this.toFret - this.fromFret <= 5 && this.view !== 'hero-open');
+    this.enableZoom = options.enableZoom ?? (this.toFret - this.fromFret <= 5 && this.view !== 'hero-open');
     this.interactive = options.interactive !== false;
     this.showInlays = options.showInlays !== false;
     this.autoPlayAudio = options.autoPlayAudio !== false;
@@ -38,6 +38,8 @@ export class GuitarEngine {
     this.stringElements = {};
     this.fretCells = {};
     this.activeHighlights = [];
+    this.animationTimers = new Set();
+    this.vibrationTimers = new Map();
 
     if (this.container) {
       this.render();
@@ -54,6 +56,7 @@ export class GuitarEngine {
 
   render() {
     if (!this.container) return;
+    this.clearAnimations();
     this.container.innerHTML = '';
     this.stringElements = {};
     this.fretCells = {};
@@ -78,43 +81,37 @@ export class GuitarEngine {
       this.container.appendChild(nut);
     }
 
-    STRINGS.forEach(stringData => {
+    [...STRINGS].reverse().forEach(stringData => {
       const s = stringData.s;
-      const row = document.createElement('div');
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.disabled = !this.interactive;
       row.className = `guitar-string-row gauge-${stringData.gauge}`;
       row.dataset.s = s;
       row.dataset.stringNumber = stringData.stringNumber;
       row.dataset.noteEn = stringData.noteEn;
       row.dataset.noteEs = stringData.noteEs;
-      row.tabIndex = 0;
-      row.setAttribute('role', 'button');
       row.setAttribute('aria-label', `Cuerda ${stringData.stringNumber}, ${stringData.noteEs} (${stringData.noteEn})`);
 
-      const badge = document.createElement('div');
+      const badge = document.createElement('span');
       badge.className = 'string-badge';
       badge.textContent = `${stringData.stringNumber} · ${stringData.noteEn}`;
       row.appendChild(badge);
 
-      const track = document.createElement('div');
+      const track = document.createElement('span');
       track.className = 'string-track';
-      const line = document.createElement('div');
+      const line = document.createElement('span');
       line.className = `string-line string-${stringData.stringNumber}`;
       track.appendChild(line);
       row.appendChild(track);
 
-      const pill = document.createElement('div');
+      const pill = document.createElement('span');
       pill.className = 'string-note-pill';
       pill.textContent = `${stringData.noteEn}${stringData.octave}`;
       row.appendChild(pill);
 
       if (this.interactive) {
         row.addEventListener('click', () => this.handleStringAction(s, 0));
-        row.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            this.handleStringAction(s, 0);
-          }
-        });
       }
 
       this.stringElements[s] = row;
@@ -128,6 +125,7 @@ export class GuitarEngine {
       <button type="button" class="strum-all-btn" title="Rasguear las 6 cuerdas">🎵 Rasguear cuerdas</button>
     `;
     const btnStrum = indicator.querySelector('.strum-all-btn');
+    btnStrum.disabled = !this.interactive;
     btnStrum.addEventListener('click', () => this.strumOpenStrings());
     this.container.appendChild(indicator);
   }
@@ -161,18 +159,19 @@ export class GuitarEngine {
       header.textContent = f === 0 ? 'Aire' : `${f}`;
       col.appendChild(header);
 
-      // Strings s:0 (1ª) down to s:5 (6ª)
-      STRINGS.forEach(stringData => {
+      // Player perspective: bass string above the treble string.
+      [...STRINGS].reverse().forEach(stringData => {
         const s = stringData.s;
         const noteName = this.getNoteName(s, f);
 
-        const cell = document.createElement('div');
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.disabled = !this.interactive;
         cell.className = 'fret-matrix-cell';
         cell.dataset.s = s;
         cell.dataset.f = f;
         cell.dataset.note = noteName;
-        cell.tabIndex = 0;
-        cell.setAttribute('role', 'button');
+        cell.tabIndex = s === 5 && f === this.fromFret ? 0 : -1;
         cell.setAttribute('aria-label', `Cuerda ${stringData.stringNumber}, Traste ${f}, Nota ${noteName}`);
 
         const bubble = document.createElement('span');
@@ -181,12 +180,15 @@ export class GuitarEngine {
         cell.appendChild(bubble);
 
         if (this.interactive) {
-          cell.addEventListener('click', (e) => this.handleFretAction(s, f, noteName, e));
+          cell.addEventListener('click', (e) => {
+            this.focusCell(s, f);
+            this.handleFretAction(s, f, noteName, e);
+          });
           cell.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              this.handleFretAction(s, f, noteName, e);
-            }
+            const positions = { ArrowLeft: [s, Math.max(this.fromFret, f - 1)], ArrowRight: [s, Math.min(this.toFret, f + 1)], ArrowUp: [Math.min(5, s + 1), f], ArrowDown: [Math.max(0, s - 1), f], Home: [s, this.fromFret], End: [s, this.toFret] };
+            if (!positions[e.key]) return;
+            e.preventDefault();
+            this.focusCell(...positions[e.key]);
           });
         }
 
@@ -231,7 +233,8 @@ export class GuitarEngine {
       el.classList.remove('plucked');
       void el.offsetWidth;
       el.classList.add('plucked');
-      setTimeout(() => el.classList.remove('plucked'), 800);
+      clearTimeout(this.vibrationTimers.get(s));
+      this.vibrationTimers.set(s, setTimeout(() => { el.classList.remove('plucked'); this.vibrationTimers.delete(s); }, 800));
     }
   }
 
@@ -268,6 +271,8 @@ export class GuitarEngine {
   clearFretHighlights() {
     Object.values(this.fretCells).forEach(cell => {
       cell.classList.remove('highlighted-root', 'highlighted-note', 'target-spot', 'pulse-target', 'finger-placed', 'anchor-finger-ring');
+      const bubble = cell.querySelector('.fret-note-bubble');
+      if (bubble) bubble.textContent = cell.dataset.note;
     });
     this.activeHighlights = [];
   }
@@ -276,7 +281,32 @@ export class GuitarEngine {
     audioEngine.strumChord([0, 0, 0, 0, 0, 0], downstroke, 40);
     const sOrder = downstroke ? [5, 4, 3, 2, 1, 0] : [0, 1, 2, 3, 4, 5];
     sOrder.forEach((s, idx) => {
-      setTimeout(() => this.vibrateString(s), idx * 40);
+      const timer = setTimeout(() => { this.vibrateString(s); this.animationTimers.delete(timer); }, idx * 40);
+      this.animationTimers.add(timer);
     });
+  }
+
+  focusCell(s, f) {
+    const target = this.fretCells[`${s}-${f}`];
+    if (!target) return;
+    Object.values(this.fretCells).forEach(cell => { cell.tabIndex = cell === target ? 0 : -1; });
+    target.focus();
+  }
+
+  clearAnimations() {
+    this.animationTimers.forEach(clearTimeout);
+    this.vibrationTimers.forEach(clearTimeout);
+    this.animationTimers.clear();
+    this.vibrationTimers.clear();
+    Object.values(this.stringElements).forEach(element => element.classList.remove('plucked'));
+  }
+
+  destroy() {
+    this.clearAnimations();
+    this.container?.replaceChildren();
+    this.stringElements = {};
+    this.fretCells = {};
+    this.onNoteClick = null;
+    this.onStringPluck = null;
   }
 }

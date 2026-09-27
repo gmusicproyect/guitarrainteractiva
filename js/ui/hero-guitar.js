@@ -41,6 +41,7 @@ export class HeroGuitarUI {
 
     this.currentStepIndex = 0;
     this.isCompleted = false;
+    this.flashTimer = null;
 
     this.init();
   }
@@ -84,6 +85,7 @@ export class HeroGuitarUI {
       } else if (this.currentStepIndex === 1) {
         this.isCompleted = true;
         this.renderCompletion();
+        document.dispatchEvent(new CustomEvent('gmusic:foldercompleted', { detail: { folderId: 'g1-m1-onboarding' } }));
       }
     } else {
       if (this.lessonSubtext) {
@@ -131,9 +133,15 @@ export class HeroGuitarUI {
 
   showSuccessFlash() {
     if (!this.microLessonBox) return;
+    clearTimeout(this.flashTimer);
     this.microLessonBox.classList.add('success');
-    setTimeout(() => {
+    this.flashTimer = setTimeout(() => {
       this.microLessonBox.classList.remove('success');
     }, 1200);
+  }
+
+  destroy() {
+    clearTimeout(this.flashTimer);
+    this.guitar?.destroy();
   }
 }

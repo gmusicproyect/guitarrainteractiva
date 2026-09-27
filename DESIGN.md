@@ -47,3 +47,22 @@ Color is always paired with text and an icon or shape.
 - Desktop shows the folder path with concise descriptions.
 - Mobile keeps the rail, stacks metadata, and preserves one clear action.
 - No horizontal scrolling is allowed in the learning path or folder modal.
+
+## Studio interface (2026)
+
+- Warm off-white workspace, white surfaces, muted green for progress, terracotta for the next action.
+- Desktop sidebar separates study, learning path, harmony, free exploration and personal progress. Mobile uses five labeled bottom-navigation controls.
+- The home page pairs one current lesson with a real, playable six-string instrument. There are no simulated students, completion percentages, achievements or testimonials.
+- Primary controls have a subtle pressed state. All navigation and interactive controls expose visible keyboard focus.
+- Progress is calculated from completed lessons, stored locally and explained plainly. Future course modules are explicitly marked as forthcoming.
+- The illustration is an original inline vector, not an external download; typography falls back to system fonts.
+- Shared color tokens apply to lessons and dialogs. The free fretboard keeps a dark, high-contrast playing surface. Motion is suppressed when reduced motion is requested.
+- The legacy demo pages retain their original styles; `studio.css` is loaded only by the current application.
+
+## Harmony laboratory
+
+- Original short progressions connect listening, chord spelling, Roman numerals and the guitar note map.
+- Tonality and tempo are explicit choices. Sound starts on interaction and stops on navigation, hiding the page, muting or changing the study.
+- The fretboard is a map of chord tones, not a fingering diagram. Its legend and instructions make this distinction explicit.
+- The laboratory is free exploration with immediate educational feedback; it does not award XP or bypass the course prerequisites.
+- Open reading links name their source and language; technical library details belong in documentation.

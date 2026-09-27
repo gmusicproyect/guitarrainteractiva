@@ -1,229 +1,207 @@
-/**
- * GMUSIC MAIN APPLICATION BOOTSTRAP (v1.1)
- * Initializes all core engines, data pipelines, and UI controllers.
- */
-
+/** Application composition: navigation, first-visit guidance, and earned local progress. */
 import { audioEngine } from './engine/audio-engine.js';
-import { HeroGuitarUI } from './ui/hero-guitar.js?v=5';
-import { PracticeViewUI } from './ui/practice-view.js?v=5';
-import { FreeGuitarUI } from './ui/free-guitar.js?v=3';
-import { ProfileDemoUI } from './ui/profile-demo.js?v=6';
-import { ModuleOnePathUI } from './ui/module-one-path.js?v=6';
+import { HeroGuitarUI } from './ui/hero-guitar.js';
+import { PracticeViewUI } from './ui/practice-view.js';
+import { FreeGuitarUI } from './ui/free-guitar.js';
+import { ProfileDemoUI } from './ui/profile-demo.js';
+import { ModuleOnePathUI } from './ui/module-one-path.js';
+import { DialogController } from './ui/dialog-controller.js';
+import { HarmonyLabUI } from './ui/harmony-lab.js';
+import { LearnerProgressStore, PROGRESS_STORAGE_KEY } from './state/learner-progress.js';
+import { loadCourseCatalog } from './state/course-catalog.js';
 
 function initApp() {
-  // 1. Initialize UI Controllers
-  const heroGuitar = new HeroGuitarUI();
-  const practiceView = new PracticeViewUI();
+  const practice = new PracticeViewUI();
   const freeGuitar = new FreeGuitarUI();
-  const profileDemo = new ProfileDemoUI();
+  const harmony = new HarmonyLabUI();
+  let store = null;
+  let modulePath = null;
+  let loading = false;
+  const pendingCompletions = [];
+  const viewSections = [...document.querySelectorAll('[data-app-view]')];
+  const viewLinks = [...document.querySelectorAll('[data-nav-view]')];
+  const hashByView = { home: '#inicio', route: '#ruta', progress: '#habilidades', harmony: '#armonia' };
+  const viewByHash = Object.fromEntries(Object.entries(hashByView).map(([view, hash]) => [hash, view]));
+  const titleByView = { home: 'Inicio', route: 'Mi ruta', progress: 'Mi progreso', harmony: 'Laboratorio de armonía' };
 
-  // 2. Keep each area of the product in its own view.
-  const appViewSections = Array.from(document.querySelectorAll('[data-app-view]'));
-  const viewNavLinks = Array.from(document.querySelectorAll('[data-nav-view]'));
-
-  const setAppView = (view) => {
-    appViewSections.forEach(section => {
-      section.hidden = section.dataset.appView !== view;
-    });
-
-    viewNavLinks.forEach(link => {
-      const isActive = link.dataset.navView === view;
-      link.classList.toggle('active', isActive);
-      if (isActive) link.setAttribute('aria-current', 'page');
+  function setView(requested, { history = 'push', focus = true } = {}) {
+    const view = Object.hasOwn(hashByView, requested) ? requested : 'home';
+    harmony.stop();
+    viewSections.forEach(section => { section.hidden = section.dataset.appView !== view; });
+    viewLinks.forEach(link => {
+      const active = link.dataset.navView === view;
+      link.classList.toggle('active', active);
+      if (active) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     });
+    if (history !== 'none' && window.location.hash !== hashByView[view]) {
+      window.history[history === 'replace' ? 'replaceState' : 'pushState']({ view }, '', hashByView[view]);
+    }
+    document.title = `${titleByView[view]} · GMusic`;
+    if (focus) {
+      const heading = viewSections.find(section => !section.hidden)?.querySelector('h1, h2');
+      if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }
 
-    const hashByView = { home: '#inicio', route: '#ruta', progress: '#habilidades' };
-    window.history.replaceState(null, '', hashByView[view] || '#inicio');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  viewNavLinks.forEach(link => {
-    link.addEventListener('click', (event) => {
-      event.preventDefault();
-      setAppView(link.dataset.navView);
-    });
-  });
-
-  document.getElementById('logoLink')?.addEventListener('click', (event) => {
+  viewLinks.forEach(link => link.addEventListener('click', event => {
     event.preventDefault();
-    setAppView('home');
+    setView(link.dataset.navView);
+  }));
+  document.getElementById('logoLink')?.addEventListener('click', event => {
+    event.preventDefault();
+    setView('home');
+  });
+  document.querySelector('a[href="#mainContent"]')?.addEventListener('click', event => {
+    event.preventDefault();
+    document.getElementById('mainContent')?.focus();
+  });
+  setView(viewByHash[window.location.hash] || 'home', { history: 'replace', focus: false });
+
+  const onboarding = document.getElementById('onboardingFlow');
+  const steps = [...document.querySelectorAll('[data-onboarding-step]')];
+  const nextButton = document.getElementById('onboardingNext');
+  const backButton = document.getElementById('onboardingBack');
+  let step = 1;
+  const onboardingDialog = onboarding ? new DialogController(onboarding, {
+    initialFocus: '#onboardingNext',
+    onClose: () => store?.markOnboardingSeen()
+  }) : null;
+
+  function renderOnboarding({ focus = false } = {}) {
+    steps.forEach(element => { element.hidden = Number(element.dataset.onboardingStep) !== step; });
+    const stepLabel = document.getElementById('onboardingStepLabel');
+    const fill = document.getElementById('onboardingProgressBar');
+    if (stepLabel) stepLabel.textContent = `Paso ${step} de ${steps.length}`;
+    if (fill) fill.style.width = `${step / steps.length * 100}%`;
+    if (backButton) { backButton.hidden = false; backButton.disabled = step === 1; }
+    if (nextButton) nextButton.textContent = step === steps.length ? 'Empezar a practicar' : 'Continuar';
+    const heading = steps.find(element => !element.hidden)?.querySelector('h1, h2, h3');
+    if (heading && onboarding) {
+      if (!heading.id) heading.id = `onboardingTitle${step}`;
+      onboarding.setAttribute('aria-labelledby', heading.id);
+    }
+    if (focus) {
+      if (heading) { heading.tabIndex = -1; heading.focus(); }
+    }
+  }
+  function openOnboarding() {
+    harmony.stop();
+    if (!steps.length) return;
+    step = 1;
+    renderOnboarding();
+    onboardingDialog?.open();
+  }
+  nextButton?.addEventListener('click', () => {
+    if (step < steps.length) { step++; renderOnboarding({ focus: true }); }
+    else { onboardingDialog?.close(); continueLearning(); }
+  });
+  backButton?.addEventListener('click', () => {
+    if (step > 1) { step--; renderOnboarding({ focus: true }); }
+  });
+  document.getElementById('onboardingStudentLogin')?.addEventListener('click', () => onboardingDialog?.close());
+  document.getElementById('btnShowOnboarding')?.addEventListener('click', openOnboarding);
+
+  function followLocation() {
+    const view = viewByHash[window.location.hash];
+    if (!view && window.location.hash) return;
+    practice.close();
+    freeGuitar.close();
+    modulePath?.closeModal();
+    onboardingDialog?.close();
+    setView(view || 'home', { history: 'none' });
+  }
+  window.addEventListener('popstate', followLocation);
+  window.addEventListener('hashchange', followLocation);
+
+  function startFolder(folder) {
+    if (store && folder && store.getStatus(folder.id) !== 'locked') practice.open(folder);
+  }
+  function continueLearning() {
+    if (!store) { void initializeCourse(); return; }
+    const next = store.getNextFolder();
+    if (next) startFolder(next);
+    else setView('route');
+  }
+  ['btnHeroContinue', 'btnStartTodaySession'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', continueLearning);
+  });
+  ['btnHeroExplore', 'navFreeGuitar', 'btnOpenFreeGuitar'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', () => { harmony.stop(); freeGuitar.open(); });
   });
 
-  const viewByHash = { '#inicio': 'home', '#ruta': 'route', '#habilidades': 'progress' };
-  setAppView(viewByHash[window.location.hash] || 'home');
-
-  // Connected Module One Path with explicit folder practice dispatch
-  const moduleOnePath = new ModuleOnePathUI({
-    onNavigateHome: () => setAppView('home'),
-    onStartFolder: (folder) => {
-      practiceView.open(folder);
-    }
+  const audioButton = document.getElementById('audioToggleBtn');
+  function updateAudioButton() {
+    const muted = audioEngine.isMuted;
+    audioButton?.classList.toggle('muted', muted);
+    audioButton?.setAttribute('aria-pressed', String(muted));
+    audioButton?.setAttribute('aria-label', muted ? 'Activar sonido de guitarra' : 'Silenciar sonido de guitarra');
+    const icon = document.getElementById('audioIcon');
+    if (icon) icon.innerHTML = `<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4 6 8H3v8h3l5 4Z"/><path d="${muted ? 'm16 9 6 6m0-6-6 6' : 'M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14'}"/></svg>`;
+    const text = audioButton?.querySelector('.audio-text');
+    if (text) text.textContent = muted ? 'Sin sonido' : 'Sonido activo';
+  }
+  audioButton?.addEventListener('click', () => {
+    harmony.stop();
+    audioEngine.toggleMute();
+    updateAudioButton();
+    if (!audioEngine.isMuted) audioEngine.playNote(0, 0, 1.2, 0.6);
   });
+  updateAudioButton();
 
-  // 3. Guide first-time visitors before showing the course interface.
-  const onboardingFlow = document.getElementById('onboardingFlow');
-  const onboardingStepLabel = document.getElementById('onboardingStepLabel');
-  const onboardingProgressBar = document.getElementById('onboardingProgressBar');
-  const onboardingBack = document.getElementById('onboardingBack');
-  const onboardingNext = document.getElementById('onboardingNext');
-  const onboardingStudentLogin = document.getElementById('onboardingStudentLogin');
-  const onboardingSteps = Array.from(document.querySelectorAll('[data-onboarding-step]'));
-  let onboardingStep = 1;
-
-  const renderOnboardingStep = () => {
-    onboardingSteps.forEach(stepEl => {
-      const stepNumber = Number(stepEl.dataset.onboardingStep);
-      stepEl.hidden = stepNumber !== onboardingStep;
-    });
-
-    if (onboardingStepLabel) onboardingStepLabel.textContent = `Paso ${onboardingStep} de 3`;
-    if (onboardingProgressBar) onboardingProgressBar.style.width = `${(onboardingStep / 3) * 100}%`;
-    if (onboardingBack) onboardingBack.disabled = onboardingStep === 1;
-
-    if (onboardingNext) {
-      if (onboardingStep === 1) onboardingNext.textContent = 'Continuar';
-      else if (onboardingStep === 2) onboardingNext.textContent = 'Ver mi ruta';
-      else onboardingNext.textContent = 'Empezar primera misión';
-    }
-  };
-
-  const openOnboarding = () => {
-    if (!onboardingFlow) return;
-    onboardingStep = 1;
-    renderOnboardingStep();
-    onboardingFlow.hidden = false;
-    document.body.style.overflow = 'hidden';
-  };
-
-  const closeOnboarding = ({ focusGuitar = false } = {}) => {
-    if (!onboardingFlow) return;
-    onboardingFlow.hidden = true;
-    document.body.style.overflow = '';
-
-    if (focusGuitar) {
-      setAppView('home');
-      window.setTimeout(() => {
-        const guitar = document.getElementById('heroGuitar');
-        guitar?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        guitar?.querySelector('[data-s="5"]')?.focus({ preventScroll: true });
-      }, 250);
-    }
-  };
-
-  onboardingNext?.addEventListener('click', () => {
-    if (onboardingStep < 3) {
-      onboardingStep += 1;
-      renderOnboardingStep();
-      return;
-    }
-    closeOnboarding({ focusGuitar: true });
+  document.addEventListener('gmusic:foldercompleted', event => {
+    const folderId = event.detail?.folderId;
+    if (store) store.recordCompletion(folderId);
+    else if (typeof folderId === 'string') pendingCompletions.push(folderId);
   });
-
-  onboardingBack?.addEventListener('click', () => {
-    if (onboardingStep > 1) {
-      onboardingStep -= 1;
-      renderOnboardingStep();
-    }
+  // Register the completion listener before the first interactive lesson becomes usable.
+  new HeroGuitarUI();
+  window.addEventListener('storage', event => {
+    if (event.key === PROGRESS_STORAGE_KEY) store?.refresh();
   });
+  window.addEventListener('pageshow', event => { if (event.persisted) store?.refresh(); });
 
-  onboardingStudentLogin?.addEventListener('click', () => {
-    profileDemo.setMode('student');
-    closeOnboarding();
-  });
-
-  document.getElementById('btnModeVisitor')?.addEventListener('click', openOnboarding);
-  document.getElementById('btnModeStudent')?.addEventListener('click', () => closeOnboarding());
-
-  renderOnboardingStep();
-  document.body.style.overflow = 'hidden';
-
-  // 4. Setup Audio Engine Controls
-  const audioToggleBtn = document.getElementById('audioToggleBtn');
-  const audioIcon = document.getElementById('audioIcon');
-
-  if (audioToggleBtn) {
-    audioToggleBtn.addEventListener('click', () => {
-      const isMuted = audioEngine.toggleMute();
-      if (isMuted) {
-        audioToggleBtn.classList.add('muted');
-        if (audioIcon) audioIcon.textContent = '🔇';
-        audioToggleBtn.querySelector('.audio-text').textContent = 'Silenciado';
-      } else {
-        audioToggleBtn.classList.remove('muted');
-        if (audioIcon) audioIcon.textContent = '🔊';
-        audioToggleBtn.querySelector('.audio-text').textContent = 'Audio ON';
-        // Play soft confirmation pluck
-        audioEngine.playNote(0, 0, 1.2, 0.6);
+  async function initializeCourse() {
+    if (loading || store) return;
+    loading = true;
+    const continueButton = document.getElementById('btnHeroContinue');
+    if (continueButton) continueButton.disabled = true;
+    try {
+      const catalog = await loadCourseCatalog();
+      store = new LearnerProgressStore({ folders: catalog.folders });
+      new ProfileDemoUI({ store, onStartFolder: startFolder });
+      modulePath = new ModuleOnePathUI({ catalog, store, onStartFolder: startFolder });
+      pendingCompletions.splice(0).forEach(id => store.recordCompletion(id));
+      if (!store.getSnapshot().onboardingSeen) openOnboarding();
+    } catch (error) {
+      console.error('No se pudo cargar el curso:', error);
+      document.querySelectorAll('[data-progress-status]').forEach(element => {
+        element.textContent = 'No se pudo cargar el curso. Comprueba tu conexión y vuelve a intentarlo.';
+      });
+      const continueText = document.getElementById('heroContinueText');
+      if (continueText) continueText.textContent = 'Reintentar carga';
+      const container = document.querySelector('#tu-camino .roadmap-timeline');
+      if (container) {
+        container.replaceChildren();
+        const message = document.createElement('p');
+        message.className = 'module-path-error';
+        message.setAttribute('role', 'status');
+        message.textContent = 'No pudimos cargar tus clases. Comprueba tu conexión.';
+        const retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'btn btn-primary';
+        retry.textContent = 'Volver a intentar';
+        retry.addEventListener('click', () => { void initializeCourse(); });
+        container.append(message, retry);
       }
-    });
+    } finally {
+      loading = false;
+      if (continueButton) continueButton.disabled = false;
+    }
   }
-
-  // 5. Connect Main CTA Buttons
-  const btnHeroContinue = document.getElementById('btnHeroContinue');
-  const btnHeroExplore = document.getElementById('btnHeroExplore');
-  const btnContinueAm = document.getElementById('btnContinueAm');
-  const btnStartTodaySession = document.getElementById('btnStartTodaySession');
-  const navFreeGuitar = document.getElementById('navFreeGuitar');
-  const btnOpenFreeGuitar = document.getElementById('btnOpenFreeGuitar');
-
-  if (btnHeroContinue) {
-    btnHeroContinue.addEventListener('click', () => {
-      if (document.body.classList.contains('mode-visitor')) {
-        document.getElementById('heroGuitar')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        document.querySelector('#heroGuitar [data-s="5"]')?.focus({ preventScroll: true });
-      } else {
-        practiceView.open('03-cuerdas');
-      }
-    });
-  }
-
-  if (btnContinueAm) {
-    btnContinueAm.addEventListener('click', () => {
-      practiceView.open('03-cuerdas');
-    });
-  }
-
-  if (btnStartTodaySession) {
-    btnStartTodaySession.addEventListener('click', () => {
-      practiceView.open('03-cuerdas');
-    });
-  }
-
-  if (btnHeroExplore) {
-    btnHeroExplore.addEventListener('click', () => {
-      freeGuitar.open();
-    });
-  }
-
-  if (navFreeGuitar) {
-    navFreeGuitar.addEventListener('click', () => {
-      freeGuitar.open();
-    });
-  }
-
-  if (btnOpenFreeGuitar) {
-    btnOpenFreeGuitar.addEventListener('click', () => {
-      freeGuitar.open();
-    });
-  }
-
-  // 6. Safe AudioContext user-gesture resume (Avoids browser autoplay block)
-  const initAudioGesture = () => {
-    audioEngine.ensureContext();
-    window.removeEventListener('click', initAudioGesture);
-    window.removeEventListener('keydown', initAudioGesture);
-    window.removeEventListener('touchstart', initAudioGesture);
-  };
-
-  window.addEventListener('click', initAudioGesture, { once: true });
-  window.addEventListener('keydown', initAudioGesture, { once: true });
-  window.addEventListener('touchstart', initAudioGesture, { once: true });
+  void initializeCourse();
 }
 
-// Bootstrap once DOM content is fully parsed
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
-} else {
-  initApp();
-}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initApp, { once: true });
+else initApp();
