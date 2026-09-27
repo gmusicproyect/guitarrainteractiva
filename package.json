@@ -12,6 +12,14 @@
     "serve": "node scripts/serve.mjs",
     "test": "node --test test/*.js",
     "check:static": "node scripts/check.mjs",
-    "check": "npm run check:static && npm test"
+    "check": "npm run check:static && npm run check:vendor && npm test",
+    "vendor:tonal": "node scripts/vendor-tonal.mjs",
+    "check:vendor": "node scripts/vendor-tonal.mjs --check"
+  },
+  "dependencies": {
+    "tonal": "6.4.3"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
   }
 }

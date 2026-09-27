@@ -6,24 +6,27 @@ import { FreeGuitarUI } from './ui/free-guitar.js';
 import { ProfileDemoUI } from './ui/profile-demo.js';
 import { ModuleOnePathUI } from './ui/module-one-path.js';
 import { DialogController } from './ui/dialog-controller.js';
+import { HarmonyLabUI } from './ui/harmony-lab.js';
 import { LearnerProgressStore, PROGRESS_STORAGE_KEY } from './state/learner-progress.js';
 import { loadCourseCatalog } from './state/course-catalog.js';
 
 function initApp() {
   const practice = new PracticeViewUI();
   const freeGuitar = new FreeGuitarUI();
+  const harmony = new HarmonyLabUI();
   let store = null;
   let modulePath = null;
   let loading = false;
   const pendingCompletions = [];
   const viewSections = [...document.querySelectorAll('[data-app-view]')];
   const viewLinks = [...document.querySelectorAll('[data-nav-view]')];
-  const hashByView = { home: '#inicio', route: '#ruta', progress: '#habilidades' };
+  const hashByView = { home: '#inicio', route: '#ruta', progress: '#habilidades', harmony: '#armonia' };
   const viewByHash = Object.fromEntries(Object.entries(hashByView).map(([view, hash]) => [hash, view]));
-  const titleByView = { home: 'Inicio', route: 'Mi ruta', progress: 'Mi progreso' };
+  const titleByView = { home: 'Inicio', route: 'Mi ruta', progress: 'Mi progreso', harmony: 'Laboratorio de armonía' };
 
   function setView(requested, { history = 'push', focus = true } = {}) {
     const view = Object.hasOwn(hashByView, requested) ? requested : 'home';
+    harmony.stop();
     viewSections.forEach(section => { section.hidden = section.dataset.appView !== view; });
     viewLinks.forEach(link => {
       const active = link.dataset.navView === view;
@@ -84,6 +87,7 @@ function initApp() {
     }
   }
   function openOnboarding() {
+    harmony.stop();
     if (!steps.length) return;
     step = 1;
     renderOnboarding();
@@ -124,7 +128,7 @@ function initApp() {
     document.getElementById(id)?.addEventListener('click', continueLearning);
   });
   ['btnHeroExplore', 'navFreeGuitar', 'btnOpenFreeGuitar'].forEach(id => {
-    document.getElementById(id)?.addEventListener('click', () => freeGuitar.open());
+    document.getElementById(id)?.addEventListener('click', () => { harmony.stop(); freeGuitar.open(); });
   });
 
   const audioButton = document.getElementById('audioToggleBtn');
@@ -139,6 +143,7 @@ function initApp() {
     if (text) text.textContent = muted ? 'Sin sonido' : 'Sonido activo';
   }
   audioButton?.addEventListener('click', () => {
+    harmony.stop();
     audioEngine.toggleMute();
     updateAudioButton();
     if (!audioEngine.isMuted) audioEngine.playNote(0, 0, 1.2, 0.6);

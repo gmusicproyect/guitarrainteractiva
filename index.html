@@ -7,7 +7,7 @@
     <title>GMusic · Tu espacio para aprender guitarra</title>
     <meta
       name="description"
-      content="Aprende guitarra a tu ritmo. Cinco clases guiadas, cuerdas que puedes tocar y un explorador de acordes y escalas. Sin registro."
+      content="Aprende guitarra a tu ritmo. Clases guiadas y un laboratorio para escuchar acordes, explorar sus notas y entender su armonía. Sin registro."
     />
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="css/roadmap.css?v=6" />
     <link rel="stylesheet" href="css/modals.css?v=5" />
     <link rel="stylesheet" href="css/studio.css?v=1" />
+    <link rel="stylesheet" href="css/harmony.css?v=1" />
   </head>
   <body class="theme-studio mode-student">
     <a class="skip-link" href="#mainContent">Saltar al contenido</a>
@@ -73,6 +74,20 @@
             <path d="M8 5h7a4 4 0 0 1 0 8H9a4 4 0 0 0 0 8h7" /></svg
           ><span>Mi aprendizaje</span></a
         >
+        <a href="#armonia" class="nav-link" data-nav-view="harmony">
+          <svg
+            class="ui-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M5 17V7m7 13V4m7 13V7M2 10h6m1 4h6m1-4h6" />
+          </svg>
+          <span>Armonía</span>
+        </a>
         <button type="button" class="nav-link" id="navFreeGuitar">
           <svg
             class="ui-icon"
@@ -219,6 +234,18 @@
               A tu propio ritmo</span
             >
           </div>
+          <a class="harmony-entry" href="#armonia" data-nav-view="harmony">
+            <span class="harmony-entry-icon" aria-hidden="true"
+              >I · vi · IV · V</span
+            >
+            <span
+              ><strong>Descubre por qué suena así</strong
+              ><small
+                >Escucha, toca y conecta los acordes con su armonía.</small
+              ></span
+            >
+            <span aria-hidden="true">↗</span>
+          </a>
           <div class="dashboard-grid">
             <div class="dashboard-primary">
               <section
@@ -755,6 +782,207 @@
             </div>
           </div>
         </section>
+        <section
+          class="harmony-lab"
+          id="harmonyLab"
+          data-app-view="harmony"
+          aria-labelledby="harmonyTitle"
+          hidden
+        >
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">EL PORQUÉ DE LO QUE TOCAS</span>
+              <h1 id="harmonyTitle">Haz que la teoría suene<span>.</span></h1>
+              <p>
+                Escucha una idea musical. Explora sus notas. Entiende la
+                relación entre sus acordes.
+              </p>
+            </div>
+            <span class="harmony-study-tag">ESTUDIO 01 · ARMONÍA</span>
+          </div>
+          <div class="harmony-session">
+            <div class="harmony-controls">
+              <label
+                >Idea musical<select id="harmonyProgression"></select
+              ></label>
+              <label>Tonalidad<select id="harmonyKey"></select></label>
+              <label class="harmony-tempo" for="harmonyTempo"
+                >Velocidad
+                <span
+                  ><output id="harmonyTempoValue" for="harmonyTempo">80</output>
+                  pulsos/min</span
+                ><input
+                  id="harmonyTempo"
+                  type="range"
+                  min="60"
+                  max="120"
+                  step="5"
+                  value="80"
+              /></label>
+            </div>
+            <div class="harmony-transport">
+              <button type="button" id="harmonyPlay" class="btn btn-primary">
+                ▶ Escuchar progresión
+              </button>
+              <div class="harmony-pulse" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+              </div>
+              <span id="harmonyPlayback" role="status"
+                >4 pulsos por acorde · compás de 4/4</span
+              >
+            </div>
+            <div
+              id="harmonyChords"
+              class="harmony-chords"
+              role="group"
+              aria-label="Acordes de la progresión"
+            ></div>
+            <p class="harmony-caption">
+              Elige un acorde para explorarlo. Cambia de tonalidad: las notas
+              cambian, los grados se conservan.
+            </p>
+          </div>
+          <div class="harmony-explore-grid">
+            <section class="harmony-detail" aria-labelledby="harmonyChordTitle">
+              <span class="eyebrow">01 · ENTIENDE EL ACORDE</span>
+              <h2 id="harmonyChordTitle"></h2>
+              <p id="harmonyExplanation"></p>
+              <div
+                id="harmonyNotes"
+                class="harmony-notes"
+                role="group"
+                aria-label="Notas del acorde"
+              ></div>
+              <p id="harmonyConstruction" class="harmony-construction"></p>
+              <button
+                type="button"
+                id="harmonyArpeggio"
+                class="harmony-secondary"
+              >
+                Escuchar nota por nota ↗
+              </button>
+              <p class="harmony-scale-label">Notas de la tonalidad</p>
+              <p id="harmonyScale" class="harmony-scale"></p>
+            </section>
+            <section
+              class="harmony-guitar"
+              aria-labelledby="harmonyGuitarTitle"
+            >
+              <span class="eyebrow">02 · ENCUÉNTRALO EN LA GUITARRA</span>
+              <h2 id="harmonyGuitarTitle">Un acorde, muchas posiciones</h2>
+              <p>
+                Las notas marcadas forman el acorde. Toca cualquier posición
+                para escucharla.
+              </p>
+              <div
+                class="harmony-fret-scroll"
+                tabindex="0"
+                role="region"
+                aria-label="Diapasón de seis cuerdas; desplázate si es necesario"
+              >
+                <div class="harmony-fret-numbers" aria-hidden="true">
+                  <span></span><span>Al aire</span><span>1</span><span>2</span
+                  ><span>3</span><span>4</span><span>5</span>
+                </div>
+                <div
+                  id="harmonyFretboard"
+                  class="harmony-fretboard"
+                  role="group"
+                  aria-label="Diapasón. Usa las flechas para moverte entre cuerdas y trastes."
+                ></div>
+              </div>
+              <div class="harmony-legend">
+                <span><i class="root-dot"></i>Fundamental</span
+                ><span><i></i>Tercera y quinta</span>
+              </div>
+              <p class="harmony-fret-hint">
+                Este mapa muestra notas, no una digitación para pulsarlas todas
+                a la vez. Con teclado, usa las flechas y pulsa Intro.
+              </p>
+              <p
+                id="harmonyNoteStatus"
+                class="harmony-note-status"
+                role="status"
+              >
+                Explora a tu ritmo.
+              </p>
+            </section>
+          </div>
+          <section
+            class="harmony-challenge"
+            aria-labelledby="harmonyChallengeTitle"
+          >
+            <div>
+              <span class="eyebrow">03 · CONECTA LO QUE ESCUCHAS</span>
+              <h2 id="harmonyChallengeTitle">Reconoce el grado V</h2>
+              <p id="harmonyQuestion"></p>
+              <div
+                id="harmonyAnswers"
+                class="harmony-answers"
+                role="group"
+                aria-labelledby="harmonyQuestion"
+              ></div>
+              <p id="harmonyFeedback" role="status">
+                Pista: cuenta cinco notas desde la primera de la tonalidad.
+              </p>
+            </div>
+            <aside>
+              <span aria-hidden="true">V → I</span>
+              <h3>Escucha la vuelta a casa</h3>
+              <p>
+                En este estudio tonal, el grado V crea tensión y el I funciona
+                como punto de reposo. Escucha la pareja y compárala con la
+                progresión.
+              </p>
+              <button
+                type="button"
+                id="harmonyResolve"
+                class="harmony-secondary"
+              >
+                Escuchar V → I
+              </button>
+            </aside>
+          </section>
+          <section
+            class="harmony-reading"
+            aria-labelledby="harmonyReadingTitle"
+          >
+            <div>
+              <span class="eyebrow">SIGUE EL HILO</span>
+              <h2 id="harmonyReadingTitle">De la práctica al estudio</h2>
+              <p>
+                Lecturas abiertas de Open Music Theory, en inglés, para
+                profundizar en lo que acabas de tocar.
+              </p>
+            </div>
+            <div class="harmony-reading-links">
+              <a
+                href="https://viva.pressbooks.pub/openmusictheory/chapter/triads/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Cómo se construye una tríada <span aria-hidden="true">↗</span
+                ><span class="sr-only"> (abre en otra pestaña)</span></a
+              ><a
+                href="https://viva.pressbooks.pub/openmusictheory/chapter/roman-numerals/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Grados y números romanos <span aria-hidden="true">↗</span
+                ><span class="sr-only"> (abre en otra pestaña)</span></a
+              ><a
+                href="https://viva.pressbooks.pub/openmusictheory/chapter/intro-to-pop-schemas/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Patrones armónicos en el pop <span aria-hidden="true">↗</span
+                ><span class="sr-only"> (abre en otra pestaña)</span></a
+              >
+            </div>
+            <p class="harmony-attribution">
+              Open Music Theory, edición 2 · CC BY-SA 4.0, salvo excepciones
+              indicadas en el libro. Los textos y estudios interactivos de esta
+              página son originales de GMusic.
+            </p>
+          </section>
+        </section>
       </main>
       <footer class="studio-footer">
         <span>gmusic. <span>Hecho para aprender tocando.</span></span
@@ -1179,6 +1407,6 @@
         interactivas.
       </div></noscript
     >
-    <script type="module" src="js/app.js?v=13"></script>
+    <script type="module" src="js/app.js?v=14"></script>
   </body>
 </html>

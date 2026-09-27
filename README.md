@@ -1,6 +1,6 @@
 # GMusic · Guitarra interactiva
 
-Un espacio de práctica de guitarra en español: lecciones guiadas, instrumento interactivo, ejercicios con respuesta inmediata y sonido generado en el navegador. HTML, CSS y módulos JavaScript nativos, sin dependencias de ejecución ni compilación.
+Un espacio de práctica de guitarra en español: lecciones guiadas, instrumento interactivo, ejercicios con respuesta inmediata y sonido generado en el navegador. HTML, CSS y módulos JavaScript nativos, con una copia local de Tonal para el laboratorio de armonía y sin compilación necesaria para servir el sitio.
 
 [Abrir la versión publicada](https://gmusicproyect.github.io/guitarrainteractiva/)
 
@@ -11,9 +11,12 @@ Un espacio de práctica de guitarra en español: lecciones guiadas, instrumento 
 - Ejercicios que comprueban la respuesta antes de avanzar y permiten volver a intentarlo.
 - Progreso local, desbloqueo secuencial y XP por completar una clase; los repasos no duplican la recompensa.
 - Una guitarra libre para explorar notas, acordes y escalas con Web Audio.
+- Un [Laboratorio de armonía](index.html#armonia) con dos miniestudios originales, I–vi–IV–V y ii–V–I, en seis tonalidades mayores: reproducción por acordes, exploración de tríadas en el diapasón y una pregunta sobre el grado V.
 - Navegación con teclado, diálogos con gestión de foco y adaptación a pantallas pequeñas.
 
 **Alcance actual:** los módulos 2–5 aparecen como próximos contenidos. No están implementados como cursos completos. El progreso pertenece al navegador y al dispositivo: no hay cuentas, autenticación, servidor ni sincronización entre dispositivos. Los ejercicios evalúan la interacción en pantalla; no califican el sonido de una guitarra real mediante el micrófono.
+
+El laboratorio es una práctica independiente del XP y del progreso de las clases. Sus sonidos son sintetizados; no incluye catálogo de canciones ni análisis automático de grabaciones. Consulta la [selección de recursos musicales](docs/MUSIC_RESOURCES.md) para conocer el papel de Open Music Theory, Tonal y los demás proyectos, y los [avisos de terceros](docs/THIRD_PARTY.md) para mantener la dependencia local.
 
 ## Guardado del avance
 
@@ -46,14 +49,15 @@ El navegador debe admitir módulos JavaScript, `fetch` y Web Audio. El audio se 
 npm run check
 ```
 
-Este comando ejecuta dos capas de verificación:
+Este comando ejecuta las siguientes verificaciones:
 
 | Comando | Qué comprueba |
 | --- | --- |
 | `npm run check:static` | Sintaxis JavaScript, scripts integrados en las páginas históricas, JSON válido y existencia de imports, recursos locales y manifiestos referenciados. |
 | `npm test` | Contratos musicales, estructura y ejercicios del Módulo 1, y pruebas de regresión del comportamiento. |
+| `npm run check:vendor` | Coherencia de la copia local de Tonal con su generación reproducible. |
 
-Las pruebas usan el ejecutor integrado de Node. No requieren paquetes ni conexión. La validación estática comprueba referencias literales; las rutas calculadas en tiempo de ejecución y el diseño visual deben comprobarse en el navegador.
+Las pruebas usan el ejecutor integrado de Node. Tras `npm ci`, las verificaciones se ejecutan localmente sin conexión. La validación estática comprueba referencias literales; las rutas calculadas en tiempo de ejecución y el diseño visual deben comprobarse en el navegador.
 
 El flujo de GitHub Actions ejecuta `npm ci` y `npm run check` con Node 22 y 24 en cada push y pull request. Usa permisos de lectura y versiones de las acciones fijadas a un commit. Dependabot propone actualizaciones de esas acciones.
 
@@ -65,6 +69,7 @@ Antes de publicar un cambio visual o de interacción, comprueba también en el n
 4. Repasar una clase y comprobar que el XP no se duplica.
 5. Recorrer botones y diálogos con Tab, Mayús+Tab y Escape, y revisar la vista móvil.
 6. Activar el sonido, cambiar de vista durante una reproducción y abrir la guitarra libre.
+7. Abrir Armonía, cambiar tonalidad y progresión, escuchar la secuencia y responder el reto del grado V.
 
 ## Organización
 
@@ -77,9 +82,11 @@ Antes de publicar un cambio visual o de interacción, comprueba también en el n
 | `js/engine/` | Audio, guitarra y evaluación de ejercicios. |
 | `js/state/` | Guardado, validación y cálculo del progreso local. |
 | `js/music/` | Cuerdas, notas, acordes, escalas y formas CAGED. |
+| `js/vendor/` | Copia local de Tonal y su licencia. |
+| `docs/` | Recursos musicales, decisiones de integración y avisos de terceros. |
 | `data/courses/guitar1/course.json` | Mapa de los cinco módulos. |
 | `data/courses/guitar1/module1/` | Manifiesto del módulo y contenido de cada carpeta. |
-| `test/` | Pruebas automatizadas sin dependencias. |
+| `test/` | Pruebas automatizadas. |
 | `scripts/` | Servidor local y validación estática. |
 | `.github/` | Integración continua y actualización de acciones. |
 
